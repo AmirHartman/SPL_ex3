@@ -9,14 +9,10 @@ public class ServiceFrameReceipt extends ServiceFrame {
     }
 
     public String toString() {
-        String result = "Stomp Command: MESSAGE\n" 
-                + "Headers:\n" // צריך הבדל? בשביל קידוד ופענוח מזהה את הסוף עם פעמיים סלש ואות אן
-                + "Receipt-id: " + this.receiptId + "\n";
-        if (this.body == "\n") {
-            return result + "\n" + this.nullChar;
-        } else {
-            return result + "\n" + this.body + "\n" + this.nullChar;
-        }
+        return type.name() + "\n" 
+                // + "Headers:\n" // צריך הבדל? בשביל קידוד ופענוח מזהה את הסוף עם פעמיים סלש ואות אן
+                + "Receipt-id: " + this.receiptId + "\n"
+                + "\n" + this.nullChar;
     }
     
 }

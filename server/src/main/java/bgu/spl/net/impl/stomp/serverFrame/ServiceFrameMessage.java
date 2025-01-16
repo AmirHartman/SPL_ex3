@@ -5,16 +5,17 @@ public class ServiceFrameMessage extends ServiceFrame {
     private int subscription;
     private String destination;
 
-    public ServiceFrameMessage (int messageID, int subscription, String destination) {
+    public ServiceFrameMessage (int messageID, int subscription, String destination, String body) {
         super(ServiceStompCommand.MESSAGE);
         this.messageID = messageID;
         this.subscription = subscription;
         this.destination = destination;
+        this.body = body;
     }
 
     public String toString() {
-        String result = "Stomp Command: MESSAGE \n" 
-                + "Headers: \n" // צריך הבדל? בשביל קידוד ופענוח מזהה את הסוף עם פעמיים סלש ואות אן
+        String result = type.name() + "\n"  
+                // + "Headers:\n" // צריך הבדל? בשביל קידוד ופענוח מזהה את הסוף עם פעמיים סלש ואות אן
                 + "Message-id: " + this.messageID + "\n" 
                 + "Subscription: " + this.subscription + "\n" 
                 + "Destination: " + this.destination + "\n";

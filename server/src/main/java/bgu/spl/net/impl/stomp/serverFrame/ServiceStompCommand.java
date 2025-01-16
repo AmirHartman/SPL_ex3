@@ -1,6 +1,6 @@
 package bgu.spl.net.impl.stomp.serverFrame;
 
-public enum ServiceFrameType {
+public enum ServiceStompCommand {
     CONNECTED,
     MESSAGE,
     RECEIPT,
