@@ -1,12 +1,18 @@
 package bgu.spl.net.impl.stomp.serverFrame;
 
+import bgu.spl.net.impl.stomp.serverFrame.ServiceStompCommand;
+
 public abstract class ServiceFrame {
     protected ServiceStompCommand type;
     protected String body;
-    protected final char nullChar = '\u0000';
 
     public ServiceFrame(ServiceStompCommand type) {
         this.type = type;
+        this.body = "\n";
+    }
+
+    public ServiceFrame(String type){
+        this.type = stringToCommand(type);
         this.body = "\n";
     }
 
@@ -18,5 +24,19 @@ public abstract class ServiceFrame {
         return body;
     }
 
-    
+    public ServiceStompCommand stringToCommand (String type) {
+        switch (type) {
+            case "CONNECTED":
+                return ServiceStompCommand.CONNECTED;
+            case "MESSAGE":
+                return ServiceStompCommand.MESSAGE;
+            case "RECEIPT":
+                return ServiceStompCommand.RECEIPT;
+            case "ERROR":
+                return ServiceStompCommand.ERROR;
+            default:
+                return null;
+        }
+    }
+
 }

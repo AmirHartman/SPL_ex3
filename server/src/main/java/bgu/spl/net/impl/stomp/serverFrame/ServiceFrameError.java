@@ -18,9 +18,9 @@ public class ServiceFrameError extends ServiceFrame {
                 + "Receipt-id: " + this.receiptId + "\n"
                 + "Message: " + this.message + "\n" ;
         if (this.body == "\n") {
-            return result + "\n" + this.nullChar;
+            return result + "\n";
         } else {
-            return result + "\n" + this.body + "\n" + this.nullChar;
+            return result + "\n" + this.body + "\n";
         }
     }    
     

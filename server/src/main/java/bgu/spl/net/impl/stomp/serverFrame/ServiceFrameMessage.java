@@ -20,9 +20,9 @@ public class ServiceFrameMessage extends ServiceFrame {
                 + "Subscription: " + this.subscription + "\n" 
                 + "Destination: " + this.destination + "\n";
         if (this.body == "\n") {
-            return result + "\n" + this.nullChar;
+            return result + "\n";
         } else {
-            return result + "\n" + this.body + "\n" + this.nullChar;
+            return result + "\n" + this.body + "\n";
         }
     }
 

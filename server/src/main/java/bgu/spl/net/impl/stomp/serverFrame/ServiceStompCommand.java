@@ -4,5 +4,5 @@ public enum ServiceStompCommand {
     CONNECTED,
     MESSAGE,
     RECEIPT,
-    ERROR; 
+    ERROR;
 }

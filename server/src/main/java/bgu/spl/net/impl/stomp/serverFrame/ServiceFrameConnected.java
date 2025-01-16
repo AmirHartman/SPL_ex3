@@ -13,7 +13,7 @@ public class ServiceFrameConnected extends ServiceFrame {
         return type.name() + "\n" 
                 // + "Headers:\n" // צריך הבדל? בשביל קידוד ופענוח מזהה את הסוף עם פעמיים סלש ואות אן
                 + "Version: " + this.version + "\n"
-                + "\n" + this.nullChar;
+                + "\n";
     }
 
     
