@@ -9,13 +9,11 @@ public class ServiceFrameConnected extends ServiceFrame {
         this.version = "1.2";
     }
 
-    public ServiceFrame process(String string){
-        String[] words = string.split(" ");
-        if (!words[0].equals("CONNECTED")){
-            return null;
-        }
-        return new ServiceFrameConnected();
+    public ServiceFrameConnected(String string) {
+        super(ServiceStompCommand.CONNECTED);
+        this.version = "1.2";
     }
+
 
     // public String toString() {
     //     return type.name() + " Version: " + this.version + "\u0000";

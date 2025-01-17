@@ -5,6 +5,7 @@
 /workspaces/SPL_ex3/server/src/main/java/bgu/spl/net/impl/newsfeed/NewsFeed.java
 /workspaces/SPL_ex3/server/src/main/java/bgu/spl/net/srv/Reactor.java
 /workspaces/SPL_ex3/server/src/main/java/bgu/spl/net/impl/rci/RCIClient.java
+/workspaces/SPL_ex3/server/src/main/java/bgu/spl/net/impl/stomp/StompMessagingProtocolImpl.java
 /workspaces/SPL_ex3/server/src/main/java/bgu/spl/net/srv/ConnectionHandler.java
 /workspaces/SPL_ex3/server/src/main/java/bgu/spl/net/api/MessageEncoderDecoder.java
 /workspaces/SPL_ex3/server/src/main/java/bgu/spl/net/impl/echo/EchoServer.java
@@ -19,6 +20,7 @@
 /workspaces/SPL_ex3/server/src/main/java/bgu/spl/net/impl/rci/RemoteCommandInvocationProtocol.java
 /workspaces/SPL_ex3/server/src/main/java/bgu/spl/net/impl/stomp/serverFrame/ServiceFrameError.java
 /workspaces/SPL_ex3/server/src/main/java/bgu/spl/net/impl/rci/Command.java
+/workspaces/SPL_ex3/server/src/main/java/bgu/spl/net/mainTests.java
 /workspaces/SPL_ex3/server/src/main/java/bgu/spl/net/srv/NonBlockingConnectionHandler.java
 /workspaces/SPL_ex3/server/src/main/java/bgu/spl/net/api/MessagingProtocol.java
 /workspaces/SPL_ex3/server/src/main/java/bgu/spl/net/impl/newsfeed/PublishNewsCommand.java
@@ -26,6 +28,7 @@
 /workspaces/SPL_ex3/server/src/main/java/bgu/spl/net/impl/rci/ObjectEncoderDecoder.java
 /workspaces/SPL_ex3/server/src/main/java/bgu/spl/net/srv/BlockingConnectionHandler.java
 /workspaces/SPL_ex3/server/src/main/java/bgu/spl/net/impl/echo/LineMessageEncoderDecoder.java
+/workspaces/SPL_ex3/server/src/main/java/bgu/spl/net/impl/stomp/StompEncoderDecoder.java
 /workspaces/SPL_ex3/server/src/main/java/bgu/spl/net/impl/echo/EchoClient.java
 /workspaces/SPL_ex3/server/src/main/java/bgu/spl/net/impl/echo/EchoProtocol.java
 /workspaces/SPL_ex3/server/src/main/java/bgu/spl/net/impl/stomp/StompServer.java

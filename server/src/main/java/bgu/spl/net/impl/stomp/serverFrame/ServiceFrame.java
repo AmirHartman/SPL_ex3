@@ -10,8 +10,6 @@ public abstract class ServiceFrame {
         this.body = "\n";
     }
 
-    public abstract ServiceFrame process(String string);
-
     public ServiceStompCommand getType() {
         return type;
     }
