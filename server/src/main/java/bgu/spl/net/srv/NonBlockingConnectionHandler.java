@@ -20,9 +20,9 @@ public class NonBlockingConnectionHandler<T> implements ConnectionHandler<T> {
     private final Queue<ByteBuffer> writeQueue = new ConcurrentLinkedQueue<>();
     private final SocketChannel chan;
     private final Reactor reactor;
-    
-        // הוספנו את CONNECTIONS בתור שדה
-        private Connections<T> connections;
+
+    //הוספתי, צריך?
+    String username = null;
 
 
     public NonBlockingConnectionHandler(
@@ -124,4 +124,10 @@ public class NonBlockingConnectionHandler<T> implements ConnectionHandler<T> {
     public void send(T msg) {
         //IMPLEMENT IF NEEDED
     }
+
+    @Override   
+    public String getUserName(){
+        return username;
+    }
+
 }
