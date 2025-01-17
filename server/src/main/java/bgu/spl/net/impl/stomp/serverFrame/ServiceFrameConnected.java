@@ -9,12 +9,23 @@ public class ServiceFrameConnected extends ServiceFrame {
         this.version = "1.2";
     }
 
+    public ServiceFrame process(String string){
+        String[] words = string.split(" ");
+        if (!words[0].equals("CONNECTED")){
+            return null;
+        }
+        return new ServiceFrameConnected();
+    }
+
+    // public String toString() {
+    //     return type.name() + " Version: " + this.version + "\u0000";
+    // }
+
     public String toString() {
         return type.name() + "\n" 
-                // + "Headers:\n" // צריך הבדל? בשביל קידוד ופענוח מזהה את הסוף עם פעמיים סלש ואות אן
-                + "Version: " + this.version + "\n"
-                + "\n";
+                + " Version: " + this.version + "\n" + this.body + " \u0000";
     }
+
 
     
 }

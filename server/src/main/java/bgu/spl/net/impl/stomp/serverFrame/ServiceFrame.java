@@ -1,6 +1,5 @@
 package bgu.spl.net.impl.stomp.serverFrame;
 
-import bgu.spl.net.impl.stomp.serverFrame.ServiceStompCommand;
 
 public abstract class ServiceFrame {
     protected ServiceStompCommand type;
@@ -11,10 +10,7 @@ public abstract class ServiceFrame {
         this.body = "\n";
     }
 
-    public ServiceFrame(String type){
-        this.type = stringToCommand(type);
-        this.body = "\n";
-    }
+    public abstract ServiceFrame process(String string);
 
     public ServiceStompCommand getType() {
         return type;

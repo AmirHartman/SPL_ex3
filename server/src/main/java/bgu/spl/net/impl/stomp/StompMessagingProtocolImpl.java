@@ -17,7 +17,6 @@ public class StompMessagingProtocolImpl<T> implements StompMessagingProtocol<T>{
     public void start(int connectionId, Connections<T> connections) {
         this.connectionId = connectionId;
         this.connections = connections;
-        // do nothing
     }
 
     @Override

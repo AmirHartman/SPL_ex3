@@ -16,6 +16,9 @@ public class BlockingConnectionHandler<T> implements Runnable, ConnectionHandler
     private BufferedOutputStream out;
     private volatile boolean connected = true;
 
+    //הוספתי, צריך?
+    String username = null;
+
     public BlockingConnectionHandler(Socket sock, MessageEncoderDecoder<T> reader, MessagingProtocol<T> protocol) {
         this.sock = sock;
         this.encdec = reader;
@@ -56,5 +59,10 @@ public class BlockingConnectionHandler<T> implements Runnable, ConnectionHandler
     @Override
     public void send(T msg) {
         //IMPLEMENT IF NEEDED
+    }
+
+    @Override   
+    public String getUserName(){
+        return username;
     }
 }

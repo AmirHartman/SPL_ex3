@@ -1,6 +1,8 @@
 package bgu.spl.net.srv;
 
-import java.io.IOException;
+// import java.io.IOException;
+// import java.util.AbstractMap.SimpleEntry;
+// import java.util.HashMap;
 
 public interface Connections<T> {
 
@@ -10,7 +12,4 @@ public interface Connections<T> {
 
     void disconnect(int connectionId);
 
-    // int getConnectionsCounter();
-
-    // int getTheIntcrementConnectionsCounter();
 }
