@@ -36,8 +36,6 @@ public class mainTests {
 
         //test connection implementation
         // ConnectionsImpl<String> connections = new ConnectionsImpl<>();
-
-
     }
 
     

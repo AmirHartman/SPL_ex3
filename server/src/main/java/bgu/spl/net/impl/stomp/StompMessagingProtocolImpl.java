@@ -21,6 +21,8 @@ public class StompMessagingProtocolImpl<T> implements StompMessagingProtocol<T>{
 
     @Override
     public void process(Object message) {
+        String msg = (String) message;
+        
         // do nothing
     }
 
