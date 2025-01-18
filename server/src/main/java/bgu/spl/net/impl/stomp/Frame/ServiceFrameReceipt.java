@@ -1,4 +1,4 @@
-package bgu.spl.net.impl.stomp.serverFrame;
+package bgu.spl.net.impl.stomp.Frame;
 
 public class ServiceFrameReceipt extends ServiceFrame {
     private int receiptId;
@@ -38,7 +38,7 @@ public class ServiceFrameReceipt extends ServiceFrame {
     // }
 
     public String toString() {
-        return type.name() + " \n" + " Receipt-id: " + this.receiptId + " \n" + this.body + " \u0000";
+        return type.name() + " \n" + " Receipt-id: " + this.receiptId + " \n" + this.body;
     }
 
     

@@ -22,7 +22,8 @@ public class StompMessagingProtocolImpl<T> implements StompMessagingProtocol<T>{
     @Override
     public void process(Object message) {
         String msg = (String) message;
-        
+        String type = msg.split(" ")[0];
+        shouldTerminate = (type.equals("DISCONNECT") | type.equals("ERROR"));
         // do nothing
     }
 

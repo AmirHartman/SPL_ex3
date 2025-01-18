@@ -1,10 +1,13 @@
 package bgu.spl.net;
 
 import bgu.spl.net.impl.stomp.StompEncoderDecoder;
-import bgu.spl.net.impl.stomp.serverFrame.ServiceFrameConnected;
-import bgu.spl.net.impl.stomp.serverFrame.ServiceFrameError;
-import bgu.spl.net.impl.stomp.serverFrame.ServiceFrameMessage;
-import bgu.spl.net.impl.stomp.serverFrame.ServiceFrameReceipt;
+import bgu.spl.net.impl.stomp.Frame.ServiceFrameConnected;
+import bgu.spl.net.impl.stomp.Frame.ServiceFrameError;
+import bgu.spl.net.impl.stomp.Frame.ServiceFrameMessage;
+import bgu.spl.net.impl.stomp.Frame.ServiceFrameReceipt;
+import bgu.spl.net.impl.stomp.Frame.ServiceFrame;
+
+
 
 public class mainTests {
     // test the toString method of the serverFrame classes
@@ -32,11 +35,14 @@ public class mainTests {
         ServiceFrameMessage message1 = new ServiceFrameMessage(message.toString());
         System.out.println(message1.toString());
 
-        
+        ServiceFrame testFrame = new ServiceFrameConnected();
+        testFrame.test();
 
         //test connection implementation
         // ConnectionsImpl<String> connections = new ConnectionsImpl<>();
     }
+
+
 
     
 }

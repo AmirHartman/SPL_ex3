@@ -1,4 +1,4 @@
-package bgu.spl.net.impl.stomp.serverFrame;
+package bgu.spl.net.impl.stomp.Frame;
 
 
 public class ServiceFrameConnected extends ServiceFrame {
@@ -21,9 +21,13 @@ public class ServiceFrameConnected extends ServiceFrame {
 
     public String toString() {
         return type.name() + "\n" 
-                + " Version: " + this.version + "\n" + this.body + " \u0000";
+                + " Version: " + this.version + "\n" + this.body;
     }
 
+    public void test () {
+        super.test();
+        System.out.println("test, i am connected");
+    }
 
     
 }

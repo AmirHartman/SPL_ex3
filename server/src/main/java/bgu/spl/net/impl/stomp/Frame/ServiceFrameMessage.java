@@ -1,4 +1,4 @@
-package bgu.spl.net.impl.stomp.serverFrame;
+package bgu.spl.net.impl.stomp.Frame;
 
 public class ServiceFrameMessage extends ServiceFrame {
     private int messageID;

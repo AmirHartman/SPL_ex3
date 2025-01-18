@@ -1,4 +1,4 @@
-package bgu.spl.net.impl.stomp.serverFrame;
+package bgu.spl.net.impl.stomp.Frame;
 
 
 public abstract class ServiceFrame {
@@ -32,5 +32,10 @@ public abstract class ServiceFrame {
                 return null;
         }
     }
+
+    public void test () {
+        System.out.println("test, i am OGclass");
+    }
+
 
 }
