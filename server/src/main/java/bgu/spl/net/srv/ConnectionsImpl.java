@@ -6,12 +6,13 @@ import java.util.LinkedList;
 import bgu.spl.net.impl.stomp.Frame.ClientFrameConnect;
 
 import java.util.AbstractMap.SimpleEntry;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class ConnectionsImpl<T> implements Connections<T> {
    //צריך תומך מקביליות?
-    private HashMap <String, LinkedList<Integer>> topics = new HashMap<>();
-    private HashMap <Integer, ConnectionHandler<T>> connectionHandlerId = new HashMap<>();
-    private HashMap <String, SimpleEntry<String, ConnectionHandler<T>>> userNames = new HashMap<>();
+    private ConcurrentHashMap <String, LinkedList<Integer>> topics = new ConcurrentHashMap<>();
+    private ConcurrentHashMap <Integer, ConnectionHandler<T>> connectionHandlerId = new ConcurrentHashMap<>();
+    private ConcurrentHashMap <String, SimpleEntry<String, ConnectionHandler<T>>> userNames = new ConcurrentHashMap<>();
 
     @Override
     public boolean send(int connectionId, T msg) {

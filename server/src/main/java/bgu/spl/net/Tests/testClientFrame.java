@@ -64,7 +64,7 @@ public class testClientFrame {
     }
 
     private static void testClientFrameSubscribe() {
-        ClientFrame testFrame = new ClientFrameSubscribe(12, "police");
+        ClientFrame testFrame = new ClientFrameSubscribe(12, "police", 121212);
         String tst = testFrame.toString();
         System.out.println(tst);
         ClientFrame testFrame2 = new ClientFrameSubscribe(tst);

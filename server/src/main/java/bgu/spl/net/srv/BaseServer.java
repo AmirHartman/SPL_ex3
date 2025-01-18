@@ -23,6 +23,7 @@ public abstract class BaseServer<T> implements Server<T> {
         this.protocolFactory = protocolFactory;
         this.encdecFactory = encdecFactory;
 		this.sock = null;
+
     }
 
     @Override
@@ -32,6 +33,7 @@ public abstract class BaseServer<T> implements Server<T> {
 			System.out.println("Server started");
 
             this.sock = serverSock; //just to be able to close
+            MessageIdGenerator messageIDGenerator = new MessageIdGenerator();
 
             while (!Thread.currentThread().isInterrupted()) {
 
@@ -40,7 +42,8 @@ public abstract class BaseServer<T> implements Server<T> {
                 BlockingConnectionHandler<T> handler = new BlockingConnectionHandler<>(
                         clientSock,
                         encdecFactory.get(),
-                        protocolFactory.get());
+                        protocolFactory.get(),
+                        messageIDGenerator);
 
                 execute(handler);
             }

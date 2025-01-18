@@ -25,10 +25,15 @@ public class ClientFrameUnsubscribe extends ClientFrame {
     public ServiceFrame process (String string, int connectionId, Connections <String> connections, ConnectionHandler<String> handler){
         return null;
     }
+    
+    protected boolean validFrame(String toFrame){
+        return false;
+    }
 
     public String toString (){
         return "UNSUBSCRIBE\n" +
                 "id:" + subscription + "\n" +
                 this.body;
     }
+
 }

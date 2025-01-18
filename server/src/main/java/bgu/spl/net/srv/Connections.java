@@ -20,5 +20,6 @@ public interface Connections<T> {
 
     void connectClient(int connectionId, ConnectionHandler<T> handler, ClientFrameConnect connectFrame);
 
+    void subscribeClient(int connectionId, String topic, ConnectionHandler<T> handler);
 
 }
