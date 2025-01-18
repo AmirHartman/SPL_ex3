@@ -2,6 +2,12 @@ package bgu.spl.net.srv;
 
 import bgu.spl.net.api.MessageEncoderDecoder;
 import bgu.spl.net.api.MessagingProtocol;
+import bgu.spl.net.impl.stomp.Frame.ClientFrame;
+import bgu.spl.net.impl.stomp.Frame.ClientFrameConnect;
+import bgu.spl.net.impl.stomp.Frame.ClientFrameDisconnect;
+import bgu.spl.net.impl.stomp.Frame.ClientFrameSend;
+import bgu.spl.net.impl.stomp.Frame.ClientFrameSubscribe;
+import bgu.spl.net.impl.stomp.Frame.ClientFrameUnsubscribe;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -127,6 +133,23 @@ public class NonBlockingConnectionHandler<T> implements ConnectionHandler<T> {
     @Override   
     public String getUserName(){
         return username;
+    }
+
+        private ClientFrame chooseClientFrame(String nextMessage){
+        String frameType = nextMessage.substring(0, nextMessage.indexOf('\n'));
+        switch (frameType){
+            case "CONNECT":
+                return new ClientFrameConnect(nextMessage);
+            case "SEND":
+                return new ClientFrameSend(nextMessage);
+            case "SUBSCRIBE":
+                return new ClientFrameSubscribe(nextMessage);
+            case "UNSUBSCRIBE":
+                return new ClientFrameUnsubscribe(nextMessage);
+            case "DISCONNECT":
+                return new ClientFrameDisconnect(nextMessage);
+        }
+        return null;
     }
 
 }

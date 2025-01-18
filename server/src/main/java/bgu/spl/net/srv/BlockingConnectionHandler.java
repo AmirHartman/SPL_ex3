@@ -9,7 +9,7 @@ import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.net.Socket;
-import bgu.spl.net.impl.stomp.Frame.ClientFrame;
+import bgu.spl.net.impl.stomp.Frame.*;
 
 public class BlockingConnectionHandler<T> implements Runnable, ConnectionHandler<T> {
 
@@ -78,6 +78,19 @@ public class BlockingConnectionHandler<T> implements Runnable, ConnectionHandler
     }
 
     private ClientFrame chooseClientFrame(String nextMessage){
+        String frameType = nextMessage.substring(0, nextMessage.indexOf('\n'));
+        switch (frameType){
+            case "CONNECT":
+                return new ClientFrameConnect(nextMessage);
+            case "SEND":
+                return new ClientFrameSend(nextMessage);
+            case "SUBSCRIBE":
+                return new ClientFrameSubscribe(nextMessage);
+            case "UNSUBSCRIBE":
+                return new ClientFrameUnsubscribe(nextMessage);
+            case "DISCONNECT":
+                return new ClientFrameDisconnect(nextMessage);
+        }
 
         return null;
     }
