@@ -12,6 +12,12 @@ public abstract class ClientFrame<T> {
         this.body = "\n \u0000";
     }
 
+    public ClientFrame(String toFrame){
+        String type = toFrame.substring(0, toFrame.indexOf('\n'));
+        this.type = stringToCommand(type);
+        this.body = "\n \u0000";
+    }
+
     public ServiceStompCommand getType() {
         return type;
     }
