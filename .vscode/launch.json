@@ -6,6 +6,20 @@
     "configurations": [
         {
             "type": "java",
+            "name": "testClientFrame",
+            "request": "launch",
+            "mainClass": "bgu.spl.net.Tests.testClientFrame",
+            "projectName": "server"
+        },
+        {
+            "type": "java",
+            "name": "mainTests",
+            "request": "launch",
+            "mainClass": "bgu.spl.net.Tests.mainTests",
+            "projectName": "server"
+        },
+        {
+            "type": "java",
             "name": "mainTests",
             "request": "launch",
             "mainClass": "bgu.spl.net.mainTests",

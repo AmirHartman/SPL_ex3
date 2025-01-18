@@ -2,10 +2,10 @@ package bgu.spl.net.impl.stomp.Frame;
 
 import bgu.spl.net.srv.Connections;
 
-public abstract class ClientFrame<T> {
+public abstract class ClientFrame {
     protected ServiceStompCommand type;
     protected String body;
-    protected Connections<T> connections;
+    protected Connections<String> connections;
 
     public ClientFrame(ServiceStompCommand type) {
         this.type = type;
@@ -26,7 +26,7 @@ public abstract class ClientFrame<T> {
         return body;
     }
 
-    public abstract void process (String string, Connections <T> connections);
+    // public abstract void process (String string, Connections <String> connections);
 
 
     public ServiceStompCommand stringToCommand (String type) {

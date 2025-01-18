@@ -7,7 +7,7 @@ public abstract class ServiceFrame {
 
     public ServiceFrame(ServiceStompCommand type) {
         this.type = type;
-        this.body = "\n";
+        this.body = "\n \u0000";
     }
 
     public ServiceStompCommand getType() {

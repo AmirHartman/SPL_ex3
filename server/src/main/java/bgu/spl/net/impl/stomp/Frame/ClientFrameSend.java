@@ -2,26 +2,50 @@ package bgu.spl.net.impl.stomp.Frame;
 
 import bgu.spl.net.srv.Connections;
 
-public class ClientFrameSend<T> extends ClientFrame<T> {
+public class ClientFrameSend extends ClientFrame {
     private String destination;
     private int receiptId;
 
-    public ClientFrameSend(String destination, int receiptId) {
+    public ClientFrameSend(String destination, int receiptId, String body) {
         super(ServiceStompCommand.SEND);
         this.destination = destination;
         this.receiptId = receiptId;
+        this.body = "\n" + body + "\n\u0000";
+
+
     }
 
     public ClientFrameSend(String toFrame){
         super(toFrame);
-        String[] header = toFrame.split("\n");
-        this.destination = header[1].split(":")[1];
+        String[] lines = toFrame.split("\n");
+        for (int i = 1; i < lines.length; i++){
+            String[] header = lines[i].split(":");
+            switch (header[0]){
+                case "destination":
+                    this.destination = header[1];
+                    break;
+                case "receipt":
+                    try {
+                        this.receiptId = Integer.parseInt(header[1]);
+                    } catch (Exception e) {
+                        System.out.println("unable to create frameSend, invalid receipt id");
+                    } 
+                    break;
+            }
+        }
         String[] body = toFrame.split("\n\n");
-        this.body = body[1];
+        this.body = "\n" + body[1] + "\u0000";
     }
 
-    @Override
-    public void process (String string, Connections <T> connections){
+    // @Override
+    // public void process (String string, Connections <String> connections){
 
+    // }
+
+    public String toString (){
+        return "SEND\n" +
+                "destination:" + destination + "\n" +
+                "receipt:" + receiptId + "\n" +
+                this.body;
     }
 }

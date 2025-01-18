@@ -2,10 +2,13 @@ package bgu.spl.net.srv;
 
 import bgu.spl.net.api.MessageEncoderDecoder;
 import bgu.spl.net.api.MessagingProtocol;
+import bgu.spl.net.impl.stomp.Frame.ClientFrame;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import bgu.spl.net.impl.stomp.Frame.ClientFrame;
 
 public class BlockingConnectionHandler<T> implements Runnable, ConnectionHandler<T> {
 
@@ -37,6 +40,7 @@ public class BlockingConnectionHandler<T> implements Runnable, ConnectionHandler
                 T nextMessage = encdec.decodeNextByte((byte) read);
                 if (nextMessage != null) {
                     // שינויים שלנו
+                    // ClientFrame clientFrame = new ClientFrame((String) nextMessage);
                     protocol.process(nextMessage);
                     T response = protocol.process(nextMessage);
                     if (response != null) {

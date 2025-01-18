@@ -2,13 +2,13 @@ package bgu.spl.net.impl.stomp.Frame;
 
 import bgu.spl.net.srv.Connections;
 
-public class ClientFrameSubscribe<T> extends ClientFrame<T> {
-    private int subscribtion;
+public class ClientFrameSubscribe extends ClientFrame {
+    private int subscription;
     private String destination;
 
-    public ClientFrameSubscribe(int subscribtion, String destination) {
+    public ClientFrameSubscribe(int subscription, String destination) {
         super(ServiceStompCommand.SUBSCRIBE);
-        this.subscribtion = subscribtion;
+        this.subscription = subscription;
         this.destination = destination;
     }
 
@@ -16,21 +16,30 @@ public class ClientFrameSubscribe<T> extends ClientFrame<T> {
         super(toFrame);
         String[] lines = toFrame.split("\n");
         // initialize headers
-        for (int i = 1; i < lines.length && lines[i] != "\u0000"; i++){
+        for (int i = 1; i < lines.length; i++){
             String[] header = lines[i].split(":");
             switch (header[0]){
                 case "destination":
                     this.destination = header[1];
+                    break;
                 case "id":
                     try {
-                        this.subscribtion = Integer.parseInt(header[1]);
+                        this.subscription = Integer.parseInt(header[1]);
                     } catch (Exception e) {
-                        System.out.println("unable to create frameSubscribe, unvalid subscribtion id");
+                        System.out.println("unable to create frameSubscribe, invalid subscription id");
                     } 
+                    break;
         }}}
 
-    @Override
-    public void process (String string, Connections <T> connections){
+    // @Override
+    // public void process (String string, Connections <String> connections){
 
+    // }
+
+    public String toString (){
+        return "SUBSCRIBE\n" +
+                "destination:" + destination + "\n" +
+                "id:" + subscription + "\n" +
+                this.body;
     }
 }

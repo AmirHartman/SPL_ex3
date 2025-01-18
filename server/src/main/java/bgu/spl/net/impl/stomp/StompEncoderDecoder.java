@@ -37,7 +37,7 @@ public class StompEncoderDecoder implements MessageEncoderDecoder<String> {
         // לבדוק אם מחזיר עם הNULLCHAR בסוף
         String result = new String(bytes, 0, len);
         len = 0;
-        return (result + "\u0000");
+        return result;
     }
     
     

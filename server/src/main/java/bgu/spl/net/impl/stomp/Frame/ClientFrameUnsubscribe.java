@@ -2,7 +2,7 @@ package bgu.spl.net.impl.stomp.Frame;
 
 import bgu.spl.net.srv.Connections;
 
-public class ClientFrameUnsubscribe<T> extends ClientFrame<T> {
+public class ClientFrameUnsubscribe extends ClientFrame {
     private int subscription;
 
     public ClientFrameUnsubscribe(int subscription) {
@@ -20,8 +20,14 @@ public class ClientFrameUnsubscribe<T> extends ClientFrame<T> {
         }
     }
 
-    @Override
-    public void process (String string, Connections <T> connections){
+    // @Override
+    // public void process (String string, Connections <String> connections){
 
+    // }
+
+    public String toString (){
+        return "UNSUBSCRIBE\n" +
+                "id:" + subscription + "\n" +
+                this.body;
     }
 }
