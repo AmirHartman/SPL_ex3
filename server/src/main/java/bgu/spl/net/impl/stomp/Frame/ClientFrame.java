@@ -1,5 +1,6 @@
 package bgu.spl.net.impl.stomp.Frame;
 
+import bgu.spl.net.srv.ConnectionHandler;
 import bgu.spl.net.srv.Connections;
 
 public abstract class ClientFrame {
@@ -26,7 +27,7 @@ public abstract class ClientFrame {
         return body;
     }
 
-    // public abstract void process (String string, Connections <String> connections);
+    public abstract ServiceFrame process (String string, int connectionId, Connections <String> connections, ConnectionHandler<String> handler);
 
 
     public ServiceStompCommand stringToCommand (String type) {

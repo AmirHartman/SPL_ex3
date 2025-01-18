@@ -3,6 +3,7 @@ package bgu.spl.net.srv;
 import bgu.spl.net.api.MessageEncoderDecoder;
 import bgu.spl.net.api.MessagingProtocol;
 import bgu.spl.net.impl.stomp.Frame.ClientFrame;
+import bgu.spl.net.impl.stomp.Frame.ClientFrameConnect;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -40,7 +41,11 @@ public class BlockingConnectionHandler<T> implements Runnable, ConnectionHandler
                 T nextMessage = encdec.decodeNextByte((byte) read);
                 if (nextMessage != null) {
                     // שינויים שלנו
-                    // ClientFrame clientFrame = new ClientFrame((String) nextMessage);
+                    ClientFrame clientFrame = chooseClientFrame((String) nextMessage);
+                    //מאתחל את USERNAME
+                    if (username == null & nextMessage instanceof ClientFrameConnect) {
+                            this.username = ((ClientFrameConnect) clientFrame).getUsername();
+                        }
                     protocol.process(nextMessage);
                     T response = protocol.process(nextMessage);
                     if (response != null) {
@@ -70,5 +75,10 @@ public class BlockingConnectionHandler<T> implements Runnable, ConnectionHandler
     @Override   
     public String getUserName(){
         return username;
+    }
+
+    private ClientFrame chooseClientFrame(String nextMessage){
+
+        return null;
     }
 }

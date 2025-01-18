@@ -1,5 +1,6 @@
 package bgu.spl.net.impl.stomp.Frame;
 
+import bgu.spl.net.srv.ConnectionHandler;
 import bgu.spl.net.srv.Connections;
 
 public class ClientFrameDisconnect extends ClientFrame {
@@ -20,10 +21,10 @@ public class ClientFrameDisconnect extends ClientFrame {
         }
     }
 
-    // @Override
-    // public void process (String string, Connections <String> connections){
-
-    // }
+    @Override
+    public ServiceFrame process (String string, int connectionId, Connections <String> connections, ConnectionHandler<String> handler){
+        return null;
+    }
 
     public String toString (){
         return "DISCONNECT\n" +
