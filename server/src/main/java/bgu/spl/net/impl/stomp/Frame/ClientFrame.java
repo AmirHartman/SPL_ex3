@@ -29,6 +29,8 @@ public abstract class ClientFrame {
 
     public abstract ServiceFrame process (String string, int connectionId, Connections <String> connections, ConnectionHandler<String> handler);
 
+    protected abstract boolean validFrame(String toFrame);
+
 
     public ServiceStompCommand stringToCommand (String type) {
         switch (type) {

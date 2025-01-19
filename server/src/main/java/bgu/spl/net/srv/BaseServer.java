@@ -33,7 +33,7 @@ public abstract class BaseServer<T> implements Server<T> {
 			System.out.println("Server started");
 
             this.sock = serverSock; //just to be able to close
-            MessageIdGenerator messageIDGenerator = new MessageIdGenerator();
+            // MessageIdGenerator messageIDGenerator = new MessageIdGenerator();
 
             while (!Thread.currentThread().isInterrupted()) {
 
@@ -42,8 +42,7 @@ public abstract class BaseServer<T> implements Server<T> {
                 BlockingConnectionHandler<T> handler = new BlockingConnectionHandler<>(
                         clientSock,
                         encdecFactory.get(),
-                        protocolFactory.get(),
-                        messageIDGenerator);
+                        protocolFactory.get());
 
                 execute(handler);
             }

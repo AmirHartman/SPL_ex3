@@ -15,19 +15,9 @@ public class ServiceFrameConnected extends ServiceFrame {
     }
 
 
-    // public String toString() {
-    //     return type.name() + " Version: " + this.version + "\u0000";
-    // }
-
     public String toString() {
         return type.name() + "\n" 
-                + " Version: " + this.version + "\n" + this.body;
+                + "Version:" + this.version + "\n" + this.body;
     }
-
-    public void test () {
-        super.test();
-        System.out.println("test, i am connected");
-    }
-
     
 }

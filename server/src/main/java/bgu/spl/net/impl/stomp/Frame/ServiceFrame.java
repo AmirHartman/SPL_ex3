@@ -7,7 +7,7 @@ public abstract class ServiceFrame {
 
     public ServiceFrame(ServiceStompCommand type) {
         this.type = type;
-        this.body = "\n \u0000";
+        this.body = "\n\u0000";
     }
 
     public ServiceStompCommand getType() {
@@ -32,10 +32,5 @@ public abstract class ServiceFrame {
                 return null;
         }
     }
-
-    public void test () {
-        System.out.println("test, i am OGclass");
-    }
-
 
 }

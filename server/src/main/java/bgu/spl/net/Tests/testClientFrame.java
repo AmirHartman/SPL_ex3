@@ -6,7 +6,11 @@ import bgu.spl.net.impl.stomp.Frame.ClientFrameDisconnect;
 import bgu.spl.net.impl.stomp.Frame.ClientFrameSend;
 import bgu.spl.net.impl.stomp.Frame.ClientFrameSubscribe;
 import bgu.spl.net.impl.stomp.Frame.ClientFrameUnsubscribe;
+import bgu.spl.net.impl.stomp.Frame.ServiceFrame;
+import bgu.spl.net.impl.stomp.Frame.ServiceFrameConnected;
+import bgu.spl.net.impl.stomp.Frame.ServiceFrameError;
 import bgu.spl.net.impl.stomp.Frame.ServiceFrameMessage;
+import bgu.spl.net.impl.stomp.Frame.ServiceFrameReceipt;
 
 public class testClientFrame {
 
@@ -16,12 +20,13 @@ public class testClientFrame {
          * test the toString method of ClientFrame classes
          * tests coth constructors
          */
-        testClientFrameConnect();
-        testClientFrameDisconnect();
-        testClientFrameSend();
-        testClientFrameSubscribe();
-        testClientFrameUnsubscribe();
+        // testClientFrameConnect();
+        // testClientFrameDisconnect();
+        // testClientFrameSend();
+        // testClientFrameSubscribe();
+        // testClientFrameUnsubscribe();
 
+        testNullChar();
         /**
          * test headers in incorrect order
          */
@@ -75,7 +80,7 @@ public class testClientFrame {
     }
 
     private static void testClientFrameUnsubscribe() {
-        ClientFrame testFrame = new ClientFrameUnsubscribe(12);
+        ClientFrame testFrame = new ClientFrameUnsubscribe(12, 121212);
         String tst = testFrame.toString();
         System.out.println(tst);
         ClientFrame testFrame2 = new ClientFrameUnsubscribe(tst);
@@ -85,6 +90,32 @@ public class testClientFrame {
         System.out.println(testFrame3.toString());
     }
 
+
+
+    private static void testNullChar() {
+        // initialize frames for test
+        ClientFrame send = new ClientFrameSend("police", 12, "this is a test message");
+        ClientFrame unsubscribe = new ClientFrameUnsubscribe(12, 121212);
+        ClientFrame subscribe = new ClientFrameSubscribe(12, "police", 121212);
+        ClientFrame disconnect = new ClientFrameDisconnect(12);
+        ClientFrame connect = new ClientFrameConnect("yam", "1234", 13);
+
+        // get the last char of each frame
+        char charSend = send.toString().charAt(send.toString().length() - 1);
+        char charUnsubscribe = unsubscribe.toString().charAt(unsubscribe.toString().length() - 1);
+        char charSubscribe = subscribe.toString().charAt(subscribe.toString().length() - 1);
+        char charDisconnect = disconnect.toString().charAt(disconnect.toString().length() - 1);
+        char charConnect = connect.toString().charAt(connect.toString().length() - 1);
+
+
+        // print the last char of each frame
+        System.out.println("Is last char of send frame is null char? " + (charSend == '\u0000'));
+        System.out.println("Is last char of unsubscribe frame is null char? " + (charUnsubscribe == '\u0000'));
+        System.out.println("Is last char of subscribe frame is null char? " + (charSubscribe == '\u0000'));
+        System.out.println("Is last char of disconnect frame is null char? " + (charDisconnect == '\u0000'));
+        System.out.println("Is last char of connect frame is null char? " + (charConnect == '\u0000'));
+
+    }
 
 
 }

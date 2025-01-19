@@ -26,6 +26,11 @@ public class ClientFrameDisconnect extends ClientFrame {
         return null;
     }
 
+    protected boolean validFrame(String toFrame){
+        return false;
+    }
+
+
     public String toString (){
         return "DISCONNECT\n" +
                 "receipt:" + receiptId + "\n" +

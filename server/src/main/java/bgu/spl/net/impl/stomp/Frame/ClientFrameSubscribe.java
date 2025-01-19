@@ -46,27 +46,20 @@ public class ClientFrameSubscribe extends ClientFrame {
         if (!validFrame(string)){
             return new ServiceFrameError("subscribe frame is invalid", receiptId, "frame structure or headers or both are invalid");
         }
-        if (!connections.isConnected(connectionId)){
+        if (!connections.isConnected(handler.getUserName())){
             return new ServiceFrameError("user is not connected", receiptId, "user is not connected to the server");
         }
-
-        return null;
-    }
-
-    public String toString (){
-        return "SUBSCRIBE\n" +
-                "destination:" + destination + "\n" +
-                "id:" + subscription + "\n" +
-                "receipt:" + receiptId + "\n" +
-                this.body;
+        ClientFrameSubscribe clientFrame = new ClientFrameSubscribe(string);
+        connections.subscribeClient(connectionId, clientFrame.destination, handler);
+        return new ServiceFrameReceipt(receiptId);
     }
 
     protected boolean validFrame(String toFrame){
         // check the validity of the frame structure
-        int headers = toFrame.split(":").length;
+        int headers = toFrame.split(":").length-1;
         String [] frame = toFrame.split("\n\n");
         String body = frame[1];
-        if (headers != 4 | !body.equals("\u0000")){
+        if (headers != 3 | !body.equals("\u0000")){
             return false;
         }
         // check the validity of the headers
@@ -79,4 +72,13 @@ public class ClientFrameSubscribe extends ClientFrame {
         }
         return true;
     }
+
+    public String toString (){
+        return "SUBSCRIBE\n" +
+                "destination:" + destination + "\n" +
+                "id:" + subscription + "\n" +
+                "receipt:" + receiptId + "\n" +
+                this.body;
+    }
+
 }

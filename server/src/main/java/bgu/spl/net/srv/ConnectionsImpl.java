@@ -20,6 +20,7 @@ public class ConnectionsImpl<T> implements Connections<T> {
         if (connectionHandlerId.containsKey(connectionId)) {
             ConnectionHandler<T> connectionHandler = connectionHandlerId.get(connectionId);
             if (connectionHandler != null) {
+                
                 connectionHandler.send(msg);
                 return true;    
             }
@@ -55,8 +56,8 @@ public class ConnectionsImpl<T> implements Connections<T> {
     }
 
     @Override
-    public boolean isConnected(int connectionId) {
-        return connectionHandlerId.containsKey(connectionId);
+    public boolean isConnected(String username) {
+        return userNames.get(username).getValue() != null;
     }
 
     @Override

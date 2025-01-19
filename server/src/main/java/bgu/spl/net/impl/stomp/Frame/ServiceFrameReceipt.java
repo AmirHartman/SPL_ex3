@@ -8,7 +8,7 @@ public class ServiceFrameReceipt extends ServiceFrame {
         this.receiptId = receiptId;
     }
 
-    // לשנות לPOTECTED
+    // למחוק?
     public ServiceFrameReceipt (String string){
         super(ServiceStompCommand.RECEIPT);
         String[] words = string.split(" ");
@@ -18,27 +18,10 @@ public class ServiceFrameReceipt extends ServiceFrame {
         this.receiptId = Integer.parseInt(words[3], 10);
     }
 
-    // public ServiceFrame process(String string){
-    //     String[] words = string.split(" ");
-    //     if (!words[0].equals("ERROR")){
-    //         throw new IllegalArgumentException("Not an ERROR frame");
-    //     }
-    //     int id = -1;
-    //     try {
-    //         id = Integer.parseInt(words[2], 10);
-    //     } catch (NumberFormatException e) {
-    //         System.out.println("messageId is not an integer");
-    //         return null;
-    //     }
-    //     return new ServiceFrameReceipt(id);
-    // }
-
-    // public String toString() {
-    //     return type.name() + " Receipt-id: " + this.receiptId + "\u0000";
-    // }
-
     public String toString() {
-        return type.name() + " \n" + " Receipt-id: " + this.receiptId + " \n" + this.body;
+        return type.name() + "\n" + 
+        "Receipt-id:" + this.receiptId + "\n" 
+        + this.body;
     }
 
     

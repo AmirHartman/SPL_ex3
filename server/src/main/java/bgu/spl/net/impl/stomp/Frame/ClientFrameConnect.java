@@ -57,7 +57,7 @@ public class ClientFrameConnect extends ClientFrame {
             return new ServiceFrameError("connect frame is invalid", receiptId, "problem with frame structure, version, host or invalid headers");
         }
         ClientFrameConnect clientFrame = new ClientFrameConnect(string);
-        if (!connections.isConnected(connectionId)){
+        if (!connections.isConnected(username)){
             if (!connections.correctPassword(username, passcode)){
                 return new ServiceFrameError("Wrong password", clientFrame.receiptId, "user is not connected but the password is wrong");
             }

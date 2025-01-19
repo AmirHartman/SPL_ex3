@@ -10,7 +10,7 @@ public class ServiceFrameMessage extends ServiceFrame {
         this.messageID = messageID;
         this.subscribtion = subscribtion;
         this.destination = destination;
-        this.body = "\n " + body + " \u0000";
+        this.body = "\n" + body + "\n\u0000";
     }
 
     public ServiceFrameMessage (String string){
@@ -56,9 +56,9 @@ public class ServiceFrameMessage extends ServiceFrame {
     }
 
     public String toString() {
-        return type.name() + " \n"  
-                + " Message-id: " + this.messageID + " \n" 
-                + " subscribtion: " + this.subscribtion + " \n" 
-                + " Destination: " + this.destination + " \n" + this.body;
+        return type.name() + "\n"  
+                + "Message-id:" + this.messageID + "\n" 
+                + "subscribtion:" + this.subscribtion + "\n" 
+                + "Destination:" + this.destination + "\n" + this.body;
     }
 }

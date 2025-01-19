@@ -29,10 +29,11 @@ public class ClientFrameUnsubscribe extends ClientFrame {
         if (!validFrame(string)){
             return new ServiceFrameError("unsubscribe frame is invalid", receiptId, "frame structure or headers or both are invalid");
         }
-        if (!connections.isConnected(connectionId)){
+        if (!connections.isConnected(handler.getUserName())){
             return new ServiceFrameError("user is not connected", receiptId, "user is not connected to the server and trying to unsubscribe from a channel");
         }
-
+        ClientFrameUnsubscribe clientFrame = new ClientFrameUnsubscribe(string);
+        // connections.unsubscribeClient(connectionId, clientFrame.subscription);
         return null;
     }
     

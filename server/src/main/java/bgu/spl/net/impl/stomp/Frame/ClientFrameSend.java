@@ -43,10 +43,16 @@ public class ClientFrameSend extends ClientFrame {
         return null;
     }
 
+    protected boolean validFrame(String toFrame){
+        return false;
+    }
+
     public String toString (){
         return "SEND\n" +
                 "destination:" + destination + "\n" +
                 "receipt:" + receiptId + "\n" +
                 this.body;
     }
+
+
 }
