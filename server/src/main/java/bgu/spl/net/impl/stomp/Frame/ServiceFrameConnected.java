@@ -1,4 +1,4 @@
-package bgu.spl.net.impl.stomp.serverFrame;
+package bgu.spl.net.impl.stomp.Frame;
 
 
 public class ServiceFrameConnected extends ServiceFrame {
@@ -9,12 +9,15 @@ public class ServiceFrameConnected extends ServiceFrame {
         this.version = "1.2";
     }
 
-    public String toString() {
-        return type.name() + "\n" 
-                // + "Headers:\n" // צריך הבדל? בשביל קידוד ופענוח מזהה את הסוף עם פעמיים סלש ואות אן
-                + "Version: " + this.version + "\n"
-                + "\n";
+    public ServiceFrameConnected(String string) {
+        super(ServiceStompCommand.CONNECTED);
+        this.version = "1.2";
     }
 
+
+    public String toString() {
+        return type.name() + "\n" 
+                + "Version:" + this.version + "\n" + this.body;
+    }
     
 }

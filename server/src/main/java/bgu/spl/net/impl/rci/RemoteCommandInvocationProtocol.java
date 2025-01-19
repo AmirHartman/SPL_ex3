@@ -15,12 +15,12 @@ public class RemoteCommandInvocationProtocol<T> implements MessagingProtocol<Ser
 
     @Override
     public void start(int connectionId, Connections<Serializable> connections) {
-        // TODO: implement this
+        // nothing
     }
 
     @Override
     public Serializable process(Serializable msg) {
-        return ((Command) msg).execute(arg);
+        return ((Command<T>) msg).execute(arg);
     }
 
     @Override

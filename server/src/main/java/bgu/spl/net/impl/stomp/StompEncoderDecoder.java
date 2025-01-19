@@ -11,6 +11,7 @@ public class StompEncoderDecoder implements MessageEncoderDecoder<String> {
 
     @Override
     public String decodeNextByte(byte nextByte) {
+        // לשנות ל-==0?
         if (nextByte == '\u0000') {
             return popString();
         }
@@ -33,6 +34,7 @@ public class StompEncoderDecoder implements MessageEncoderDecoder<String> {
     }
 
     private String popString() {
+        // לבדוק אם מחזיר עם הNULLCHAR בסוף
         String result = new String(bytes, 0, len);
         len = 0;
         return result;

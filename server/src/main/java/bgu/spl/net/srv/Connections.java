@@ -1,6 +1,10 @@
 package bgu.spl.net.srv;
 
-import java.io.IOException;
+import bgu.spl.net.impl.stomp.Frame.ClientFrameConnect;
+
+// import java.io.IOException;
+// import java.util.AbstractMap.SimpleEntry;
+// import java.util.HashMap;
 
 public interface Connections<T> {
 
@@ -9,4 +13,13 @@ public interface Connections<T> {
     void send(String channel, T msg);
 
     void disconnect(int connectionId);
+
+    boolean isConnected(String username);
+
+    boolean correctPassword(String username, String password);
+
+    boolean connectClient(int connectionId, ConnectionHandler<T> handler, ClientFrameConnect connectFrame);
+
+    void subscribeClient(int connectionId, String topic, ConnectionHandler<T> handler);
+
 }
