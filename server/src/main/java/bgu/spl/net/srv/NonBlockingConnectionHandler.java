@@ -130,26 +130,10 @@ public class NonBlockingConnectionHandler<T> implements ConnectionHandler<T> {
         //IMPLEMENT IF NEEDED
     }
 
-    @Override   
+    @Override
     public String getUserName(){
         return username;
     }
 
-        private ClientFrame chooseClientFrame(String nextMessage){
-        String frameType = nextMessage.substring(0, nextMessage.indexOf('\n'));
-        switch (frameType){
-            case "CONNECT":
-                return new ClientFrameConnect(nextMessage);
-            case "SEND":
-                return new ClientFrameSend(nextMessage);
-            case "SUBSCRIBE":
-                return new ClientFrameSubscribe(nextMessage);
-            case "UNSUBSCRIBE":
-                return new ClientFrameUnsubscribe(nextMessage);
-            case "DISCONNECT":
-                return new ClientFrameDisconnect(nextMessage);
-        }
-        return null;
-    }
-
 }
+

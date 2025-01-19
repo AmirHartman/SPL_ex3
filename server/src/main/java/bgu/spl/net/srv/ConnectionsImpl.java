@@ -1,12 +1,11 @@
 package bgu.spl.net.srv;
 
-import java.util.HashMap;
-import java.util.LinkedList;
+import java.util.concurrent.ConcurrentHashMap;
+
 
 import bgu.spl.net.impl.stomp.Frame.ClientFrameConnect;
 
 import java.util.AbstractMap.SimpleEntry;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class ConnectionsImpl<T> implements Connections<T> {
@@ -66,7 +65,7 @@ public class ConnectionsImpl<T> implements Connections<T> {
             SimpleEntry<String, ConnectionHandler<T>> user = userNames.get(username);
             return user.getKey().equals(password);
         }
-        return false;
+        return true;
     }
 
     @Override

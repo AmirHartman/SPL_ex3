@@ -16,7 +16,7 @@ public abstract class ClientFrame {
     public ClientFrame(String toFrame){
         String type = toFrame.substring(0, toFrame.indexOf('\n'));
         this.type = stringToCommand(type);
-        this.body = "\n \u0000";
+        this.body = "\n\u0000";
     }
 
     public ServiceStompCommand getType() {
