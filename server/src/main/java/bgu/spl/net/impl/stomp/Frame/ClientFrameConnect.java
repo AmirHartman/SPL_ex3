@@ -70,10 +70,10 @@ public class ClientFrameConnect extends ClientFrame {
 
     protected boolean validFrame(String toFrame){
         // check the validity of the frame structure
-        int headers = toFrame.split(":").length;
+        int headers = toFrame.split(":").length-1;
         String [] frame = toFrame.split("\n\n");
         String body = frame[1];
-        if (headers != 6 | !body.equals("\u0000")){
+        if (headers != 5 | !body.equals("\u0000")){
             return false;
         }
         // check the validity of the headers

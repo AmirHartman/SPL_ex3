@@ -7,10 +7,11 @@ import bgu.spl.net.impl.stomp.Frame.ClientFrameConnect;
 
 import java.util.AbstractMap.SimpleEntry;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class ConnectionsImpl<T> implements Connections<T> {
    //צריך תומך מקביליות?
-    private ConcurrentHashMap <String, LinkedList<Integer>> topics = new ConcurrentHashMap<>();
+    private ConcurrentHashMap <String, ConcurrentLinkedQueue<Integer>> topics = new ConcurrentHashMap<>();
     private ConcurrentHashMap <Integer, ConnectionHandler<T>> connectionHandlerId = new ConcurrentHashMap<>();
     private ConcurrentHashMap <String, SimpleEntry<String, ConnectionHandler<T>>> userNames = new ConcurrentHashMap<>();
 
@@ -31,7 +32,7 @@ public class ConnectionsImpl<T> implements Connections<T> {
         if (!topics.containsKey(channel)) {
             return;
         }
-        LinkedList<Integer> channelSubscribers = topics.get(channel);
+        ConcurrentLinkedQueue<Integer> channelSubscribers = topics.get(channel);
         for (Integer connectionId : channelSubscribers) {
             send(connectionId, msg);
         }
@@ -68,11 +69,27 @@ public class ConnectionsImpl<T> implements Connections<T> {
     }
 
     @Override
-    public void connectClient(int connectionId, ConnectionHandler<T> handler, ClientFrameConnect connectFrame){
-        if (!isConnected(connectionId)) {
-            connectionHandlerId.put(connectionId, handler);
-            userNames.putIfAbsent(connectFrame.getUsername(), new SimpleEntry<>(connectFrame.getPasscode(), handler));
-        }
+    public boolean connectClient(int connectionId, ConnectionHandler<T> handler, ClientFrameConnect connectFrame){
+        synchronized (userNames){
+            if (!userNames.containsKey(connectFrame.getUsername())) {
+                userNames.put(connectFrame.getUsername(), new SimpleEntry<>(connectFrame.getPasscode(), handler));
+                connectionHandlerId.put(connectionId, handler);
+                return true;
+            } else {
+                SimpleEntry<String, ConnectionHandler<T>> user = userNames.get(connectFrame.getUsername());
+                if (user.getValue() != null) {
+                    return false;
+                } else {
+                    user.setValue(handler);
+                    connectionHandlerId.put(connectionId, handler);
+                    return true;
+                }
+        }}}
+
+    @Override
+    public void subscribeClient(int connectionId, String topic, ConnectionHandler<T> handler){
+        topics.putIfAbsent(topic, new ConcurrentLinkedQueue<>());
+        topics.get(topic).add(connectionId);
     }
 
     // // צריך??
