@@ -14,12 +14,12 @@ public interface Connections<T> {
 
     void disconnect(int connectionId);
 
-    boolean isConnected(String username);
+    // boolean isConnected(String username);
 
-    boolean correctPassword(String username, String password);
+    // boolean correctPassword(String username, String password);
 
-    boolean connectClient(int connectionId, ConnectionHandler<T> handler, ClientFrameConnect connectFrame);
+    // boolean connectClient(int connectionId, ConnectionHandler<T> handler, ClientFrameConnect connectFrame);
 
-    void subscribeClient(int connectionId, String topic, ConnectionHandler<T> handler);
+    // void subscribeClient(int connectionId, String topic, ConnectionHandler<T> handler);
 
 }

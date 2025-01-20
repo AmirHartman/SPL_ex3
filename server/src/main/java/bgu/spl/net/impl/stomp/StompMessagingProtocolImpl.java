@@ -7,28 +7,27 @@ import bgu.spl.net.api.StompMessagingProtocol;
 import bgu.spl.net.srv.Connections;
 import bgu.spl.net.impl.stomp.Frame.*;
 
-public class StompMessagingProtocolImpl<T> implements StompMessagingProtocol<T>{
+public class StompMessagingProtocolImpl<String> implements StompMessagingProtocol<String>{
     
     private boolean shouldTerminate = false;
     int connectionId;
-    private Connections<T> connections;
-    private ConcurrentLinkedDeque<T> messages = new ConcurrentLinkedDeque<>();
+    private Connections<String> connections;
 
 
     @Override  
     /**
 	 * Used to initiate the current client protocol with it's personal connection ID and the connections implementation
 	**/ 
-    public void start(int connectionId, Connections<T> connections) {
+    public void start(int connectionId, Connections<String> connections) {
         this.connectionId = connectionId;
         this.connections = connections;
     }
 
     @Override
     public void process(Object message) {
-        String msg = (String) message;
-        String type = msg.split("\n")[0];
-        shouldTerminate = (type.equals("DISCONNECT") | type.equals("ERROR"));
+        // String msg = (String) message;
+        // String type = msg.split("\n")[0];
+        // shouldTerminate = (type.equals("DISCONNECT") | type.equals("ERROR"));
         // do nothing
     }
 

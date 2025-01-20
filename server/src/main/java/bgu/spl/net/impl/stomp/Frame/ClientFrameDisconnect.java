@@ -4,7 +4,6 @@ import bgu.spl.net.srv.ConnectionHandler;
 import bgu.spl.net.srv.Connections;
 
 public class ClientFrameDisconnect extends ClientFrame {
-    private int receiptId;
 
     public ClientFrameDisconnect(int receiptId) {
         super(ServiceStompCommand.DISCONNECT);

@@ -5,10 +5,9 @@ import bgu.spl.net.srv.Connections;
 
 public class ClientFrameUnsubscribe extends ClientFrame {
     private int subscription;
-    int receiptId;
 
     public ClientFrameUnsubscribe(int subscription, int receiptId){
-        super(ServiceStompCommand.UNSUBSCRIBE);
+        super(StompCommand.UNSUBSCRIBE);
         this.subscription = subscription;
         this.receiptId = receiptId;
     }

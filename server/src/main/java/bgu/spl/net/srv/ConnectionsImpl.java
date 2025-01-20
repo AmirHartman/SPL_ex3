@@ -9,7 +9,6 @@ import java.util.AbstractMap.SimpleEntry;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class ConnectionsImpl<T> implements Connections<T> {
-   //צריך תומך מקביליות?
     private ConcurrentHashMap <String, ConcurrentLinkedQueue<Integer>> topics = new ConcurrentHashMap<>();
     private ConcurrentHashMap <Integer, ConnectionHandler<T>> connectionHandlerId = new ConcurrentHashMap<>();
     private ConcurrentHashMap <String, SimpleEntry<String, ConnectionHandler<T>>> userNames = new ConcurrentHashMap<>();
