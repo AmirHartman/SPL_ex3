@@ -32,7 +32,7 @@ public abstract class ClientFrame {
         return receiptId;
     }
 
-    public abstract ServiceFrame process (String string, int connectionId, Connections <String> connections, ConnectionHandler<String> handler);
+    public abstract ServiceFrame process (int connectionId, Connections <String> connections);
 
     protected abstract boolean validFrame(String toFrame);
 

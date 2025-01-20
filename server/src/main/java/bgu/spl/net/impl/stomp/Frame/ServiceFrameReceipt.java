@@ -1,16 +1,15 @@
 package bgu.spl.net.impl.stomp.Frame;
 
 public class ServiceFrameReceipt extends ServiceFrame {
-    private int receiptId;
 
     public ServiceFrameReceipt(int receiptId) {
-        super(ServiceStompCommand.RECEIPT);
+        super(StompCommand.RECEIPT);
         this.receiptId = receiptId;
     }
 
     // למחוק?
     public ServiceFrameReceipt (String string){
-        super(ServiceStompCommand.RECEIPT);
+        super(StompCommand.RECEIPT);
         String[] words = string.split(" ");
         if (!words[0].equals("RECEIPT")){
             throw new IllegalArgumentException("Not a RECEIPT frame");

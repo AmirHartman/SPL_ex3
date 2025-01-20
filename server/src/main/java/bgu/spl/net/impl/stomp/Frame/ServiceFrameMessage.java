@@ -6,7 +6,7 @@ public class ServiceFrameMessage extends ServiceFrame {
     private String destination;
 
     public ServiceFrameMessage (int messageID, int subscribtion, String destination, String body) {
-        super(ServiceStompCommand.MESSAGE);
+        super(StompCommand.MESSAGE);
         this.messageID = messageID;
         this.subscribtion = subscribtion;
         this.destination = destination;
@@ -14,7 +14,7 @@ public class ServiceFrameMessage extends ServiceFrame {
     }
 
     public ServiceFrameMessage (String string){
-        super(ServiceStompCommand.MESSAGE);
+        super(StompCommand.MESSAGE);
         String[] words = string.split(" ");
         if (!words[0].equals("MESSAGE")){
             throw new IllegalArgumentException("Not a MESSAGE frame");
@@ -55,10 +55,15 @@ public class ServiceFrameMessage extends ServiceFrame {
         body = body.substring(0, body.length()-1);
     }
 
+    public String getTopic() {
+        return destination;
+    }
+
     public String toString() {
         return type.name() + "\n"  
                 + "Message-id:" + this.messageID + "\n" 
                 + "subscribtion:" + this.subscribtion + "\n" 
                 + "Destination:" + this.destination + "\n" + this.body;
     }
+
 }

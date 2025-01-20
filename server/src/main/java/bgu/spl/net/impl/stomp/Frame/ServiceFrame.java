@@ -2,15 +2,16 @@ package bgu.spl.net.impl.stomp.Frame;
 
 
 public abstract class ServiceFrame {
-    protected ServiceStompCommand type;
+    protected StompCommand type;
     protected String body;
+    protected int receiptId = -1; // indication of an invalid recepit id
 
-    public ServiceFrame(ServiceStompCommand type) {
+    public ServiceFrame(StompCommand type) {
         this.type = type;
         this.body = "\n\u0000";
     }
 
-    public ServiceStompCommand getType() {
+    public StompCommand getType() {
         return type;
     }
 
@@ -18,16 +19,20 @@ public abstract class ServiceFrame {
         return body;
     }
 
-    public ServiceStompCommand stringToCommand (String type) {
+    public int getReceiptId() {
+        return receiptId;
+    }
+
+    public StompCommand stringToCommand (String type) {
         switch (type) {
             case "CONNECTED":
-                return ServiceStompCommand.CONNECTED;
+                return StompCommand.CONNECTED;
             case "MESSAGE":
-                return ServiceStompCommand.MESSAGE;
+                return StompCommand.MESSAGE;
             case "RECEIPT":
-                return ServiceStompCommand.RECEIPT;
+                return StompCommand.RECEIPT;
             case "ERROR":
-                return ServiceStompCommand.ERROR;
+                return StompCommand.ERROR;
             default:
                 return null;
         }
