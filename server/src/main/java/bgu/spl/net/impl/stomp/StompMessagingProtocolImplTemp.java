@@ -6,22 +6,31 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedDeque;
 
 import bgu.spl.net.api.StompMessagingProtocol;
+import bgu.spl.net.srv.ConnectionHandler;
 import bgu.spl.net.srv.Connections;
 import bgu.spl.net.impl.stomp.Frame.*;
+import bgu.spl.net.impl.stomp.ServerFrame.ServerFrame;
+import bgu.spl.net.impl.stomp.ServerFrame.ServerFrameError;
+import bgu.spl.net.impl.stomp.ServerFrame.ServerFrameMessage;
+import bgu.spl.net.impl.stomp.ServerFrame.ServerFrameReceipt;
 
 
-public class StompMessagingProtocolImplTemp implements StompMessagingProtocol<String>{
+public class StompMessagingProtocolImpl implements StompMessagingProtocol<String>{
     private boolean shouldTerminate = false;
     private ConcurrentHashMap<Integer, SimpleEntry<ClientFrame, ServerFrame>> receipts = new ConcurrentHashMap<>();
+    //צריך מקביליות? אולי בריאקטור?
+    protected ConcurrentHashMap<Integer, String> subscriberIds = new ConcurrentHashMap<>();
     private int connectionId;
     private Connections<String> connections;
+    private ConnectionHandler<String> handler;
     
 
 
     @Override
-    public void start(int connectionId, Connections<String> connections){
+    public void start(int connectionId, Connections<String> connections, ConnectionHandler<String> handler) {
         this.connectionId = connectionId;
         this.connections = connections;
+        this.handler = handler;
     }
     
 
@@ -47,10 +56,8 @@ public class StompMessagingProtocolImplTemp implements StompMessagingProtocol<St
             }
             else{
                 receipts.put(clientFrame.getReceiptId(), new SimpleEntry<>(clientFrame, null));
-                // אולי התייחסות שונה אם זה רישום או יציאה מערוץ
-                ServerFrame serverFrame = clientFrame.process(connectionId, connections);
-                // if (serviceFrame.getClass().isAssignableFrom(ServiceFrameMessage.class))
-                // send the message to all the subscribers to that topic
+                ServerFrame serverFrame = clientFrame.process(connectionId, connections, handler, this);
+                // send the message to all subscribers of that topic
                 if (serverFrame instanceof ServerFrameMessage){
                     String topic = ((ServerFrameMessage) serverFrame).getTopic();
                     connections.send(topic, serverFrame.toString());
@@ -60,19 +67,11 @@ public class StompMessagingProtocolImplTemp implements StompMessagingProtocol<St
                 SimpleEntry<ClientFrame,ServerFrame> entry = receipts.get(clientFrame.getReceiptId());
                 // האם יכול להיות שלא יהיה NULL?
                 entry.setValue(serverFrame);
-            }
-
-
-                
-        }
-
-   }
+            }}}
 	
    public boolean shouldTerminate(){
     return shouldTerminate;
    }
-
-
 }
 
     
