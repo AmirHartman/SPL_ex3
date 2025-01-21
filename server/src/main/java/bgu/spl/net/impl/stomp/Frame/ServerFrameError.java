@@ -1,19 +1,18 @@
 package bgu.spl.net.impl.stomp.Frame;
 
 
-public class ServiceFrameError extends ServiceFrame {
-    private int receiptId;
+public class ServerFrameError extends ServerFrame {
     private String message;
 
-    public ServiceFrameError(String message, int receiptId, String body) {
-        super(ServiceStompCommand.ERROR);
+    public ServerFrameError(String message, int receiptId, String body) {
+        super(StompCommand.ERROR);
         this.receiptId = receiptId;
         this.message = message;
         this.body = "\n" + body + "\n\u0000";
     }
 
-    public ServiceFrameError(String string) {
-        super(ServiceStompCommand.ERROR);
+    public ServerFrameError(String string) {
+        super(StompCommand.ERROR);
         String[] words = string.split(" ");
         if (!words[0].equals("ERROR")){
             throw new IllegalArgumentException("Not an ERROR frame");

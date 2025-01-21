@@ -1,11 +1,11 @@
 package bgu.spl.net.impl.stomp.Frame;
 
-public class ServiceFrameMessage extends ServiceFrame {
+public class ServerFrameMessage extends ServerFrame {
     private int messageID;
     private int subscribtion;
     private String destination;
 
-    public ServiceFrameMessage (int messageID, int subscribtion, String destination, String body) {
+    public ServerFrameMessage (int messageID, int subscribtion, String destination, String body) {
         super(StompCommand.MESSAGE);
         this.messageID = messageID;
         this.subscribtion = subscribtion;
@@ -13,7 +13,7 @@ public class ServiceFrameMessage extends ServiceFrame {
         this.body = "\n" + body + "\n\u0000";
     }
 
-    public ServiceFrameMessage (String string){
+    public ServerFrameMessage (String string){
         super(StompCommand.MESSAGE);
         String[] words = string.split(" ");
         if (!words[0].equals("MESSAGE")){

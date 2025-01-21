@@ -43,7 +43,7 @@ public class Auxiliary {
         }
     }
 
-    public static ServiceFrameError validateClientFrame (StompCommand command, String toFrame){
+    public static ServerFrameError validateClientFrame (StompCommand command, String toFrame){
         switch (command){
             case CONNECT:
                 return validateConnectFrame(toFrame);
@@ -61,9 +61,9 @@ public class Auxiliary {
     }
 
     // יכול להיות פרטי או צריך ציבורי
-    private static ServiceFrameError validateConnectFrame (String toFrame){
+    private static ServerFrameError validateConnectFrame (String toFrame){
         // check the validity of the frame structure
-        ServiceFrameError error = checkHeadersNumber(toFrame, 5);
+        ServerFrameError error = checkHeadersNumber(toFrame, 5);
         if (error != null) {
             return error;
         }
@@ -85,25 +85,25 @@ public class Auxiliary {
                 try {
                     receiptId = Integer.parseInt(header[1]);
                 } catch (Exception e) {
-                    return new ServiceFrameError("receipt id is not an integer", -1, toFrame);
+                    return new ServerFrameError("receipt id is not an integer", -1, toFrame);
                 }
             }
             // check the validity of header names
             if (!header[0].equals("accept-version") | !header[0].equals("host") | !header[0].equals("username" ) | !header[0].equals("passcode") | !header[0].equals("receipt")){
-                return new ServiceFrameError("invalid one or more header names", receiptId, toFrame);
+                return new ServerFrameError("invalid one or more header names", receiptId, toFrame);
             }// check the validity accept-version
             if (header[0].equals("accept-version") & !header[1].equals("1.2")){
-                return new ServiceFrameError("Wrong version", receiptId, "version is not 1.2");
+                return new ServerFrameError("Wrong version", receiptId, "version is not 1.2");
             }// check the validity host
             if (header[0].equals("host") & !header[1].equals("stomp.cs.bgu.ac.il")){
-                return new ServiceFrameError("Wrong host", receiptId, "host is not stomp.cs.bgu.ac.il");
+                return new ServerFrameError("Wrong host", receiptId, "host is not stomp.cs.bgu.ac.il");
             }
         }
     return null;
     }
 
-    private static ServiceFrameError validateSendtFrame (String toFrame){
-        ServiceFrameError error = checkHeadersNumber(toFrame, 2);
+    private static ServerFrameError validateSendtFrame (String toFrame){
+        ServerFrameError error = checkHeadersNumber(toFrame, 2);
         if (error != null) {
             return error;
         }
@@ -113,7 +113,7 @@ public class Auxiliary {
         }
         error = isFrameBodyEmpty(toFrame);
         if (error == null){
-            return new ServiceFrameError("no body in the frame", -1, toFrame);
+            return new ServerFrameError("no body in the frame", -1, toFrame);
         }
         String frame = toFrame.split("\n\n")[0];
         String [] headers = frame.split("\n");
@@ -125,19 +125,19 @@ public class Auxiliary {
                 try {
                     receiptId = Integer.parseInt(header[1]);
                 } catch (Exception e) {
-                    return new ServiceFrameError("receipt id is not an integer", -1, toFrame);
+                    return new ServerFrameError("receipt id is not an integer", -1, toFrame);
                 }
             }
             // check the validity of header names
             if (!header[0].equals("destination") | !header[0].equals("receipt")){
-                return new ServiceFrameError("invalid one or more header names", receiptId, toFrame);
+                return new ServerFrameError("invalid one or more header names", receiptId, toFrame);
             }
         }
         return null;
     }
 
-    private static ServiceFrameError validateSubscribeFrame (String toFrame){// destination & id
-        ServiceFrameError error = checkHeadersNumber(toFrame, 3);
+    private static ServerFrameError validateSubscribeFrame (String toFrame){// destination & id
+        ServerFrameError error = checkHeadersNumber(toFrame, 3);
         if (error != null) {
             return error;
         }
@@ -159,19 +159,19 @@ public class Auxiliary {
                 try {
                     receiptId = Integer.parseInt(header[1]);
                 } catch (Exception e) {
-                    return new ServiceFrameError("receipt id is not an integer", -1, toFrame);
+                    return new ServerFrameError("receipt id is not an integer", -1, toFrame);
                 }
             }
             // check the validity of header names
             if (!header[0].equals("destination") | !header[0].equals("id") | !header[0].equals("receipt")){
-                return new ServiceFrameError("invalid one or more header names", receiptId, toFrame);
+                return new ServerFrameError("invalid one or more header names", receiptId, toFrame);
             }
         }
         return null;
     }
 
-    private static ServiceFrameError validateUnsubscribeFrame (String toFrame){// id 
-        ServiceFrameError error = checkHeadersNumber(toFrame, 2);
+    private static ServerFrameError validateUnsubscribeFrame (String toFrame){// id 
+        ServerFrameError error = checkHeadersNumber(toFrame, 2);
         if (error != null) {
             return error;
         }
@@ -193,19 +193,19 @@ public class Auxiliary {
                 try {
                     receiptId = Integer.parseInt(header[1]);
                 } catch (Exception e) {
-                    return new ServiceFrameError("receipt id is not an integer", -1, toFrame);
+                    return new ServerFrameError("receipt id is not an integer", -1, toFrame);
                 }
             }
             // check the validity of header names
             if (!header[0].equals("id") | !header[0].equals("receipt")){
-                return new ServiceFrameError("invalid one or more header names", receiptId, toFrame);
+                return new ServerFrameError("invalid one or more header names", receiptId, toFrame);
             }
         }
         return null;
     }
 
-    private static ServiceFrameError validateDisconnectFrame (String toFrame){
-        ServiceFrameError error = checkHeadersNumber(toFrame, 1);
+    private static ServerFrameError validateDisconnectFrame (String toFrame){
+        ServerFrameError error = checkHeadersNumber(toFrame, 1);
         if (error != null) {
             return error;
         }
@@ -221,41 +221,41 @@ public class Auxiliary {
         String [] header = headerline.split(":");
         int receiptId = -1;
         if (!header[0].equals("receipt")){
-            return new ServiceFrameError("invalid header name", receiptId, toFrame);
+            return new ServerFrameError("invalid header name", receiptId, toFrame);
         } 
         try {
             receiptId = Integer.parseInt(header[1]);
         } catch (Exception e) {
-            return new ServiceFrameError("receipt id is not an integer", -1, toFrame);
+            return new ServerFrameError("receipt id is not an integer", -1, toFrame);
         }
         return null;
     }
 
 
 
-    private static ServiceFrameError checkHeadersNumber (String toFrame, int headersNumber){
+    private static ServerFrameError checkHeadersNumber (String toFrame, int headersNumber){
         int headersNum = toFrame.split(":").length-1;
         if (headersNum != headersNumber){
-            return new ServiceFrameError("number of headers is invalid", -1, toFrame);
+            return new ServerFrameError("number of headers is invalid", -1, toFrame);
         }
         return null;
     }
 
 
-    private static ServiceFrameError checkNullChar (String toFrame){
+    private static ServerFrameError checkNullChar (String toFrame){
         String [] frame = toFrame.split("\n\n");
         String body = frame[1];
         if (body.length() == 0 || body.charAt(body.length()-1) != '\u0000'){
-            return new ServiceFrameError("no null char at the end of the frame", -1, toFrame);
+            return new ServerFrameError("no null char at the end of the frame", -1, toFrame);
         }
         return null;
     }
 
-    private static ServiceFrameError isFrameBodyEmpty (String toFrame){
+    private static ServerFrameError isFrameBodyEmpty (String toFrame){
         String [] frame = toFrame.split("\n\n");
         String body = frame[1];
         if (body.length() > 0 && !body.equals("\u0000")){
-            return new ServiceFrameError("body isn't empty", -1, toFrame);
+            return new ServerFrameError("body isn't empty", -1, toFrame);
         }
         return null;
     }

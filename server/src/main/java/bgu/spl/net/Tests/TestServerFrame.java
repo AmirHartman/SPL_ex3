@@ -14,34 +14,34 @@ public class TestServerFrame {
     }
 
     private static void testServerFrameConnected() {
-        ServiceFrame testFrame = new ServiceFrameConnected(12);
+        ServerFrame testFrame = new ServerFrameConnected(12);
         String tst = testFrame.toString();
         System.out.println(tst);
     }
 
     private static void testServerFrameError() {
-        ServiceFrameError error = new ServiceFrameError("this is a test", 2345, "this is the body.\nthis should contain the original frame that triggered the error frame");
+        ServerFrameError error = new ServerFrameError("this is a test", 2345, "this is the body.\nthis should contain the original frame that triggered the error frame");
         System.out.println(error.toString());
 
     }
 
     private static void testServerFrameMessage() {
-        ServiceFrameMessage message = new ServiceFrameMessage(1, 1, "popo", "this is the body.\nit should contain the body of client frame send");
+        ServerFrameMessage message = new ServerFrameMessage(1, 1, "popo", "this is the body.\nit should contain the body of client frame send");
         System.out.println(message.toString());
 
     }
 
     private static void testServerFrameReceipt() {
-        ServiceFrameReceipt receipt = new ServiceFrameReceipt(1);
+        ServerFrameReceipt receipt = new ServerFrameReceipt(1);
         System.out.println(receipt.toString());
     }
 
     private static void testNullChar() {
         // initialize frames for test
-        ServiceFrameReceipt receipt = new ServiceFrameReceipt(1);
-        ServiceFrameMessage message = new ServiceFrameMessage(1, 1, "popo", "this is the body.\nit should contain the body of client frame send");
-        ServiceFrame connected = new ServiceFrameConnected(12);
-        ServiceFrameError error = new ServiceFrameError("this is a test", 2345, "this is the body.\nthis should contain the original frame that triggered the error frame");
+        ServerFrameReceipt receipt = new ServerFrameReceipt(1);
+        ServerFrameMessage message = new ServerFrameMessage(1, 1, "popo", "this is the body.\nit should contain the body of client frame send");
+        ServerFrame connected = new ServerFrameConnected(12);
+        ServerFrameError error = new ServerFrameError("this is a test", 2345, "this is the body.\nthis should contain the original frame that triggered the error frame");
 
         // get the last char of each frame
         char charReceipt = receipt.toString().charAt(receipt.toString().length() - 1);

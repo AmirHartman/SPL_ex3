@@ -6,7 +6,7 @@ import bgu.spl.net.srv.Connections;
 public class ClientFrameDisconnect extends ClientFrame {
 
     public ClientFrameDisconnect(int receiptId) {
-        super(ServiceStompCommand.DISCONNECT);
+        super(StompCommand.DISCONNECT);
         this.receiptId = receiptId;
     }
 
@@ -21,7 +21,7 @@ public class ClientFrameDisconnect extends ClientFrame {
     }
 
     @Override
-    public ServiceFrame process (String string, int connectionId, Connections <String> connections, ConnectionHandler<String> handler){
+    public ServerFrame process (String string, int connectionId, Connections <String> connections, ConnectionHandler<String> handler){
         return null;
     }
 

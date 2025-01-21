@@ -1,12 +1,12 @@
 package bgu.spl.net.impl.stomp.Frame;
 
 
-public abstract class ServiceFrame {
+public abstract class ServerFrame {
     protected StompCommand type;
     protected String body;
     protected int receiptId = -1; // indication of an invalid recepit id
 
-    public ServiceFrame(StompCommand type) {
+    public ServerFrame(StompCommand type) {
         this.type = type;
         this.body = "\n\u0000";
     }

@@ -9,10 +9,9 @@ public class ClientFrameConnect extends ClientFrame {
     private String host = "stomp.cs.bgu.ac.il";
     private String username;
     private String passcode;
-    private int receiptId;
 
     public ClientFrameConnect(String username, String passcode, int receiptId){
-        super(ServiceStompCommand.CONNECT);
+        super(StompCommand.CONNECT);
         this.username = username;
         this.passcode = passcode;
         this.receiptId = receiptId;
@@ -52,26 +51,26 @@ public class ClientFrameConnect extends ClientFrame {
     }
 
     @Override
-    public ServiceFrame process (String string, int connectionId, Connections <String> connections, ConnectionHandler<String> handler){
+    public ServerFrame process (String string, int connectionId, Connections <String> connections, ConnectionHandler<String> handler){
         // check the structure of client frame before creation
         if (!validFrame(string)){
-            return new ServiceFrameError("connect frame is invalid", -1, "problem with frame structure, version, host or invalid headers");
+            return new ServerFrameError("connect frame is invalid", -1, "problem with frame structure, version, host or invalid headers");
         }
 
         // check correctness of version and host
-        ServiceFrameError error = checkHeaders(string);
+        ServerFrameError error = checkHeaders(string);
         if (error != null){
             return error;
         }
         //connect client if password is correct and is not already connected
         ClientFrameConnect clientFrame = new ClientFrameConnect(string);
         if (!connections.correctPassword(username, passcode)){
-            return new ServiceFrameError("Wrong password", clientFrame.receiptId, "user is not connected but the password is wrong");
+            return new ServerFrameError("Wrong password", clientFrame.receiptId, "user is not connected but the password is wrong");
         }
         if (connections.connectClient(connectionId, handler, clientFrame)){
-            return new ServiceFrameConnected(clientFrame.receiptId);
+            return new ServerFrameConnected(clientFrame.receiptId);
         } else {
-            return new ServiceFrameError("User already logged in", clientFrame.receiptId, "User already connected");
+            return new ServerFrameError("User already logged in", clientFrame.receiptId, "User already connected");
         }
     }
 
@@ -95,16 +94,16 @@ public class ClientFrameConnect extends ClientFrame {
             return true;    
         }
 
-        private ServiceFrameError checkHeaders (String toFrame){
+        private ServerFrameError checkHeaders (String toFrame){
             ClientFrameConnect clientFrame = new ClientFrameConnect(toFrame);
             String[] lines = toFrame.split("\n");
             for (int i = 1; i < lines.length; i++){
                 String[] header = lines[i].split(":");
                 if (header[0].equals("accept-version") & !header[1].equals("1.2")){
-                    return new ServiceFrameError("Wrong version", clientFrame.receiptId, "version is not 1.2");
+                    return new ServerFrameError("Wrong version", clientFrame.receiptId, "version is not 1.2");
                 }
                 if (header[0].equals("host") & !header[1].equals("stomp.cs.bgu.ac.il")){
-                    return new ServiceFrameError("Wrong host", clientFrame.receiptId, "host is not stomp.cs.bgu.ac.il");
+                    return new ServerFrameError("Wrong host", clientFrame.receiptId, "host is not stomp.cs.bgu.ac.il");
                 }
             }
             return null;

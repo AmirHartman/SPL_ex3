@@ -1,18 +1,17 @@
 package bgu.spl.net.impl.stomp.Frame;
 
 
-public class ServiceFrameConnected extends ServiceFrame {
+public class ServerFrameConnected extends ServerFrame {
     private final String version;
-    private int receiptId;
 
-    public ServiceFrameConnected(int receiptid) {
-        super(ServiceStompCommand.CONNECTED);
+    public ServerFrameConnected(int receiptid) {
+        super(StompCommand.CONNECTED);
         this.version = "1.2";
         this.receiptId = receiptid;
     }
 
-    public ServiceFrameConnected(String string) {
-        super(ServiceStompCommand.CONNECTED);
+    public ServerFrameConnected(String string) {
+        super(StompCommand.CONNECTED);
         this.version = "1.2";
     }
 

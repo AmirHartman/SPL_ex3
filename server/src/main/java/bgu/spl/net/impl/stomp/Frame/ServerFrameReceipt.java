@@ -1,14 +1,14 @@
 package bgu.spl.net.impl.stomp.Frame;
 
-public class ServiceFrameReceipt extends ServiceFrame {
+public class ServerFrameReceipt extends ServerFrame {
 
-    public ServiceFrameReceipt(int receiptId) {
+    public ServerFrameReceipt(int receiptId) {
         super(StompCommand.RECEIPT);
         this.receiptId = receiptId;
     }
 
     // למחוק?
-    public ServiceFrameReceipt (String string){
+    public ServerFrameReceipt (String string){
         super(StompCommand.RECEIPT);
         String[] words = string.split(" ");
         if (!words[0].equals("RECEIPT")){

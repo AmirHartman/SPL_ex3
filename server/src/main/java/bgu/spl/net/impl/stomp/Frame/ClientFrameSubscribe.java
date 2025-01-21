@@ -6,10 +6,9 @@ import bgu.spl.net.srv.Connections;
 public class ClientFrameSubscribe extends ClientFrame {
     private int subscription;
     private String destination;
-    private int receiptId;
 
     public ClientFrameSubscribe(int subscription, String destination, int receiptId) {
-        super(ServiceStompCommand.SUBSCRIBE);
+        super(StompCommand.SUBSCRIBE);
         this.subscription = subscription;
         this.destination = destination;
         this.receiptId = receiptId;
@@ -42,16 +41,16 @@ public class ClientFrameSubscribe extends ClientFrame {
         }}}
 
     @Override
-    public ServiceFrame process (String string, int connectionId, Connections <String> connections, ConnectionHandler<String> handler){
+    public ServerFrame process (String string, int connectionId, Connections <String> connections, ConnectionHandler<String> handler){
         if (!validFrame(string)){
-            return new ServiceFrameError("subscribe frame is invalid", receiptId, "frame structure or headers or both are invalid");
+            return new ServerFrameError("subscribe frame is invalid", receiptId, "frame structure or headers or both are invalid");
         }
         if (!connections.isConnected(handler.getUserName())){
-            return new ServiceFrameError("user is not connected", receiptId, "user is not connected to the server");
+            return new ServerFrameError("user is not connected", receiptId, "user is not connected to the server");
         }
         ClientFrameSubscribe clientFrame = new ClientFrameSubscribe(string);
         connections.subscribeClient(connectionId, clientFrame.destination, handler);
-        return new ServiceFrameReceipt(receiptId);
+        return new ServerFrameReceipt(receiptId);
     }
 
     protected boolean validFrame(String toFrame){
