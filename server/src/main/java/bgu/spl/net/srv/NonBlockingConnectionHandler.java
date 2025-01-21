@@ -124,9 +124,10 @@ public class NonBlockingConnectionHandler<T> implements ConnectionHandler<T> {
         //IMPLEMENT IF NEEDED
     }
 
-    @Override   
+    @Override
     public String getUserName(){
         return username;
     }
 
 }
+

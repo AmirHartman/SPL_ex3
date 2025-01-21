@@ -1,14 +1,14 @@
-package bgu.spl.net.impl.stomp.Frame;
+package bgu.spl.net.impl.stomp;
 
+import bgu.spl.net.impl.stomp.ServerFrame.ServerFrame;
 import bgu.spl.net.srv.ConnectionHandler;
 import bgu.spl.net.srv.Connections;
 
 public class ClientFrameSend extends ClientFrame {
     private String destination;
-    private int receiptId;
 
     public ClientFrameSend(String destination, int receiptId, String body) {
-        super(ServiceStompCommand.SEND);
+        super(StompCommand.SEND);
         this.destination = destination;
         this.receiptId = receiptId;
         this.body = "\n" + body + "\n\u0000";
@@ -39,7 +39,7 @@ public class ClientFrameSend extends ClientFrame {
     }
 
     @Override
-    public ServiceFrame process (String string, int connectionId, Connections <String> connections, ConnectionHandler<String> handler){
+    public ServerFrame process (int connectionId, Connections <String> connections, ConnectionHandler<String> handler, StompMessagingProtocolImpl protocol){
         return null;
     }
 

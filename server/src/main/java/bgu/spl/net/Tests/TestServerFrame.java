@@ -1,54 +1,47 @@
 package bgu.spl.net.Tests;
 
-import bgu.spl.net.impl.stomp.StompEncoderDecoder;
-import bgu.spl.net.impl.stomp.Frame.ServiceFrameConnected;
-import bgu.spl.net.impl.stomp.Frame.ServiceFrameError;
-import bgu.spl.net.impl.stomp.Frame.ServiceFrameMessage;
-import bgu.spl.net.impl.stomp.Frame.ServiceFrameReceipt;
-import bgu.spl.net.impl.stomp.Frame.ClientFrame;
-import bgu.spl.net.impl.stomp.Frame.ClientFrameConnect;
-import bgu.spl.net.impl.stomp.Frame.ServiceFrame;
+import bgu.spl.net.impl.stomp.ServerFrame.*;
 
 public class TestServerFrame {
     public static void main(String[] args) {
-        // testServerFrameConnected();
-        // testServerFrameError();
-        // testServerFrameMessage();
-        // testServerFrameReceipt();
+        testServerFrameConnected();
+        testServerFrameError();
+        testServerFrameMessage();
+        testServerFrameReceipt();
 
         testNullChar();
 
     }
 
     private static void testServerFrameConnected() {
-        ServiceFrame testFrame = new ServiceFrameConnected();
+        ServerFrame testFrame = new ServerFrameConnected(12);   
         String tst = testFrame.toString();
         System.out.println(tst);
     }
 
     private static void testServerFrameError() {
-        ServiceFrameError error = new ServiceFrameError("this is a test", 2345, "this is the body.\nthis should contain the original frame that triggered the error frame");
+        ServerFrameError error = new ServerFrameError("this is a test", 2345, "this is the body.\nthis should contain the original frame that triggered the error frame");
         System.out.println(error.toString());
 
     }
 
     private static void testServerFrameMessage() {
-        ServiceFrameMessage message = new ServiceFrameMessage(1, 1, "popo", "this is the body.\nit should contain the body of client frame send");
+        ServerFrameMessage message = new ServerFrameMessage(1, 1, "popo", "this is the body.\nit should contain the body of client frame send");
         System.out.println(message.toString());
 
     }
 
     private static void testServerFrameReceipt() {
-        ServiceFrameReceipt receipt = new ServiceFrameReceipt(1);
+        ServerFrameReceipt receipt = new ServerFrameReceipt(1);
         System.out.println(receipt.toString());
     }
 
     private static void testNullChar() {
         // initialize frames for test
-        ServiceFrameReceipt receipt = new ServiceFrameReceipt(1);
-        ServiceFrameMessage message = new ServiceFrameMessage(1, 1, "popo", "this is the body.\nit should contain the body of client frame send");
-        ServiceFrame connected = new ServiceFrameConnected();
-        ServiceFrameError error = new ServiceFrameError("this is a test", 2345, "this is the body.\nthis should contain the original frame that triggered the error frame");
+        ServerFrameReceipt receipt = new ServerFrameReceipt(1);
+        ServerFrameMessage message = new ServerFrameMessage(1, 1, "popo", "this is the body.\nit should contain the body of client frame send");
+        ServerFrame connected = new ServerFrameConnected(12);
+        ServerFrameError error = new ServerFrameError("this is a test", 2345, "this is the body.\nthis should contain the original frame that triggered the error frame");
 
         // get the last char of each frame
         char charReceipt = receipt.toString().charAt(receipt.toString().length() - 1);

@@ -1,16 +1,17 @@
-package bgu.spl.net.impl.stomp.Frame;
+package bgu.spl.net.impl.stomp.ServerFrame;
 
-public class ServiceFrameReceipt extends ServiceFrame {
-    private int receiptId;
+import bgu.spl.net.impl.stomp.StompCommand;
 
-    public ServiceFrameReceipt(int receiptId) {
-        super(ServiceStompCommand.RECEIPT);
+public class ServerFrameReceipt extends ServerFrame {
+
+    public ServerFrameReceipt(int receiptId) {
+        super(StompCommand.RECEIPT);
         this.receiptId = receiptId;
     }
 
     // למחוק?
-    public ServiceFrameReceipt (String string){
-        super(ServiceStompCommand.RECEIPT);
+    public ServerFrameReceipt (String string){
+        super(StompCommand.RECEIPT);
         String[] words = string.split(" ");
         if (!words[0].equals("RECEIPT")){
             throw new IllegalArgumentException("Not a RECEIPT frame");

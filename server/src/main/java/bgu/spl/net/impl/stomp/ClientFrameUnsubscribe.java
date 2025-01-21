@@ -1,14 +1,16 @@
-package bgu.spl.net.impl.stomp.Frame;
+package bgu.spl.net.impl.stomp;
 
+import bgu.spl.net.impl.stomp.ServerFrame.ServerFrame;
+import bgu.spl.net.impl.stomp.ServerFrame.ServerFrameError;
+import bgu.spl.net.impl.stomp.ServerFrame.ServerFrameReceipt;
 import bgu.spl.net.srv.ConnectionHandler;
 import bgu.spl.net.srv.Connections;
 
 public class ClientFrameUnsubscribe extends ClientFrame {
     private int subscription;
-    int receiptId;
 
     public ClientFrameUnsubscribe(int subscription, int receiptId){
-        super(ServiceStompCommand.UNSUBSCRIBE);
+        super(StompCommand.UNSUBSCRIBE);
         this.subscription = subscription;
         this.receiptId = receiptId;
     }
@@ -25,16 +27,16 @@ public class ClientFrameUnsubscribe extends ClientFrame {
     }
 
     @Override
-    public ServiceFrame process (String string, int connectionId, Connections <String> connections, ConnectionHandler<String> handler){
-        if (!validFrame(string)){
-            return new ServiceFrameError("unsubscribe frame is invalid", receiptId, "frame structure or headers or both are invalid");
-        }
+    public ServerFrame process (int connectionId, Connections <String> connections, ConnectionHandler<String> handler, StompMessagingProtocolImpl protocol){
         if (!connections.isConnected(handler.getUserName())){
-            return new ServiceFrameError("user is not connected", receiptId, "user is not connected to the server and trying to unsubscribe from a channel");
+            return new ServerFrameError("Unconnected user is trying to Unsubscribe from a channel", receiptId, toString());
         }
-        ClientFrameUnsubscribe clientFrame = new ClientFrameUnsubscribe(string);
-        // connections.unsubscribeClient(connectionId, clientFrame.subscription);
-        return null;
+        if (!protocol.subscriberIds.containsKey(subscription)){
+            return new ServerFrameError("user is not subscribed to channel", receiptId, toString());
+        }
+        String topic = protocol.subscriberIds.remove(subscription);
+        connections.unsubscribe(connectionId, topic);
+        return new ServerFrameReceipt(receiptId);
     }
     
     protected boolean validFrame(String toFrame){

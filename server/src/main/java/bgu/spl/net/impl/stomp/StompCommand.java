@@ -1,6 +1,6 @@
-package bgu.spl.net.impl.stomp.Frame;
+package bgu.spl.net.impl.stomp;
 
-public enum ServiceStompCommand {
+public enum StompCommand {
     // server commands
     CONNECTED,
     MESSAGE,

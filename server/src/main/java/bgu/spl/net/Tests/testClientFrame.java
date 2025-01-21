@@ -1,16 +1,11 @@
 package bgu.spl.net.Tests;
 
-import bgu.spl.net.impl.stomp.Frame.ClientFrame;
-import bgu.spl.net.impl.stomp.Frame.ClientFrameConnect;
-import bgu.spl.net.impl.stomp.Frame.ClientFrameDisconnect;
-import bgu.spl.net.impl.stomp.Frame.ClientFrameSend;
-import bgu.spl.net.impl.stomp.Frame.ClientFrameSubscribe;
-import bgu.spl.net.impl.stomp.Frame.ClientFrameUnsubscribe;
-import bgu.spl.net.impl.stomp.Frame.ServiceFrame;
-import bgu.spl.net.impl.stomp.Frame.ServiceFrameConnected;
-import bgu.spl.net.impl.stomp.Frame.ServiceFrameError;
-import bgu.spl.net.impl.stomp.Frame.ServiceFrameMessage;
-import bgu.spl.net.impl.stomp.Frame.ServiceFrameReceipt;
+import bgu.spl.net.impl.stomp.ClientFrame;
+import bgu.spl.net.impl.stomp.ClientFrameConnect;
+import bgu.spl.net.impl.stomp.ClientFrameDisconnect;
+import bgu.spl.net.impl.stomp.ClientFrameSend;
+import bgu.spl.net.impl.stomp.ClientFrameSubscribe;
+import bgu.spl.net.impl.stomp.ClientFrameUnsubscribe;
 
 public class testClientFrame {
 
@@ -20,11 +15,11 @@ public class testClientFrame {
          * test the toString method of ClientFrame classes
          * tests coth constructors
          */
-        // testClientFrameConnect();
-        // testClientFrameDisconnect();
-        // testClientFrameSend();
-        // testClientFrameSubscribe();
-        // testClientFrameUnsubscribe();
+        testClientFrameConnect();
+        testClientFrameDisconnect();
+        testClientFrameSend();
+        testClientFrameSubscribe();
+        testClientFrameUnsubscribe();
 
         testNullChar();
         /**
