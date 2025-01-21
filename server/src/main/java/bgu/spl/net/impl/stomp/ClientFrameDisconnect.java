@@ -1,5 +1,6 @@
-package bgu.spl.net.impl.stomp.Frame;
+package bgu.spl.net.impl.stomp;
 
+import bgu.spl.net.impl.stomp.ServerFrame.ServerFrame;
 import bgu.spl.net.srv.ConnectionHandler;
 import bgu.spl.net.srv.Connections;
 
@@ -21,7 +22,8 @@ public class ClientFrameDisconnect extends ClientFrame {
     }
 
     @Override
-    public ServerFrame process (String string, int connectionId, Connections <String> connections, ConnectionHandler<String> handler){
+    public ServerFrame process (int connectionId, Connections <String> connections, ConnectionHandler<String> handler, StompMessagingProtocolImpl protocol){
+
         return null;
     }
 

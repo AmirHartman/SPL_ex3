@@ -1,10 +1,11 @@
 package bgu.spl.net.impl.stomp;
 
-import bgu.spl.net.impl.stomp.StompCommand;
+import bgu.spl.net.impl.stomp.ServerFrame.ServerFrame;
+import bgu.spl.net.impl.stomp.ServerFrame.ServerFrameError;
+import bgu.spl.net.impl.stomp.ServerFrame.ServerFrameReceipt;
 import bgu.spl.net.srv.ConnectionHandler;
 import bgu.spl.net.srv.Connections;
 
-import java.util.concurrent.ConcurrentHashMap;
 
 public class ClientFrameSubscribe extends ClientFrame {
     private int subscription;
@@ -46,7 +47,7 @@ public class ClientFrameSubscribe extends ClientFrame {
     @Override
     public ServerFrame process (int connectionId, Connections <String> connections, ConnectionHandler<String> handler, StompMessagingProtocolImpl protocol){
         if (!connections.isConnected(handler.getUserName())){
-            return new ServerFrameError("unconnected user is trying to subscribe to a channel", receiptId, toString());
+            return new ServerFrameError("Unconnected user is trying to subscribe to a channel", receiptId, toString());
         }
         if (protocol.subscriberIds.containsKey(subscription)){
             return new ServerFrameError("already subscribed to " + destination, receiptId, toString());

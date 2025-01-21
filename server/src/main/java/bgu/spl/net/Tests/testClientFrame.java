@@ -1,6 +1,11 @@
 package bgu.spl.net.Tests;
 
-import bgu.spl.net.impl.stomp.Frame.*;
+import bgu.spl.net.impl.stomp.ClientFrame;
+import bgu.spl.net.impl.stomp.ClientFrameConnect;
+import bgu.spl.net.impl.stomp.ClientFrameDisconnect;
+import bgu.spl.net.impl.stomp.ClientFrameSend;
+import bgu.spl.net.impl.stomp.ClientFrameSubscribe;
+import bgu.spl.net.impl.stomp.ClientFrameUnsubscribe;
 
 public class testClientFrame {
 

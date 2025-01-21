@@ -1,8 +1,9 @@
-package bgu.spl.net.impl.stomp.Frame;
+package bgu.spl.net.impl.stomp;
 
+import bgu.spl.net.impl.stomp.ServerFrame.*;
 import bgu.spl.net.srv.ConnectionHandler;
 import bgu.spl.net.srv.Connections;
-import bgu.spl.net.impl.stomp.Auxiliary;
+
 
 public abstract class ClientFrame {
     protected StompCommand type;
@@ -32,9 +33,8 @@ public abstract class ClientFrame {
         return receiptId;
     }
 
-    public abstract ServerFrame process (int connectionId, Connections <String> connections, ConnectionHandler<String> handler);
+    public abstract ServerFrame process (int connectionId, Connections <String> connections, ConnectionHandler<String> handler, StompMessagingProtocolImpl protocol);
 
-    protected abstract boolean validFrame(String toFrame);
 
 
 

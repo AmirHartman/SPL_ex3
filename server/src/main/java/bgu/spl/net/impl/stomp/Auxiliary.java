@@ -1,6 +1,6 @@
 package bgu.spl.net.impl.stomp;
 
-import bgu.spl.net.impl.stomp.Frame.*;
+import bgu.spl.net.impl.stomp.ServerFrame.ServerFrameError;
 
 public class Auxiliary {
 
@@ -60,7 +60,6 @@ public class Auxiliary {
         }
     }
 
-    // יכול להיות פרטי או צריך ציבורי
     private static ServerFrameError validateConnectFrame (String toFrame){
         // check the validity of the frame structure
         ServerFrameError error = checkHeadersNumber(toFrame, 5);
@@ -89,14 +88,14 @@ public class Auxiliary {
                 }
             }
             // check the validity of header names
-            if (!header[0].equals("accept-version") | !header[0].equals("host") | !header[0].equals("username" ) | !header[0].equals("passcode") | !header[0].equals("receipt")){
+            if (!header[0].equals("accept-version") & !header[0].equals("host") & !header[0].equals("login") & !header[0].equals("passcode") & !header[0].equals("receipt")){
                 return new ServerFrameError("invalid one or more header names", receiptId, toFrame);
             }// check the validity accept-version
             if (header[0].equals("accept-version") & !header[1].equals("1.2")){
-                return new ServerFrameError("Wrong version", receiptId, "version is not 1.2");
+                return new ServerFrameError("Wrong version", receiptId, toFrame);
             }// check the validity host
             if (header[0].equals("host") & !header[1].equals("stomp.cs.bgu.ac.il")){
-                return new ServerFrameError("Wrong host", receiptId, "host is not stomp.cs.bgu.ac.il");
+                return new ServerFrameError("Wrong host", receiptId, toFrame);
             }
         }
     return null;
@@ -129,7 +128,7 @@ public class Auxiliary {
                 }
             }
             // check the validity of header names
-            if (!header[0].equals("destination") | !header[0].equals("receipt")){
+            if (!header[0].equals("destination") & !header[0].equals("receipt")){
                 return new ServerFrameError("invalid one or more header names", receiptId, toFrame);
             }
         }
@@ -163,7 +162,7 @@ public class Auxiliary {
                 }
             }
             // check the validity of header names
-            if (!header[0].equals("destination") | !header[0].equals("id") | !header[0].equals("receipt")){
+            if (!header[0].equals("destination") & !header[0].equals("id") & !header[0].equals("receipt")){
                 return new ServerFrameError("invalid one or more header names", receiptId, toFrame);
             }
         }
@@ -197,7 +196,7 @@ public class Auxiliary {
                 }
             }
             // check the validity of header names
-            if (!header[0].equals("id") | !header[0].equals("receipt")){
+            if (!header[0].equals("id") & !header[0].equals("receipt")){
                 return new ServerFrameError("invalid one or more header names", receiptId, toFrame);
             }
         }
@@ -244,8 +243,7 @@ public class Auxiliary {
 
     private static ServerFrameError checkNullChar (String toFrame){
         String [] frame = toFrame.split("\n\n");
-        String body = frame[1];
-        if (body.length() == 0 || body.charAt(body.length()-1) != '\u0000'){
+        if (frame.length == 1 || !(frame[1].charAt(frame[1].length()-1) == '\u0000')){
             return new ServerFrameError("no null char at the end of the frame", -1, toFrame);
         }
         return null;

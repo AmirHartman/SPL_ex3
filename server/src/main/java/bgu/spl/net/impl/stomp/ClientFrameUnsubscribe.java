@@ -1,6 +1,8 @@
 package bgu.spl.net.impl.stomp;
 
-import bgu.spl.net.impl.stomp.Frame.StompCommand;
+import bgu.spl.net.impl.stomp.ServerFrame.ServerFrame;
+import bgu.spl.net.impl.stomp.ServerFrame.ServerFrameError;
+import bgu.spl.net.impl.stomp.ServerFrame.ServerFrameReceipt;
 import bgu.spl.net.srv.ConnectionHandler;
 import bgu.spl.net.srv.Connections;
 
@@ -33,9 +35,8 @@ public class ClientFrameUnsubscribe extends ClientFrame {
             return new ServerFrameError("user is not subscribed to channel", receiptId, toString());
         }
         String topic = protocol.subscriberIds.remove(subscription);
-        connections.unsubscribe(connectionId, topic));
-        // connections.unsubscribeClient(connectionId, clientFrame.subscription);
-        return null;
+        connections.unsubscribe(connectionId, topic);
+        return new ServerFrameReceipt(receiptId);
     }
     
     protected boolean validFrame(String toFrame){

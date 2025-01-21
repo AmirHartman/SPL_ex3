@@ -1,4 +1,4 @@
-package bgu.spl.net.impl.stomp.Frame;
+package bgu.spl.net.impl.stomp;
 
 public enum StompCommand {
     // server commands

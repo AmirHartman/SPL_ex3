@@ -1,4 +1,6 @@
-package bgu.spl.net.impl.stomp.Frame;
+package bgu.spl.net.impl.stomp.ServerFrame;
+
+import bgu.spl.net.impl.stomp.StompCommand;
 
 public class ServerFrameReceipt extends ServerFrame {
 

@@ -1,11 +1,7 @@
 package bgu.spl.net.Tests;
 
 import bgu.spl.net.impl.stomp.ServerFrameConnected;
-import bgu.spl.net.impl.stomp.Frame.*;
-import bgu.spl.net.impl.stomp.ServerFrame.ServerFrame;
-import bgu.spl.net.impl.stomp.ServerFrame.ServerFrameError;
-import bgu.spl.net.impl.stomp.ServerFrame.ServerFrameMessage;
-import bgu.spl.net.impl.stomp.ServerFrame.ServerFrameReceipt;
+import bgu.spl.net.impl.stomp.ServerFrame.*;
 
 public class TestServerFrame {
     public static void main(String[] args) {
