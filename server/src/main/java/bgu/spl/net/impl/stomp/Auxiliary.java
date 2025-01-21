@@ -160,6 +160,13 @@ public class Auxiliary {
                 } catch (Exception e) {
                     return new ServerFrameError("receipt id is not an integer", -1, toFrame);
                 }
+            }// check subscription id is a number
+            if (header[0].equals("id")){
+                try {
+                    Integer.parseInt(header[1]);
+                } catch (Exception e) {
+                    return new ServerFrameError("subscription id is not an integer", -1, toFrame);
+                }
             }
             // check the validity of header names
             if (!header[0].equals("destination") & !header[0].equals("id") & !header[0].equals("receipt")){
@@ -193,6 +200,13 @@ public class Auxiliary {
                     receiptId = Integer.parseInt(header[1]);
                 } catch (Exception e) {
                     return new ServerFrameError("receipt id is not an integer", -1, toFrame);
+                }
+            }// check subscription id is a number
+            if (header[0].equals("id")){
+                try {
+                    Integer.parseInt(header[1]);
+                } catch (Exception e) {
+                    return new ServerFrameError("subscription id is not an integer", -1, toFrame);
                 }
             }
             // check the validity of header names

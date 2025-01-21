@@ -1,6 +1,5 @@
 package bgu.spl.net.Tests;
 
-import bgu.spl.net.impl.stomp.ServerFrameConnected;
 import bgu.spl.net.impl.stomp.ServerFrame.*;
 
 public class TestServerFrame {
