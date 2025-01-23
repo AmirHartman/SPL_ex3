@@ -68,4 +68,8 @@ public class ServerFrameMessage extends ServerFrame {
                 + "Destination:" + this.destination + "\n" + this.body;
     }
 
+    public void setSubscribtion(int subscribtion) {
+        this.subscribtion = subscribtion;
+    }
+
 }

@@ -1,8 +1,13 @@
 package bgu.spl.net.impl.stomp;
 
 import bgu.spl.net.impl.stomp.ServerFrame.ServerFrame;
+import bgu.spl.net.impl.stomp.ServerFrame.ServerFrameError;
+import bgu.spl.net.impl.stomp.ServerFrame.ServerFrameMessage;
+import bgu.spl.net.impl.stomp.ServerFrame.ServerFrameReceipt;
 import bgu.spl.net.srv.ConnectionHandler;
 import bgu.spl.net.srv.Connections;
+
+import java.util.concurrent.ConcurrentHashMap;
 
 public class ClientFrameSend extends ClientFrame {
     private String destination;
@@ -40,7 +45,23 @@ public class ClientFrameSend extends ClientFrame {
 
     @Override
     public ServerFrame process (int connectionId, Connections <String> connections, ConnectionHandler<String> handler, StompMessagingProtocolImpl protocol){
-        return null;
+        if (!connections.isConnected(handler.getUserName())){
+            return new ServerFrameError("Unconnected user is trying to send a message", receiptId, toString());
+        }
+        ConcurrentHashMap<Integer, Integer> subscribers = connections.getSubscribers(destination);
+        if (subscribers == null){// should not happen
+            return new ServerFrameError("channel does not exist", receiptId, toString());
+        }
+        if (!subscribers.containsKey(connectionId)){
+            return new ServerFrameError("user is not subscribed to channel", receiptId, toString());
+        }
+        ServerFrameMessage messageFrame = new ServerFrameMessage(connections.getNextMessageId(), -1, destination, body);
+        // updates subscription id for each subscriber
+        for (Integer handlerId : subscribers.keySet()){
+            messageFrame.setSubscribtion(subscribers.get(handlerId));
+            connections.send(handlerId, messageFrame.toString());
+        }
+        return new ServerFrameReceipt(receiptId); 
     }
 
     protected boolean validFrame(String toFrame){

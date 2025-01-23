@@ -1,5 +1,7 @@
 package bgu.spl.net.srv;
 
+import java.util.concurrent.ConcurrentHashMap;
+
 
 public interface Connections<T> {
 
@@ -15,10 +17,14 @@ public interface Connections<T> {
 
     boolean connect(int connectionId, ConnectionHandler<T> handler, String username, String password);
 
-    void subscribe(int connectionId, String topic);
+    void subscribe(int connectionId, String topic, int subscriptionId);
 
     boolean unsubscribe(int connectionId, String topic);
 
     int getNextMessageId();
+
+    int getSubscriptionId(String topic, int connectionId);
+
+    ConcurrentHashMap<Integer, Integer> getSubscribers(String topic);
 
 }

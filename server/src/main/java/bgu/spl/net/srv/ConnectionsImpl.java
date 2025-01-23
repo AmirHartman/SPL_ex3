@@ -2,20 +2,16 @@
 package bgu.spl.net.srv;
 
 import java.util.concurrent.ConcurrentHashMap;
-<<<<<<< HEAD
-
-import java.util.LinkedList;
-=======
 import java.util.concurrent.atomic.AtomicInteger;
 
->>>>>>> frame
 
 
 import java.util.AbstractMap.SimpleEntry;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class ConnectionsImpl<T> implements Connections<T> {
-    private ConcurrentHashMap <String, ConcurrentLinkedQueue<Integer>> topics = new ConcurrentHashMap<>();
+    // topic as key, value is a hash map of connectionId as key and their subscription id as value
+    private ConcurrentHashMap <String, ConcurrentHashMap<Integer, Integer>> topics = new ConcurrentHashMap<>();
+    // connectionId as key, value is a pair of username and connectionHandler
     private ConcurrentHashMap <Integer, SimpleEntry<String, ConnectionHandler<T>>> connectionsIds = new ConcurrentHashMap<>();
     // username as key, value is a pair of password and boolean if the user is connected
     private ConcurrentHashMap <String, SimpleEntry<String, Boolean>> users = new ConcurrentHashMap<>();
@@ -24,10 +20,20 @@ public class ConnectionsImpl<T> implements Connections<T> {
     
     @Override
     public boolean send(int connectionId, T msg){
+
+
         return true;
     }
     @Override
     public void send(String channel, T msg){
+        synchronized(topics.get(channel)){
+            for (Integer connectionId : topics.get(channel).keySet()){
+                if (connectionsIds.get(connectionId) != null){
+                connectionsIds.get(connectionId).getValue().send(msg);
+                }
+            }
+        }
+            
 
     }
 
@@ -75,19 +81,20 @@ public class ConnectionsImpl<T> implements Connections<T> {
     }
 
     @Override
-    public void subscribe(int connectionId, String topic){
-        topics.putIfAbsent(topic, new ConcurrentLinkedQueue<>());
+    public void subscribe(int connectionId, String topic, int subscriptionId){
+        topics.putIfAbsent(topic, new ConcurrentHashMap<>());
         synchronized (topics.get(topic)){
-            topics.get(topic).add(connectionId);
+            topics.get(topic).put(connectionId, subscriptionId);
         }}
 
     @Override
     public boolean unsubscribe(int connectionId, String topic){
         if (topics.containsKey(topic)){
             synchronized (topics.get(topic)){
-                topics.get(topic).remove(connectionId);
-                return true;
-            }
+                ConcurrentHashMap<Integer, Integer> topicMap = topics.get(topic);
+                if (topicMap.remove(connectionId) != null){
+                    return true;
+                }}
         }// topic doesn't exist, thus unable to unsubscribe user
         return false;
     }
@@ -96,6 +103,25 @@ public class ConnectionsImpl<T> implements Connections<T> {
     public int getNextMessageId(){
         return messageIdCounter.getAndIncrement();
     }
+
+    @Override
+    public int getSubscriptionId(String topic, int connectionId){
+        if (topics.containsKey(topic)){
+            synchronized (topics.get(topic)){
+                ConcurrentHashMap<Integer, Integer> topicMap = topics.get(topic);
+                if (topicMap.containsKey(connectionId)){
+                    return topicMap.get(connectionId);
+                }}
+        }// topic doesn't exist, thus unable to get subscription id
+        return -1;
+    }
+
+    @Override
+    public ConcurrentHashMap<Integer, Integer> getSubscribers(String topic){
+        return topics.get(topic);
+    }
+
+
 
 
 
