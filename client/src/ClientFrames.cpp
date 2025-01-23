@@ -1,4 +1,4 @@
-#include <ClientFrames.h>
+#include "../include/ClientFrames.h"
 
 /**
  * @class ClientFrames
@@ -11,11 +11,7 @@
 
 
 // Constructor
-ClientFrames::ClientFrames(){
-    subscriptionId = 0;
-    reciptId = 0;
-
-}
+ClientFrames::ClientFrames(): subscriptionId(0), receiptId(0){}
 
 /**
  * @brief returns the current subscriptionId and increasing its value by one. (ready for the next subscription)
@@ -32,7 +28,7 @@ unsigned int ClientFrames::generateSubscriptionId(){
  * @return A unique recipt id.
  */
 unsigned int ClientFrames::generateReciptId(){
-    return reciptId++;
+    return receiptId++;
 }
 
 /**
@@ -42,7 +38,7 @@ unsigned int ClientFrames::generateReciptId(){
  * @param message The message content to be sent.
  * @return A string representing the SEND frame.
  */
-std::string ClientFrames::getSENDframe(std::string topic, std::string message){
+std::string ClientFrames::generateSendFrame(const std::string &topic, const std::string &message){
     return "SEND\n"
            "destination:/topic/" + topic + "\n" +
            "receipt:" + std::to_string(ClientFrames::generateReciptId()) + "\n" +
@@ -57,7 +53,7 @@ std::string ClientFrames::getSENDframe(std::string topic, std::string message){
  * @param topic The topic to subscribe to.
  * @return A string representing the SUBSCRIBE frame.
  */
-std::string ClientFrames::getSubscribeFrame(std::string topic){
+std::string ClientFrames::generateSubscribeFrame(const std::string &topic){
     unsigned int id = ClientFrames::generateSubscriptionId();
     topicSubscriptionMap[topic] = id;
     return "SUBSCRIBE\n"
@@ -74,7 +70,7 @@ std::string ClientFrames::getSubscribeFrame(std::string topic){
  * @param topic The topic to unsubscribe from.
  * @return A string representing the UNSUBSCRIBE frame.
  */
-std::string ClientFrames::getUnsubscribeFrame(std::string topic){
+std::string ClientFrames::generateUnsubscribeFrame(const std::string &topic){
     unsigned int id = topicSubscriptionMap[topic];
     topicSubscriptionMap.erase(topic);
     return "UNSUBSCRIBE\n"
@@ -89,7 +85,7 @@ std::string ClientFrames::getUnsubscribeFrame(std::string topic){
  * 
  * @return A string representing the DISCONNECT frame.
  */
-std::string ClientFrames::getDisconnectFrame(){
+std::string ClientFrames::generateDisconnectFrame(){
     return "DISCONNECT\n"
            "receipt:" + std::to_string(ClientFrames::generateReciptId()) + "\n" +
            "\n" + 
