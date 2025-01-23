@@ -34,6 +34,25 @@ unsigned int ClientFrames::generateReciptId(){
 /**
  * @brief 
  * 
+ * @param host The host to connect to.
+ * @param port The port to connect to.
+ * @param username The username to connect with.
+ * @param password The password to connect with.
+ * @return A string representing the CONNECT frame.
+ */
+std::string ClientFrames::generateConnectFrame(const std::string &host,short port,const std::string &username, const std::string &password){
+    return "CONNECT\n"
+           "accept-version:1.2\n"
+           "host:" + host + "\n" +
+           "login:" + username + "\n" +
+           "passcode:" + password + "\n" +
+           "\n" + 
+           '\0';
+}
+
+/**
+ * @brief 
+ * 
  * @param topic The topic to which the message is sent.
  * @param message The message content to be sent.
  * @return A string representing the SEND frame.
@@ -91,3 +110,5 @@ std::string ClientFrames::generateDisconnectFrame(){
            "\n" + 
            '\0';
 }
+
+

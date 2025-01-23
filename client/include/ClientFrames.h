@@ -8,6 +8,7 @@ class ClientFrames{
         ClientFrames();
         unsigned int generateSubscriptionId();
         unsigned int generateReciptId();
+        std::string generateConnectFrame(const std::string &host,short port,const std::string &username, const std::string &password);
         std::string generateSendFrame(const std::string &topic, const std::string &message);
         std::string generateSubscribeFrame(const std::string &topic);
         std::string generateUnsubscribeFrame(const std::string &topic);

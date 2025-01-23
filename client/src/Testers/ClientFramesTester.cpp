@@ -15,6 +15,14 @@ int main() {
 	ClientFrames clientFrames;
 	cout << "ClientFrames object created\n" << endl;
 
+    // Testing generateConnectFrame
+    string host = "localhost";
+    short port = 8080;
+    string username = "Amir";
+    string password = "1234";
+    cout << "________________Connect Frame:________________\nHost: " << host << "\nPort: " << port << "\nUsername: " << username << "\nPassword: " << password << "\n" << endl;
+    printFrame(clientFrames.generateConnectFrame(host,port,username,password));
+
     // Testing generateSendFrame
     string topic = "MyTopic";
     string message = "Hello my name is Amir";
