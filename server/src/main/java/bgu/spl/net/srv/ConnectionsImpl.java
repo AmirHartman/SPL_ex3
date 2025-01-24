@@ -20,10 +20,13 @@ public class ConnectionsImpl<T> implements Connections<T> {
     
     @Override
     public boolean send(int connectionId, T msg){
-
-
-        return true;
+        if (connectionsIds.containsKey(connectionId)){
+            connectionsIds.get(connectionId).getValue().send(msg);
+            return true;
+        }
+        return false;
     }
+
     @Override
     public void send(String channel, T msg){
         synchronized(topics.get(channel)){
@@ -39,7 +42,19 @@ public class ConnectionsImpl<T> implements Connections<T> {
 
     @Override
     public void disconnect(int connectionId){
-
+        // disconnect user from the system
+        SimpleEntry<String, ConnectionHandler<T>> user = connectionsIds.remove(connectionId);
+        if (user != null){
+            synchronized (users.get(user.getKey())){
+                users.get(user.getKey()).setValue(false);
+                // unsubscribe user from all topics
+                for (String topic : topics.keySet()){
+                    synchronized (topics.get(topic)){
+                        topics.get(topic).remove(connectionId);
+                    }
+                }
+            }
+        }
     }
 
     @Override
@@ -120,6 +135,8 @@ public class ConnectionsImpl<T> implements Connections<T> {
     public ConcurrentHashMap<Integer, Integer> getSubscribers(String topic){
         return topics.get(topic);
     }
+
+
 
 
 

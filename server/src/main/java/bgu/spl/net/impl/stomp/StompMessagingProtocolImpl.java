@@ -28,46 +28,6 @@ public class StompMessagingProtocolImpl implements StompMessagingProtocol<String
     }
     
 
-<<<<<<< HEAD
-    @Override
-    public void process(Object message) {
-        String msg = (String) message;
-        String type = msg.split("\n")[0];
-        shouldTerminate = (type.equals("DISCONNECT") | type.equals("ERROR"));
-        // do nothing
-    }
-
-    @Override
-    public boolean shouldTerminate() {
-        return shouldTerminate;
-    }
-
-    // protected String getAnswer(){
-    //     ServiceFrame frame =(ServiceFrame) messages.pollFirst();
-    //     if (frame != null){
-    //         return frame.toString();
-    //     }
-    //     return null;
-    // }
-
-    private ClientFrame chooseClientFrame(String nextMessage){
-        String frameType = nextMessage.substring(0, nextMessage.indexOf('\n'));
-        switch (frameType){
-            case "CONNECT":
-                return new ClientFrameConnect(nextMessage);
-            case "SEND":
-                return new ClientFrameSend(nextMessage);
-            case "SUBSCRIBE":
-                return new ClientFrameSubscribe(nextMessage);
-            case "UNSUBSCRIBE":
-                return new ClientFrameUnsubscribe(nextMessage);
-            case "DISCONNECT":
-                return new ClientFrameDisconnect(nextMessage);
-        }
-        return null;
-    }
-
-=======
     public void process(String message){
         String commandtmp = message.split("\n")[0];
         StompCommand command = Auxiliary.stringToCommand(commandtmp);
@@ -104,9 +64,10 @@ public class StompMessagingProtocolImpl implements StompMessagingProtocol<String
             }}}
 	
    public boolean shouldTerminate(){
+    // יציאה מהמערכת אבל צריך לשלוח פריים קראש
+    // לנתק מכל מקם על לא כמו ניוק עדין
     return shouldTerminate;
    }
->>>>>>> frame
 }
 
     
