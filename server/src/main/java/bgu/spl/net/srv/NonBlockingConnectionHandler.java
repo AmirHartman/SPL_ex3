@@ -21,7 +21,6 @@ public class NonBlockingConnectionHandler<T> implements ConnectionHandler<T> {
     private final SocketChannel chan;
     private final Reactor<T> reactor;
 
-    private int connectionId;
     String username = null;
 
     public NonBlockingConnectionHandler(

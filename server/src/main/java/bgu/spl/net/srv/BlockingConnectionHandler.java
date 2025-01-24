@@ -62,15 +62,6 @@ public class BlockingConnectionHandler<T> implements Runnable, ConnectionHandler
     @Override
     public void send(T msg) {
         messages.add(msg);
-        // בשעות קבלה להבין מה הכוונה שאסור שיהיה תלוי במימוש הסטומפ שלנו 
-        // לא משנה איך נתייחס ל"סנד" עדיין הוא יהיה תלוי במימוש שלנו גם אם נקרא לשיטה בתוך הפרוטוקול
-        // String command = ((String)msg).substring(0, ((String)msg).indexOf('\n'));
-        // if (command.equals("ERROR")){
-        //     messages.addFirst(msg);
-        // }
-        // else{
-        //     messages.add(msg);
-        // }
     }
 
     @Override

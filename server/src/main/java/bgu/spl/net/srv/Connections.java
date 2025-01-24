@@ -27,6 +27,5 @@ public interface Connections<T> {
 
     ConcurrentHashMap<Integer, Integer> getSubscribers(String topic);
 
-    void errorDisconnect(int connectionId);
 
 }

@@ -5,6 +5,7 @@ import bgu.spl.net.api.MessagingProtocol;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
 
 public abstract class BaseServer<T> implements Server<T> {
@@ -24,6 +25,7 @@ public abstract class BaseServer<T> implements Server<T> {
         this.encdecFactory = encdecFactory;
 		this.sock = null;
 
+
     }
 
     @Override
@@ -31,9 +33,10 @@ public abstract class BaseServer<T> implements Server<T> {
 
         try (ServerSocket serverSock = new ServerSocket(port)) {
 			System.out.println("Server started");
-
+            
             this.sock = serverSock; //just to be able to close
             // MessageIdGenerator messageIDGenerator = new MessageIdGenerator();
+            AtomicInteger idCounter = new AtomicInteger(0);
 
             while (!Thread.currentThread().isInterrupted()) {
 

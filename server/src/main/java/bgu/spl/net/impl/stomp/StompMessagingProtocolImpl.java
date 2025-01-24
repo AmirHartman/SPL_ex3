@@ -16,15 +16,14 @@ public class StompMessagingProtocolImpl implements StompMessagingProtocol<String
     protected ConcurrentHashMap<Integer, String> subscriberIds = new ConcurrentHashMap<>();
     private int connectionId;
     private Connections<String> connections;
-    private ConnectionHandler<String> handler;
+    private ConnectionHandler<String> handler = null;
     
 
 
     @Override
-    public void start(int connectionId, Connections<String> connections, ConnectionHandler<String> handler) {
+    public void start(int connectionId, Connections<String> connections) {
         this.connectionId = connectionId;
         this.connections = connections;
-        this.handler = handler;
     }
     
 
@@ -40,34 +39,40 @@ public class StompMessagingProtocolImpl implements StompMessagingProtocol<String
         ServerFrameError error = Auxiliary.validateClientFrame(command, message);
         if (error != null){
             connections.send(connectionId, error.toString());
+            shouldTerminate = true;
         }
         else {// valid frame
             ClientFrame clientFrame = Auxiliary.chooseClientFrame(command, message); 
+            //case of disconnect
+            if (clientFrame instanceof ClientFrameDisconnect){
+                shouldTerminate = true;
+            }
             if (receipts.containsKey(clientFrame.getReceiptId())){
                 error = new ServerFrameError("receipt id isn't unique", clientFrame.getReceiptId(), message);
                 receipts.put(clientFrame.getReceiptId(), new SimpleEntry<>(clientFrame, error));
                 connections.send(connectionId, error.toString());
+                shouldTerminate = true;
             }
             else{
                 receipts.put(clientFrame.getReceiptId(), new SimpleEntry<>(clientFrame, null));
                 ServerFrame serverFrame = clientFrame.process(connectionId, connections, handler, this);
-                // send the message to all subscribers of that topic
-                if (serverFrame instanceof ServerFrameMessage){
-                    String topic = ((ServerFrameMessage) serverFrame).getTopic();
-                    connections.send(topic, serverFrame.toString());
-                    serverFrame = new ServerFrameReceipt(clientFrame.getReceiptId());
+                if (serverFrame instanceof ServerFrameError ){
+                    shouldTerminate = true;
                 }
                 connections.send(connectionId, serverFrame.toString());
+                // צריך?
                 SimpleEntry<ClientFrame,ServerFrame> entry = receipts.get(clientFrame.getReceiptId());
                 // האם יכול להיות שלא יהיה NULL?
                 entry.setValue(serverFrame);
             }}}
 	
    public boolean shouldTerminate(){
-    // יציאה מהמערכת אבל צריך לשלוח פריים קראש
-    // לנתק מכל מקם על לא כמו ניוק עדין
     return shouldTerminate;
    }
+
+    public void setHandler(ConnectionHandler<String> handler) {
+        this.handler = handler;
+    }
 }
 
     
