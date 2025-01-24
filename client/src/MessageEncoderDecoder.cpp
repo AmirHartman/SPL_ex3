@@ -260,6 +260,8 @@ bool MessageEncoderDecoder::decodeAndPrintErrorFrame(vector<vector<string>> &fra
                     "Error message:" + errorMessage + "\n" + 
                     "Error content:\n" + 
                     messageBody;
+    cout << output << endl;
+    return true;
 }
 
 string MessageEncoderDecoder::concatenateMessageBody(vector<vector<string>> &frameArgs, int messageStartLineIndex){

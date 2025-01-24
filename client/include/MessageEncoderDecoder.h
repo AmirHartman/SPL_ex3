@@ -100,5 +100,5 @@ class MessageEncoderDecoder{
 
         // Concatenating a vector of strings to a single string
         // Used to concatenate back the message body of a frame
-        string concatenateStringVector(vector<string> &frameArgs, int messageStartLineIndex);
+        string concatenateMessageBody(vector<vector<string>> &frameArgs, int messageStartLineIndex);
 };
