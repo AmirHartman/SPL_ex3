@@ -1,4 +1,4 @@
-#include "../../include/ClientFrames.h" 
+#include "../../include/MessageEncoderDecoder.h" 
 #include <stdio.h>
 #include <iostream>
 #include <string>
@@ -12,8 +12,8 @@ static void printFrame(const string &frame){
 }
 
 int main() {
-	ClientFrames clientFrames;
-	cout << "ClientFrames object created\n" << endl;
+	MessageEncoderDecoder clientFrames;
+	cout << "MessageEncoderDecoder object created\n" << endl;
 
     // Testing generateConnectFrame
     string host = "localhost";

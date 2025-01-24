@@ -1,13 +1,18 @@
 #include "../include/CommandsHandler.h"
-#include "../include/ClientFrames.h"
+#include "../include/MessageEncoderDecoder.h"
 
 CommandsHandler::CommandsHandler() {}
 
-void CommandsHandler::runCommand(vector<string> &args) {
+bool CommandsHandler::runCommand(vector<string> &args) {
     // check if command exists
     if (commandsMap.find(args[0]) == commandsMap.end()) {
         cout << "Command not found" << endl;
-        return;
+        return false;
+    }
+
+    if (!connectionHandler) {
+        cout << "You must login first" << endl;
+        return false;
     }
     
     Commands command = commandsMap[args[0]];
@@ -16,40 +21,48 @@ void CommandsHandler::runCommand(vector<string> &args) {
     case LOGIN:
         if (args.size() != 5) {
             cerr << "Usage: login {host} {port} {username} {password}" << endl;
-            return;
+            return false;
         }
-        login(args[1], stoi(args[2]), args[3], args[4]);
-        break;
+        return login(args[1], stoi(args[2]), args[3], args[4]);
     case JOIN:
-        // join(args[1]);
-        break;
+        return join(args[1]);
     case EXIT:
-        // exit(args[1]);
-        break;
+        // return exit(args[1]);
     case REPORT:
-        // report(args[1]);
-        break;
+        // return report(args[1]);
     case SUMMARY:
-        // summary(args[1], args[2], args[3]);
-        break;
+        // return summary(args[1], args[2], args[3]);
     case LOGOUT:
-        // logout();
-        break;
+        // return logout();
     }
 }
 
 // לא גמור!
-void CommandsHandler::login(string& host, short port, string& username, string& password) {
+bool CommandsHandler::login(string& host, short port, string& username, string& password) {
     cout << "Connecting to " << host << ":" << port << endl;
     connectionHandler = make_unique<ConnectionHandler>(host, port);
     if (!connectionHandler->connect()) {
         cerr << "Failed to connect" << endl;
         connectionHandler.reset();
-        return;
+        return false;
     }
     cout << "Connected successfully as " << username << endl;
+    return true;
 }
 
+bool CommandsHandler::join(string& channelName) {
+    cout << "Joining channel " << channelName << endl;
+    string frame = clientFrames.generateSubscribeFrame(channelName);
+    connectionHandler->sendFrameAscii(frame, '\0');
+    string answer;
+    if (!connectionHandler->getFrameAscii(answer, '\0')) {
+        
+        cerr << "Failed to join channel " << channelName << endl;
+        return false;
+    }
+    cout << "Joined channel " << channelName << endl;
+    return true;
+}
 
 
 // // DELETE THIS (FOR TESTING PURPOSES)

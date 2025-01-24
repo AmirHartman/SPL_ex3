@@ -5,26 +5,26 @@
 #include <sstream>
 #include <map>
 #include "ConnectionHandler.h"
-#include "ClientFrames.h"
+#include "MessageEncoderDecoder.h"
 
 using namespace std;
 
 class CommandsHandler{
     public:
         CommandsHandler();
-        void runCommand(vector<string> &command);
-        void login(string& host, short port, string& username, string& password);
-        void join(string& channelName);
-        void exit(string& channelName);
-        void report(string& filePath);
-        void summary(string& channelName, string& user, string& filePath);
-        void logout();
+        bool runCommand(vector<string> &command);
+        bool login(string& host, short port, string& username, string& password);
+        bool join(string& channelName);
+        bool exit(string& channelName);
+        bool report(string& filePath);
+        bool summary(string& channelName, string& user, string& filePath);
+        bool logout();
 
     private:
         unique_ptr<ConnectionHandler> connectionHandler;
-        ClientFrames clientFrames;
+        MessageEncoderDecoder clientFrames;
         
-        // enum for the commands - could implement without it but it makes the code more readable
+        // enum class and a map for the commands - could implement without it but it makes the code more readable
         enum Commands{
             LOGIN,
             JOIN,
