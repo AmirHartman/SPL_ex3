@@ -26,7 +26,6 @@ public class BlockingConnectionHandler<T> implements Runnable, ConnectionHandler
         this.encdec = reader;
         this.protocol = protocol;
         this.protocol.setHandler(this);
-
     }
 
     @Override

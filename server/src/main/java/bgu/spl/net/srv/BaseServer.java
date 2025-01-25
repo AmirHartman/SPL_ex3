@@ -5,7 +5,6 @@ import bgu.spl.net.api.MessagingProtocol;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
 
 public abstract class BaseServer<T> implements Server<T> {
@@ -36,7 +35,6 @@ public abstract class BaseServer<T> implements Server<T> {
             
             this.sock = serverSock; //just to be able to close
             // MessageIdGenerator messageIDGenerator = new MessageIdGenerator();
-            AtomicInteger idCounter = new AtomicInteger(0);
 
             while (!Thread.currentThread().isInterrupted()) {
 

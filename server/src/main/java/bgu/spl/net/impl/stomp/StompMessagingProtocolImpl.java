@@ -1,6 +1,5 @@
 package bgu.spl.net.impl.stomp;
 
-import java.util.AbstractMap.SimpleEntry;
 import java.util.concurrent.ConcurrentHashMap;
 
 import bgu.spl.net.api.StompMessagingProtocol;

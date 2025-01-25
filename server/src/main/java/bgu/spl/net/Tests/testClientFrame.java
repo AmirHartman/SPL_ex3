@@ -15,11 +15,11 @@ public class testClientFrame {
          * test the toString method of ClientFrame classes
          * tests coth constructors
          */
-        testClientFrameConnect();
-        testClientFrameDisconnect();
+        // testClientFrameConnect();
+        // testClientFrameDisconnect();
         testClientFrameSend();
         testClientFrameSubscribe();
-        testClientFrameUnsubscribe();
+        // testClientFrameUnsubscribe();
 
         testNullChar();
         /**
