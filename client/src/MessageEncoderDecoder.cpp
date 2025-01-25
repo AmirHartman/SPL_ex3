@@ -1,5 +1,8 @@
 #include "../include/MessageEncoderDecoder.h"
 
+MessageEncoderDecoder::MessageEncoderDecoder() : topicSubscriptionMap(map<string, unsigned int>()) {}
+    
+
 // Encode methods
 /**
  * @brief Generates a CONNECT frame for the STOMP protocol.
@@ -99,15 +102,11 @@ Frame MessageEncoderDecoder::decodeFrame(const string &frame){
     }
 
     FrameType frameType = stringToFrameType(parsedFrameByArgs[0][0]);
-
-    if (frameType == FrameType::UNKNOWN){
-        cerr << "Could not read frame type" << endl;
-        return Frame();
-    }
-
     map<string, string> headers;
+
     switch (frameType)
     {
+    // Server frames:
     case CONNECTED:
         headers["version"] = "";
         headers["receipt-id"] = "";
@@ -124,6 +123,35 @@ Frame MessageEncoderDecoder::decodeFrame(const string &frame){
         headers["receipt-id"] = "";
         headers["message"] = "";
         break;
+
+    // Client frames:
+    case CONNECT:
+        headers["accept-version"] = "";
+        headers["host"] = "";
+        headers["login"] = "";
+        headers["passcode"] = "";
+        break;
+    case SEND:
+        headers["destination"] = "";
+        headers["receipt"] = "";
+        break;
+    case SUBSCRIBE:
+        headers["destination"] = "";
+        headers["id"] = "";
+        headers["receipt"] = "";
+        break;
+    case UNSUBSCRIBE:
+        headers["id"] = "";
+        headers["receipt"] = "";
+        break;
+    case DISCONNECT:
+        headers["receipt"] = "";
+        break;
+
+    // Frame type indicates an error
+    case UNKNOWN:
+        cerr << "Could not read frame type" << endl;
+        return Frame();
     }
     return decodeFrameByArgs(parsedFrameByArgs, frameType, headers);
 }
@@ -164,7 +192,9 @@ Frame MessageEncoderDecoder::decodeFrameByArgs(vector<vector<string>> &frameArgs
         }
 
         // update the headers map with the values from the frame
-        for (const auto &[header, value] : headers) {
+        for (const auto &pair : headers) {
+            string header = pair.first;
+            string value = pair.second;
             if (frameArgs[i][0] == header){
                 headers[header] = frameArgs[i][1];
                 argsFound[i-1] = true;
@@ -183,7 +213,9 @@ Frame MessageEncoderDecoder::decodeFrameByArgs(vector<vector<string>> &frameArgs
     if (!allArgsFound) {
         cerr << "Frame is missing arguments" << endl;
         cout << "Missing headers: ";
-        for (const auto &[header, value] : headers) {
+        for (const auto &pair : headers) {
+            string header = pair.first;
+            string value = pair.second;
             if (!argsFound[i-1]){
                 cout << header << " ";
             }
@@ -204,7 +236,7 @@ Frame MessageEncoderDecoder::decodeFrameByArgs(vector<vector<string>> &frameArgs
 string MessageEncoderDecoder::concatenateMessageBody(vector<vector<string>> &frameArgs, int messageStartLineIndex){
     string message = "";
     for (size_t i = messageStartLineIndex; i < frameArgs.size(); i++) {
-        int numOfArgsInLine = frameArgs[i].size();
+        size_t numOfArgsInLine = frameArgs[i].size();
         for (size_t j = 0; j < numOfArgsInLine; j++) {
             message += frameArgs[i][j];
             if (j < numOfArgsInLine - 1) // This means that ":" was part of the MessageBody, add it back.
