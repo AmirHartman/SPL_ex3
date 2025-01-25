@@ -127,6 +127,12 @@ public class Auxiliary {
                     return new ServerFrameError("receipt id is not an integer", -1, toFrame);
                 }
             }
+            if (header[0].equals("destination")){
+                String[] topic = header[1].split("/");
+                if (topic.length != 3 || !topic[1].equals("topic")){
+                    return new ServerFrameError("invalid destination header, should be: /topic/{destination}", receiptId, toFrame);
+                }
+            }
             // check the validity of header names
             if (!header[0].equals("destination") & !header[0].equals("receipt")){
                 return new ServerFrameError("invalid one or more header names", receiptId, toFrame);
@@ -168,6 +174,13 @@ public class Auxiliary {
                     return new ServerFrameError("subscription id is not an integer", -1, toFrame);
                 }
             }
+            if (header[0].equals("destination")){
+                String[] topic = header[1].split("/");
+                if (topic.length != 3 || !topic[1].equals("topic")){
+                    return new ServerFrameError("invalid destination header, should be: /topic/{destination}", receiptId, toFrame);
+                }
+            }
+
             // check the validity of header names
             if (!header[0].equals("destination") & !header[0].equals("id") & !header[0].equals("receipt")){
                 return new ServerFrameError("invalid one or more header names", receiptId, toFrame);
@@ -271,7 +284,5 @@ public class Auxiliary {
         }
         return null;
     }
-
-
     
 }
