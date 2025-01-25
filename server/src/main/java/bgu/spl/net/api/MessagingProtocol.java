@@ -1,6 +1,8 @@
 package bgu.spl.net.api;
 
+import bgu.spl.net.srv.ConnectionHandler;
 import bgu.spl.net.srv.Connections;
+import bgu.spl.net.srv.NonBlockingConnectionHandler;
 
 public interface MessagingProtocol<T> {
     
@@ -17,4 +19,6 @@ public interface MessagingProtocol<T> {
      */
     boolean shouldTerminate();
  
+    void setHandler(ConnectionHandler<T> handler);
+
 }

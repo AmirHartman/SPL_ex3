@@ -11,12 +11,12 @@ import bgu.spl.net.impl.stomp.ServerFrame.*;
 
 public class StompMessagingProtocolImpl implements StompMessagingProtocol<String>{
     private boolean shouldTerminate = false;
-    private ConcurrentHashMap<Integer, SimpleEntry<ClientFrame, ServerFrame>> receipts = new ConcurrentHashMap<>();
     //צריך מקביליות? אולי בריאקטור?
     protected ConcurrentHashMap<Integer, String> subscriberIds = new ConcurrentHashMap<>();
     private int connectionId;
     private Connections<String> connections;
     private ConnectionHandler<String> handler = null;
+    private boolean crushed = false;
     
 
 
@@ -37,9 +37,11 @@ public class StompMessagingProtocolImpl implements StompMessagingProtocol<String
         }
         // check client frame structure: header names, null char, body, etc.
         ServerFrameError error = Auxiliary.validateClientFrame(command, message);
+        // malformed frame, disconnect the client due to protocol violation
         if (error != null){
             connections.send(connectionId, error.toString());
             shouldTerminate = true;
+            connections.disconnect(connectionId);
         }
         else {// valid frame
             ClientFrame clientFrame = Auxiliary.chooseClientFrame(command, message); 
@@ -47,31 +49,32 @@ public class StompMessagingProtocolImpl implements StompMessagingProtocol<String
             if (clientFrame instanceof ClientFrameDisconnect){
                 shouldTerminate = true;
             }
-            if (receipts.containsKey(clientFrame.getReceiptId())){
-                error = new ServerFrameError("receipt id isn't unique", clientFrame.getReceiptId(), message);
-                receipts.put(clientFrame.getReceiptId(), new SimpleEntry<>(clientFrame, error));
-                connections.send(connectionId, error.toString());
-                shouldTerminate = true;
-            }
-            else{
-                receipts.put(clientFrame.getReceiptId(), new SimpleEntry<>(clientFrame, null));
                 ServerFrame serverFrame = clientFrame.process(connectionId, connections, handler, this);
-                if (serverFrame instanceof ServerFrameError ){
-                    shouldTerminate = true;
-                }
                 connections.send(connectionId, serverFrame.toString());
-                // צריך?
-                SimpleEntry<ClientFrame,ServerFrame> entry = receipts.get(clientFrame.getReceiptId());
-                // האם יכול להיות שלא יהיה NULL?
-                entry.setValue(serverFrame);
-            }}}
-	
-   public boolean shouldTerminate(){
-    return shouldTerminate;
-   }
+            }}
 
+	@Override
+    public boolean shouldTerminate() {
+        return shouldTerminate;
+    }
+
+//    public boolean shouldTerminate(ClientFrame clientFrame, ServerFrame serverFrame){
+//          if (clientFrame instanceof ClientFrameDisconnect){
+//               shouldTerminate = true;
+//          }
+//          if (clientFrame instanceof ClientFrameConnect & serverFrame instanceof ServerFrameError){
+
+//          }
+//     return shouldTerminate;
+//    }
+
+    @Override
     public void setHandler(ConnectionHandler<String> handler) {
         this.handler = handler;
+    }
+
+    public boolean Crushed() {
+        return this.crushed;
     }
 }
 
