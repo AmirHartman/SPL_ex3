@@ -34,53 +34,14 @@ enum FrameType{
 };
 
 string frameTypeToString(FrameType type);
+FrameType stringToFrameType(const string &type);
 
 struct Frame {
     FrameType type;
     map<string, string> headers;
     string body;
 
-    Frame(FrameType type);
+    Frame(); // default constructor for unknown frame indicating an error
+    Frame(FrameType type, map<string, string> headers, string body);
     string toString();
-};
-
-
-// Client frames:
-struct ConnectFrame : Frame {
-    ConnectFrame(string &host, short &port, string &username, string &password);
-};
-
-struct SendFrame : Frame {
-    SendFrame(string &topic, string &messageBody);
-
-};
-
-struct SubscribeFrame : Frame {
-    SubscribeFrame(string &topic, unsigned int subscriptionId);
-};
-
-struct UnsubscribeFrame : Frame {
-    UnsubscribeFrame(string &topic, unsigned int subscriptionId);
-};
-
-struct DisconnectFrame : Frame {
-    DisconnectFrame();
-};
-
-
-// Server frames:
-struct ConnectedFrame : Frame {
-    ConnectedFrame();
-};
-
-struct MessageFrame : Frame {
-    MessageFrame(unsigned int &subscriptionId, unsigned int &messageId, string &channelName, string& messageBody);
-};
-
-struct ReceiptFrame : Frame {
-    ReceiptFrame(unsigned int &receiptId);
-};
-
-struct ErrorFrame : Frame {
-    ErrorFrame(unsigned int &receiptId, string &errorHeader, string &messageBody);
 };

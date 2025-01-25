@@ -1,7 +1,5 @@
 #include "../include/MessageEncoderDecoder.h"
 
-MessageEncoderDecoder::MessageEncoderDecoder(): subscriptionId(0), receiptId(0){}
-
 // Encode methods
 /**
  * @brief Generates a CONNECT frame for the STOMP protocol.
@@ -10,71 +8,78 @@ MessageEncoderDecoder::MessageEncoderDecoder(): subscriptionId(0), receiptId(0){
  * @param port The port to connect to.
  * @param username The username to connect with.
  * @param password The password to connect with.
- * @return A string representing the CONNECT frame.
+ * @return CONNECT frame.
  */
-std::string MessageEncoderDecoder::generateConnectFrame(const std::string &host,short port,const std::string &username, const std::string &password){
-    return ConnectFrame(host, port, username, password, MessageEncoderDecoder::generateReciptId());
+Frame MessageEncoderDecoder::generateConnectFrame(const string &host,short &port,const string &username, const string &password){
+    map<string, string> headers;
+    headers["host"] = host;
+    headers["accept-version"] = "1.2";
+    headers["login"] = username;
+    headers["passcode"] = password;
+    headers["receipt"] = to_string(idCounter::generateReceiptId());
+    return Frame(FrameType::CONNECT, headers, "");
 }
 
 /**
  * @brief Generates a SEND frame for the STOMP protocol.
  * 
- * @param topic The topic to which the messageBody is sent.
- * @param messageBody The messageBody content to be sent.
- * @return A string representing the SEND frame.
+ * @param destination The topic to which the message is sent to.
+ * @param messageBody The message content to be sent.
+ * @return SEND frame.
  */
-std::string MessageEncoderDecoder::generateSendFrame(const std::string &topic, const std::string &messageBody){
-    return "SEND\n"
-           "destination:/topic/" + topic + "\n" +
-           "receipt:" + std::to_string(MessageEncoderDecoder::generateReciptId()) + "\n" +
-           "\n" + 
-           messageBody + "\n" + 
-           '\0';
+Frame MessageEncoderDecoder::generateSendFrame(const string &destination, const string &messageBody){
+    map<string, string> headers;
+    headers["destination"] = "/" + destination;
+    headers["receipt"] = to_string(idCounter::generateReceiptId());
+
+    return Frame(FrameType::SEND, headers, messageBody);
 }
 
 /**
  * @brief Generates a SUBSCRIBE frame for the STOMP protocol.
  * 
  * @param topic The topic to subscribe to.
- * @return A string representing the SUBSCRIBE frame.
+ * @return SUBSCRIBE frame.
  */
-std::string MessageEncoderDecoder::generateSubscribeFrame(const std::string &topic){
-    unsigned int id = MessageEncoderDecoder::generateSubscriptionId();
-    topicSubscriptionMap[topic] = id;
-    return "SUBSCRIBE\n"
-           "destination:/topic/" + topic + "\n" +
-           "id:" + std::to_string(id) + "\n" +
-           "receipt:" + std::to_string(MessageEncoderDecoder::generateReciptId()) + "\n" +
-           "\n" + 
-           '\0';
+Frame MessageEncoderDecoder::generateSubscribeFrame(const string &topic){
+    unsigned int subscriptionId = idCounter::generateSubscriptionId();
+    topicSubscriptionMap[topic] = subscriptionId;
+
+    map<string, string> headers;
+    headers["destination"] = "/" + topic;
+    headers["id"] = to_string(subscriptionId);
+    headers["receipt"] = to_string(idCounter::generateReceiptId());
+
+    return Frame(FrameType::SUBSCRIBE, headers, "");
 }
 
 /**
  * @brief Generates a UNSUBSCRIBE frame for the STOMP protocol.
  * 
  * @param topic The topic to unsubscribe from.
- * @return A string representing the UNSUBSCRIBE frame.
+ * @return UNSUBSCRIBE frame.
  */
-std::string MessageEncoderDecoder::generateUnsubscribeFrame(const std::string &topic){
-    unsigned int id = topicSubscriptionMap[topic];
+Frame MessageEncoderDecoder::generateUnsubscribeFrame(const string &topic){
+    unsigned int subscriptionId = topicSubscriptionMap[topic];
     topicSubscriptionMap.erase(topic);
-    return "UNSUBSCRIBE\n"
-           "id:" + std::to_string(id) + "\n" +
-           "receipt:" + std::to_string(MessageEncoderDecoder::generateReciptId()) + "\n" +
-           "\n" + 
-           '\0';
+
+    map<string, string> headers;
+    headers["id"] = to_string(subscriptionId);
+    headers["receipt"] = to_string(idCounter::generateReceiptId());
+
+    return Frame(FrameType::UNSUBSCRIBE, headers, "");
 }
 
 /**
  * @brief Generates a DISCONNECT frame for the STOMP protocol.
  * 
- * @return A string representing the DISCONNECT frame.
+ * @return DISCONNECT frame.
  */
-std::string MessageEncoderDecoder::generateDisconnectFrame(){
-    return "DISCONNECT\n"
-           "receipt:" + std::to_string(MessageEncoderDecoder::generateReciptId()) + "\n" +
-           "\n" + 
-           '\0';
+Frame MessageEncoderDecoder::generateDisconnectFrame(){
+    map<string, string> headers;
+    headers["receipt"] = to_string(idCounter::generateReceiptId());
+    
+    return Frame(FrameType::DISCONNECT, headers, "");
 }
 
 
@@ -82,61 +87,49 @@ std::string MessageEncoderDecoder::generateDisconnectFrame(){
 /**
  * @brief Decodes a frame received from the server.
  * 
- * @param frame The frame to decode.
- * @return false if the frame is an ERROR frame, or the receipt id received from the server doesn't match the one sent by client.
+ * @param frame The frame to decode (as a string).
+ * @return The decoded Frame struct.
  */
-bool MessageEncoderDecoder::decodeFrame(const string &frame){
+Frame MessageEncoderDecoder::decodeFrame(const string &frame){
     vector<vector<string>> parsedFrameByArgs = parseFrameByArgs(frame);
 
     if (parsedFrameByArgs.size() == 0){
-        cerr << "Frame is empty" << endl;
-        return false;
+        cerr << "Error reading frame. frame is empty!" << endl;
+        return Frame();
     }
 
-    ServerFrameType frameType = getServerMessageType(parsedFrameByArgs[0][0]);
+    FrameType frameType = stringToFrameType(parsedFrameByArgs[0][0]);
 
-    if (frameType == ServerFrameType::UNKNOWN){
-        cerr << "Frame type is not recognized" << endl;
-        return false;
+    if (frameType == FrameType::UNKNOWN){
+        cerr << "Could not read frame type" << endl;
+        return Frame();
     }
 
-
+    map<string, string> headers;
     switch (frameType)
     {
     case CONNECTED:
-        cout << "Login successful" << endl;
+        headers["version"] = "";
+        headers["receipt-id"] = "";
         break;
     case MESSAGE:
-        cout << "Message received from the server: " << endl;
-        decodeAndPrintMessageFrame(parsedFrameByArgs);
+        headers["subscription"] = "";
+        headers["message-id"] = "";
+        headers["destination"] = "";
         break;
     case RECEIPT:
+        headers["receipt-id"] = "";
         break;
     case ERROR:
-        cerr << "Error received from the server: " << endl;
-        decodeAndPrintErrorFrame(parsedFrameByArgs);
-        return false;
+        headers["receipt-id"] = "";
+        headers["message"] = "";
+        break;
     }
-    return true;
-}
-
-ServerFrameType MessageEncoderDecoder::getServerMessageType(const string &stringType){
-    if (serverFramesMap.find(stringType) == serverFramesMap.end())
-        return ServerFrameType::UNKNOWN;
-    return serverFramesMap[stringType];
+    return decodeFrameByArgs(parsedFrameByArgs, frameType, headers);
 }
 
 
 // Private methods
-
-unsigned int MessageEncoderDecoder::generateSubscriptionId(){
-    return subscriptionId++;
-}
-
-unsigned int MessageEncoderDecoder::generateReciptId(){
-    return receiptId++;
-}
-
 vector<string> MessageEncoderDecoder::parseStringByDelimeter(const string &frame, char delimiter){
     vector<string> parsedString;
     stringstream stream(frame);
@@ -157,102 +150,55 @@ vector<vector<string>> MessageEncoderDecoder::parseFrameByArgs(const string &fra
     return parsedFrameByArgs;
 }
 
-bool MessageEncoderDecoder::checkRecieptId(unsigned int &sentRecieptId, unsigned int &receivedRecieptId){
-    if (sentRecieptId != receivedRecieptId){
-        cerr << "Receipt id from the server mismatch the id sent." << endl;
-        cout << "Sent receipt id: " << sentRecieptId << "Received receipt id: " << receivedRecieptId << endl;
-        return false;
-    }
-    return true;
-}
+Frame MessageEncoderDecoder::decodeFrameByArgs(vector<vector<string>> &frameArgs, FrameType &type, map<string, string> &headers){
+    bool argsFound[headers.size()] = {false}; // using bool array to indicate if all args needed are in the frame
+    bool allArgsFound = false;
+    bool errorFound = false;
 
-bool MessageEncoderDecoder::decodeAndPrintMessageFrame(vector<vector<string>> &frameArgs){ 
-    unsigned int subscriptionId;
-    unsigned int messageId;
-    string channelName;
-
-    int messageStartLineIndex;
-    bool argsFound[] = {false, false, false, false};
-
-    size_t i = 1; // start from 1 to skip the frame type
-    while (!argsFound[0] && !argsFound[1] && !argsFound[2] && !argsFound[3]) // using bool array to indicate if all args were found
-    {
-        if (i == frameArgs.size()){ // if reached the end of the frame and not all args were found
-            cerr << "Message frame is missing arguments" << endl;
-            return false;
+    size_t i = 1; // representing line index in the frame. start from 1 to skip the frame type
+    while (frameArgs[i][0] == "\n" && !errorFound){
+        if (allArgsFound) {
+            cerr << "Frame has too many arguments" << endl;
+            errorFound = true;
+            break;
         }
 
-        if (frameArgs[i][0] == "subscription"){
-            subscriptionId = stoi(frameArgs[i][1]);
-            argsFound[0] = true;
+        // update the headers map with the values from the frame
+        for (const auto &[header, value] : headers) {
+            if (frameArgs[i][0] == header){
+                headers[header] = frameArgs[i][1];
+                argsFound[i-1] = true;
+            }
         }
-        else if (frameArgs[i][0] == "messageBody-id"){
-            messageId = stoi(frameArgs[i][1]);
-            argsFound[1] = true;
+
+        // check if all args were found
+        allArgsFound = true;
+        for (bool argFound : argsFound){
+            allArgsFound = allArgsFound && argFound;
         }
-        else if (frameArgs[i][0] == "destination"){
-            channelName = parseStringByDelimeter(frameArgs[i][1], '/')[2];
-            argsFound[2] = true;
-        }
-        else if (frameArgs[i].size() == 0){ // indicates the start of the MessageBody (empty line)
-            messageStartLineIndex = i+1;
-            argsFound[3] = true;
-        }
+
         i++;
     }
 
-    // concatenate back the MessageBody lines
-    string messageBody = concatenateMessageBody(frameArgs, messageStartLineIndex);
-
-    string output = "Subscription id: " + to_string(subscriptionId) + "\n" +
-                    "Message id: " + to_string(messageId) + "\n" +
-                    "Message received from channel: " + channelName + "\n" + 
-                    "Message content:\n" + 
-                    messageBody;
-    cout << output << endl;
-    return true;
-}
-
-bool MessageEncoderDecoder::decodeAndPrintErrorFrame(vector<vector<string>> &frameArgs){
-    unsigned int receiptId;
-    string errorMessage;
-    
-    int messageStartLineIndex;
-    bool argsFound[] = {false, false,false};
-
-    size_t i = 1; // start from 1 to skip the frame type
-    while (!argsFound[0] && !argsFound[1] && !argsFound[2]) // using bool array to indicate if all args were found
-    {
-        if (i == frameArgs.size()){ // if reached the end of the frame and not all args were found
-            cerr << "Error frame is missing arguments" << endl;
-            return false;
+    if (!allArgsFound) {
+        cerr << "Frame is missing arguments" << endl;
+        cout << "Missing headers: ";
+        for (const auto &[header, value] : headers) {
+            if (!argsFound[i-1]){
+                cout << header << " ";
+            }
         }
-
-        if (frameArgs[i][0] == "receipt"){
-            receiptId = stoi(frameArgs[i][1]);
-            argsFound[0] = true;
-        }
-        else if (frameArgs[i][0] == "message"){
-            errorMessage = frameArgs[i][1];
-            argsFound[1] = true;
-        }
-        else if (frameArgs[i].size() == 0){ // indicates the start of the MessageBody (empty line)
-            messageStartLineIndex = i+1;
-            argsFound[2] = true;
-        }
-        i++;
+        errorFound = true;
     }
 
-    // concatenate back the MessageBody lines
+    if (errorFound){
+        return Frame();
+    }
+
+    int messageStartLineIndex = i+1; // The index of the line where the message body starts
     string messageBody = concatenateMessageBody(frameArgs, messageStartLineIndex);
 
-    string output = "Receipt id:" + to_string(receiptId) + "\n" +
-                    "Error message:" + errorMessage + "\n";
-    if (messageBody.size() > 0){
-        output += "Error content:\n" + messageBody;
-    }
-    cout << output << endl;
-    return true;
+    return Frame(type, headers, messageBody);
 }
 
 string MessageEncoderDecoder::concatenateMessageBody(vector<vector<string>> &frameArgs, int messageStartLineIndex){
@@ -267,3 +213,13 @@ string MessageEncoderDecoder::concatenateMessageBody(vector<vector<string>> &fra
     }
     return message;
 }
+
+bool MessageEncoderDecoder::checkRecieptId(unsigned int &sentRecieptId, unsigned int &receivedRecieptId){
+    if (sentRecieptId != receivedRecieptId){
+        cerr << "Receipt id from the server mismatch the id sent." << endl;
+        cout << "Sent receipt id: " << sentRecieptId << "Received receipt id: " << receivedRecieptId << endl;
+        return false;
+    }
+    return true;
+}
+
