@@ -1,21 +1,11 @@
 #pragma once
 
-#include <string>
 #include <vector>
-#include <map>
 #include <iostream>
 #include <sstream>
+#include "Frames.h"
 
 using namespace std;
-
-// enum class for the server frames
-enum ServerFrameType{
-    CONNECTED,
-    MESSAGE,
-    RECEIPT,
-    ERROR,
-    UNKNOWN
-};
 
 class MessageEncoderDecoder{
     public:
@@ -33,13 +23,17 @@ class MessageEncoderDecoder{
         string generateDisconnectFrame();
 
 
-        /*
-        ______________Decode method_______________
-        Using only one public method to decode frames. 
-        This method does all the work: decoding. printing output to client if needed.
-        Returns false if error was occured during decoding.
-        */
-        bool decodeFrame(const string &frame, unsigned int &sentRecieptId); // TODO : implement
+        /*______________Decode methods_______________*/
+
+        // returns server frame type
+        ServerFrameType getServerMessageType(const string &frame);
+
+        // TODO: add comment here
+        // TODO: remove this method and make the methods it uses public
+        bool decodeFrame(const string &frame);
+
+        // Parsing a frame to a vector of vectors of strings by the delimiters '\n' and ':'
+        vector<vector<string>> parseFrameByArgs(const string &frame);
         
 
     private:
@@ -76,14 +70,8 @@ class MessageEncoderDecoder{
                 (auxiliary methods for decoding)
         */
 
-        // returns server frame type
-        ServerFrameType getServerMessageType(const string &frame);
-
         // Parsing a string to a vector of strings by a delimiter
         vector<string> parseStringByDelimeter(const string &frame, char delimeter);
-
-        // Parsing a frame to a vector of vectors of strings by the delimiters '\n' and ':'
-        vector<vector<string>> parseFrameByArgs(const string &frame);
 
         // Checks if the receipt id received from the server matches the one sent by the client.
         bool checkRecieptId(unsigned int &sentRecieptId, unsigned int &receivedRecieptId);
@@ -102,3 +90,4 @@ class MessageEncoderDecoder{
         // Used to concatenate back the message body of a frame
         string concatenateMessageBody(vector<vector<string>> &frameArgs, int messageStartLineIndex);
 };
+

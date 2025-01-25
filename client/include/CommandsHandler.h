@@ -22,7 +22,7 @@ class CommandsHandler{
 
     private:
         unique_ptr<ConnectionHandler> connectionHandler;
-        MessageEncoderDecoder clientFrames;
+        MessageEncoderDecoder encdec;
         
         // enum class and a map for the commands - could implement without it but it makes the code more readable
         enum Commands{

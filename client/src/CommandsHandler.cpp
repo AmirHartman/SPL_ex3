@@ -10,6 +10,7 @@ bool CommandsHandler::runCommand(vector<string> &args) {
         return false;
     }
 
+    // check if user is logged in
     if (!connectionHandler) {
         cout << "You must login first" << endl;
         return false;
@@ -20,7 +21,7 @@ bool CommandsHandler::runCommand(vector<string> &args) {
     {
     case LOGIN:
         if (args.size() != 5) {
-            cerr << "Usage: login {host} {port} {username} {password}" << endl;
+            cout << "Usage: login {host} {port} {username} {password}" << endl;
             return false;
         }
         return login(args[1], stoi(args[2]), args[3], args[4]);
@@ -37,29 +38,52 @@ bool CommandsHandler::runCommand(vector<string> &args) {
     }
 }
 
-// לא גמור!
 bool CommandsHandler::login(string& host, short port, string& username, string& password) {
-    cout << "Connecting to " << host << ":" << port << endl;
-    connectionHandler = make_unique<ConnectionHandler>(host, port);
-    if (!connectionHandler->connect()) {
-        cerr << "Failed to connect" << endl;
-        connectionHandler.reset();
-        return false;
+    bool isConnectedSuccessfully = false;
+
+    if (connectionHandler != nullptr) {
+        cout << "The client is already logged in, log out before trying again" << endl;
+    } else {
+        connectionHandler = make_unique<ConnectionHandler>(host, port);
     }
-    cout << "Connected successfully as " << username << endl;
-    return true;
+
+    if (!connectionHandler->connect()) {
+        cout << "Could not connect to server" << endl;
+    } else {
+        string frame = encdec.generateConnectFrame(host, port, username, password);
+        if (!connectionHandler->sendFrameAscii(frame, '\0')){
+            cerr << "Failed to send the connect frame" << endl;
+        }
+
+        string answer;
+        if (!connectionHandler->getFrameAscii(answer, '\0')) {
+            cerr << "Failed to get the answer from the server" << endl;
+        }
+
+        encdec.decodeFrame(answer); // TODO: check with yam's user already logged on error frame and print 
+
+        if (encdec.getServerMessageType(answer) == ServerFrameType::CONNECTED) {
+            isConnectedSuccessfully = true;
+        }
+        
+        return isConnectedSuccessfully;
+    }
+
 }
 
 bool CommandsHandler::join(string& channelName) {
     cout << "Joining channel " << channelName << endl;
-    string frame = clientFrames.generateSubscribeFrame(channelName);
-    connectionHandler->sendFrameAscii(frame, '\0');
-    string answer;
-    if (!connectionHandler->getFrameAscii(answer, '\0')) {
-        
-        cerr << "Failed to join channel " << channelName << endl;
+    string frame = encdec.generateSubscribeFrame(channelName);
+    if (connectionHandler->sendFrameAscii(frame, '\0')) {
+        cerr << "Failed to send the subscribe frame" << endl;
         return false;
     }
+    string answer;
+    if (!connectionHandler->getFrameAscii(answer, '\0')) {
+        cerr << "Failed to receive an answer from the server" << endl;
+        return false;
+    }
+    
     cout << "Joined channel " << channelName << endl;
     return true;
 }

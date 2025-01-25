@@ -13,13 +13,7 @@ MessageEncoderDecoder::MessageEncoderDecoder(): subscriptionId(0), receiptId(0){
  * @return A string representing the CONNECT frame.
  */
 std::string MessageEncoderDecoder::generateConnectFrame(const std::string &host,short port,const std::string &username, const std::string &password){
-    return "CONNECT\n"
-           "accept-version:1.2\n"
-           "host:" + host + "\n" +
-           "login:" + username + "\n" +
-           "passcode:" + password + "\n" +
-           "\n" + 
-           '\0';
+    return ConnectFrame(host, port, username, password, MessageEncoderDecoder::generateReciptId());
 }
 
 /**
@@ -91,7 +85,7 @@ std::string MessageEncoderDecoder::generateDisconnectFrame(){
  * @param frame The frame to decode.
  * @return false if the frame is an ERROR frame, or the receipt id received from the server doesn't match the one sent by client.
  */
-bool MessageEncoderDecoder::decodeFrame(const string &frame, unsigned int &sentRecieptId){
+bool MessageEncoderDecoder::decodeFrame(const string &frame){
     vector<vector<string>> parsedFrameByArgs = parseFrameByArgs(frame);
 
     if (parsedFrameByArgs.size() == 0){
@@ -110,17 +104,13 @@ bool MessageEncoderDecoder::decodeFrame(const string &frame, unsigned int &sentR
     switch (frameType)
     {
     case CONNECTED:
-        cout << "Connected to server" << endl;
+        cout << "Login successful" << endl;
         break;
     case MESSAGE:
         cout << "Message received from the server: " << endl;
         decodeAndPrintMessageFrame(parsedFrameByArgs);
         break;
     case RECEIPT:
-        unsigned int receivedRecieptId = stoi(parsedFrameByArgs[1][1]);
-        if (!checkRecieptId(sentRecieptId, receivedRecieptId)){
-            return false;
-        }
         break;
     case ERROR:
         cerr << "Error received from the server: " << endl;
@@ -128,6 +118,12 @@ bool MessageEncoderDecoder::decodeFrame(const string &frame, unsigned int &sentR
         return false;
     }
     return true;
+}
+
+ServerFrameType MessageEncoderDecoder::getServerMessageType(const string &stringType){
+    if (serverFramesMap.find(stringType) == serverFramesMap.end())
+        return ServerFrameType::UNKNOWN;
+    return serverFramesMap[stringType];
 }
 
 
@@ -139,12 +135,6 @@ unsigned int MessageEncoderDecoder::generateSubscriptionId(){
 
 unsigned int MessageEncoderDecoder::generateReciptId(){
     return receiptId++;
-}
-
-ServerFrameType MessageEncoderDecoder::getServerMessageType(const string &frame){
-    if (serverFramesMap.find(frame) == serverFramesMap.end())
-        return ServerFrameType::UNKNOWN;
-    return serverFramesMap[frame];
 }
 
 vector<string> MessageEncoderDecoder::parseStringByDelimeter(const string &frame, char delimiter){
@@ -257,9 +247,10 @@ bool MessageEncoderDecoder::decodeAndPrintErrorFrame(vector<vector<string>> &fra
     string messageBody = concatenateMessageBody(frameArgs, messageStartLineIndex);
 
     string output = "Receipt id:" + to_string(receiptId) + "\n" +
-                    "Error message:" + errorMessage + "\n" + 
-                    "Error content:\n" + 
-                    messageBody;
+                    "Error message:" + errorMessage + "\n";
+    if (messageBody.size() > 0){
+        output += "Error content:\n" + messageBody;
+    }
     cout << output << endl;
     return true;
 }
