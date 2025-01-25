@@ -30,30 +30,34 @@ public class BlockingConnectionHandler<T> implements Runnable, ConnectionHandler
 
     @Override
     public void run() {
-        try (Socket sock = this.sock) { //just for automatic closing
+        System.out.println("Start run method for client: " + sock.getRemoteSocketAddress());
+        try (Socket sock = this.sock) {
             int read;
-
             in = new BufferedInputStream(sock.getInputStream());
             out = new BufferedOutputStream(sock.getOutputStream());
-
+            System.out.println("Input and output streams initialized for client: " + sock.getRemoteSocketAddress());
+    
             while (!protocol.shouldTerminate() && connected && (read = in.read()) >= 0) {
                 T nextMessage = encdec.decodeNextByte((byte) read);
                 if (nextMessage != null) {
+                    System.out.println("Message received: " + nextMessage);
                     protocol.process(nextMessage);
                     T response = messages.pollFirst();
                     if (response != null) {
                         out.write(encdec.encode(response));
                         out.flush();
+                        System.out.println("Response sent to client: " + sock.getRemoteSocketAddress());
                     }
                 }
             }
-
         } catch (IOException ex) {
+            System.err.println("Error in connection handler for client: " + sock.getRemoteSocketAddress() + " - " + ex.getMessage());
             ex.printStackTrace();
+        } finally {
+            System.out.println("Connection closed for client: " + sock.getRemoteSocketAddress());
         }
-
     }
-
+    
     @Override
     public void close() throws IOException {
         connected = false;
