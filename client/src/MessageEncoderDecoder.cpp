@@ -107,9 +107,8 @@ Frame MessageEncoderDecoder::decodeFrame(const string &frame){
     switch (frameType)
     {
     // Server frames:
-    case CONNECTED: // TODO: check if need to remove receipt-id
+    case CONNECTED:
         headers["version"] = "";
-        headers["receipt-id"] = "";
         break;
     case MESSAGE:
         headers["subscription"] = "";

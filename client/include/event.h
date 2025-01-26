@@ -18,9 +18,13 @@ private:
     int date_time;
     // description of the event
     std::string description;
-    // map of all the general information
+    // map of all the general information   
     std::map<std::string, std::string> general_information;
     std::string eventOwnerUser;
+
+    // ADDED BY STUDENTS:
+    // added this method because it was listed in the cpp file but the compiler couldn't find it
+    void split_str(const std::string &line, char delim, std::vector<std::string> &lineArgs);
 
 public:
     Event(std::string channel_name, std::string city, std::string name, int date_time, std::string description, std::map<std::string, std::string> general_information);

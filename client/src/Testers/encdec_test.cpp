@@ -163,8 +163,8 @@ int main() {
     MessageEncoderDecoder encdec;
     cout << "MessageEncoderDecoder object created\n" << endl;
 
-    int choice =2;
-    // cin >> choice;
+    int choice;
+    cin >> choice;
     switch (choice)
     {
     case 1:
