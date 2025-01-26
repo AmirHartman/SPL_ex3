@@ -1,5 +1,6 @@
 package bgu.spl.net.impl.stomp;
 
+import java.util.AbstractMap.SimpleEntry;
 import java.util.concurrent.ConcurrentHashMap;
 
 import bgu.spl.net.api.StompMessagingProtocol;
@@ -96,15 +97,6 @@ public class StompMessagingProtocolImpl implements StompMessagingProtocol<String
         return shouldTerminate;
     }
 
-//    public boolean shouldTerminate(ClientFrame clientFrame, ServerFrame serverFrame){
-//          if (clientFrame instanceof ClientFrameDisconnect){
-//               shouldTerminate = true;
-//          }
-//          if (clientFrame instanceof ClientFrameConnect & serverFrame instanceof ServerFrameError){
-
-//          }
-//     return shouldTerminate;
-//    }
 
     @Override
     public void setHandler(ConnectionHandler<String> handler) {
@@ -114,6 +106,12 @@ public class StompMessagingProtocolImpl implements StompMessagingProtocol<String
     public boolean Crushed() {
         return this.crushed;
     }
+
+    @Override
+    public void addClient(){
+        connections.addClient(this.connectionId, this.handler);
+    }
+
 }
 
     

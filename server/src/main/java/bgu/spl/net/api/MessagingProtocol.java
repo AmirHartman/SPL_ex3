@@ -20,4 +20,9 @@ public interface MessagingProtocol<T> {
  
     void setHandler(ConnectionHandler<T> handler);
 
+    void addClient();
+
+
+
+
 }

@@ -49,7 +49,7 @@ public class ConnectionsImpl<T> implements Connections<T> {
         if (connectionsIds.containsKey(connectionId)){
         synchronized (connectionsIds.get(connectionId)){
         user = connectionsIds.remove(connectionId);
-        }}if (user != null){
+        }}if (user != null & user.getKey() != null){
             synchronized (users.get(user.getKey())){
                 users.get(user.getKey()).setValue(false);
                 // unsubscribe user from all topics
@@ -83,6 +83,11 @@ public class ConnectionsImpl<T> implements Connections<T> {
     }
 
     @Override
+    public void addClient (int connectionId, ConnectionHandler<T> handler){
+        connectionsIds.put(connectionId, new SimpleEntry<>(null, handler));
+    }
+
+    @Override
     public boolean connect(int connectionId, ConnectionHandler<T> handler, String username, String password){
         if (users.containsKey(username)){
             synchronized (users.get(username)){
@@ -99,6 +104,8 @@ public class ConnectionsImpl<T> implements Connections<T> {
         connectionsIds.put(connectionId, new SimpleEntry<>(username, handler));
         return true;
     }
+
+
 
     @Override
     public void subscribe(int connectionId, String topic, int subscriptionId){
