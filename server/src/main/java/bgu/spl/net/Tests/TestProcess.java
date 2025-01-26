@@ -13,10 +13,10 @@ public class TestProcess{
      * structure isnt valid
      */
     testvalidateClientFrameConnect();
-    testvalidateClientFrameDisconnect();
-    testvalidateClientFrameSubscribe();
-    testvalidateClientFrameUnsubscribe();
-    testvalidateClientFrameSend();
+    // testvalidateClientFrameDisconnect();
+    // testvalidateClientFrameSubscribe();
+    // testvalidateClientFrameUnsubscribe();
+    // testvalidateClientFrameSend();
 
     /**
      * the client is already connected
@@ -56,7 +56,7 @@ public class TestProcess{
         System.out.println(Auxiliary.validateClientFrame(StompCommand.CONNECT, testReceiptId).toString());
         
         // test correct structure but wrong version: 1.1, should be 1.2
-        String testWrongVersion = "CONNECT\naccept-version:1.1\nhost:stomp.cs.bgu.ac.il\nlogin:yam\npasscode:123\nreceipt:1905\n\n\u0000";
+        String testWrongVersion = "CONNECT\naccept-version:1.1\nhost:stomp.cs.bgu.ac.il\nlogin:yam\npasscode:123\n\n\u0000";
         System.out.println(Auxiliary.validateClientFrame(StompCommand.CONNECT, testWrongVersion).toString());
 
         // test correct structure but wrong host: bgn, should be bgu

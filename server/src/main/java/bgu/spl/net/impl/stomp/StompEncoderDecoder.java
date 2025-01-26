@@ -1,5 +1,7 @@
 package bgu.spl.net.impl.stomp;
 import bgu.spl.net.api.MessageEncoderDecoder;
+import bgu.spl.net.impl.stomp.ServerFrame.ServerFrameError;
+
 // import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
@@ -12,6 +14,15 @@ public class StompEncoderDecoder implements MessageEncoderDecoder<String> {
     @Override
     public String decodeNextByte(byte nextByte) {
         // לשנות ל-==0?
+        //malformed frame: no null char at the end of the frame
+        if (bytes[bytes.length-1] != '\u0000'){
+            ServerFrameError error =  new ServerFrameError("no null char at the end of the frame", -1, "malformed frame:\n" +
+                                                                                                "no null char at the end of the frame\n" +
+                                                                                                "thus, no way do decode message,\n" +
+                                                                                                "no null char at the end of the frame.\n" +
+                                                                                                "error in StompEncoderDecoder");
+            return error.toString();
+        }
         if (nextByte == '\u0000') {
             return popString();
         }
@@ -22,7 +33,7 @@ public class StompEncoderDecoder implements MessageEncoderDecoder<String> {
 
     @Override   
     public byte[] encode(String message) {
-        return (message + "\u0000").getBytes();
+        return (message).getBytes();
     }
 
     private void pushByte(byte nextByte) {
@@ -34,10 +45,9 @@ public class StompEncoderDecoder implements MessageEncoderDecoder<String> {
     }
 
     private String popString() {
-        // לבדוק אם מחזיר עם הNULLCHAR בסוף
         String result = new String(bytes, 0, len);
         len = 0;
-        return result;
+        return result + "\u0000";
     }
     
     

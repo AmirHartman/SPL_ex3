@@ -46,6 +46,6 @@ PAY ATTENTION - errors i didnt implement but should happen:
 in orderto run:
 mvn compile
 tpc:
-    mvn exec:java -Dexec.mainClass="bgu.spl.net.impl.stomp.StompServer" -Dexec.args="7777 tpc"
+    mvn exec:java -Dexec.mainClass="bgu.spl.net.impl.stomp.StompServer" -Dexec.args="8888 tpc"
 rector:
     mvn exec:java -Dexec.mainClass="bgu.spl.net.impl.stomp.StompServer" -Dexec.args="7777 reactor"

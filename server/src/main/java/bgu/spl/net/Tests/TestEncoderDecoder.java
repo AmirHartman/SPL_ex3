@@ -6,7 +6,7 @@ import bgu.spl.net.impl.stomp.ClientFrameConnect;
 public class TestEncoderDecoder {
     public static void main(String[] args) {
         // create a test frame and convet it to string
-        ClientFrame testFrame = new ClientFrameConnect("yam", "1234", 13);
+        ClientFrame testFrame = new ClientFrameConnect("yam", "1234");
         String message = testFrame.toString();
 
         // test encoder

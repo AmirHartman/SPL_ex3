@@ -21,9 +21,11 @@ public class ConnectionsImpl<T> implements Connections<T> {
     @Override
     public boolean send(int connectionId, T msg){
         if (connectionsIds.containsKey(connectionId)){
-            connectionsIds.get(connectionId).getValue().send(msg);
+            synchronized (connectionsIds.get(connectionId)){
+            connectionsIds.get(connectionId).getValue().
+            send(msg);
             return true;
-        }
+        }}
         return false;
     }
 
@@ -43,8 +45,11 @@ public class ConnectionsImpl<T> implements Connections<T> {
     @Override
     public void disconnect(int connectionId){
         // disconnect user from the system
-        SimpleEntry<String, ConnectionHandler<T>> user = connectionsIds.remove(connectionId);
-        if (user != null){
+        SimpleEntry<String, ConnectionHandler<T>> user = null;
+        if (connectionsIds.containsKey(connectionId)){
+        synchronized (connectionsIds.get(connectionId)){
+        user = connectionsIds.remove(connectionId);
+        }}if (user != null){
             synchronized (users.get(user.getKey())){
                 users.get(user.getKey()).setValue(false);
                 // unsubscribe user from all topics
