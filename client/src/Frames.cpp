@@ -86,6 +86,5 @@ string Frame::toString(){
     if (body != "") {
         output += body;
     }
-    output += '\0';
     return output;
 }

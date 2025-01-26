@@ -94,7 +94,7 @@ Frame MessageEncoderDecoder::generateDisconnectFrame(){
  * @return The decoded Frame struct.
  */
 Frame MessageEncoderDecoder::decodeFrame(const string &frame){
-    vector<vector<string>> parsedFrameByArgs = parseFrameByArgs(frame);
+    vector<vector<string>> parsedFrameByArgs = parseStringFrameToArgs(frame);
 
     if (parsedFrameByArgs.size() == 0){
         cerr << "Error reading frame. frame is empty!" << endl;
@@ -107,7 +107,7 @@ Frame MessageEncoderDecoder::decodeFrame(const string &frame){
     switch (frameType)
     {
     // Server frames:
-    case CONNECTED:
+    case CONNECTED: // TODO: check if need to remove receipt-id
         headers["version"] = "";
         headers["receipt-id"] = "";
         break;
@@ -153,7 +153,8 @@ Frame MessageEncoderDecoder::decodeFrame(const string &frame){
         cerr << "Could not read frame type" << endl;
         return Frame();
     }
-    return decodeFrameByArgs(parsedFrameByArgs, frameType, headers);
+    Frame output = generateFrameFromArgs(parsedFrameByArgs, headers);
+    return output;
 }
 
 
@@ -168,23 +169,31 @@ vector<string> MessageEncoderDecoder::parseStringByDelimeter(const string &frame
     return parsedString;
 }
 
-vector<vector<string>> MessageEncoderDecoder::parseFrameByArgs(const string &frame){
+vector<vector<string>> MessageEncoderDecoder::parseStringFrameToArgs(const string &frame){
     vector<string> parsedFrameByLines = parseStringByDelimeter(frame, '\n');
     vector<vector<string>> parsedFrameByArgs;
-    for (size_t i = 1; i < parsedFrameByLines.size(); i++)
-    {
+    size_t i = 0;
+    while (i < parsedFrameByLines.size() && parsedFrameByLines[i] != ""){ // handles headers
         parsedFrameByArgs.push_back(parseStringByDelimeter(parsedFrameByLines[i], ':'));
+        i++;
+    }
+    i++; // skip the empty line
+    parsedFrameByArgs.push_back({}); // add an empty line to separate the headers from the message body
+    while(i < parsedFrameByLines.size()) { // handles the message body - each line is a string.
+        vector<string> messageLine = {parsedFrameByLines[i]};
+        parsedFrameByArgs.push_back(messageLine); 
+        i++;
     }
     return parsedFrameByArgs;
 }
 
-Frame MessageEncoderDecoder::decodeFrameByArgs(vector<vector<string>> &frameArgs, FrameType &type, map<string, string> &headers){
+Frame MessageEncoderDecoder::generateFrameFromArgs(vector<vector<string>> &frameArgs, map<string, string> &headers){
     bool argsFound[headers.size()] = {false}; // using bool array to indicate if all args needed are in the frame
     bool allArgsFound = false;
     bool errorFound = false;
 
     size_t i = 1; // representing line index in the frame. start from 1 to skip the frame type
-    while (frameArgs[i][0] == "\n" && !errorFound){
+    while (frameArgs[i].size() > 0 && frameArgs[i][0] != "\n" && !errorFound){ // keeps iterating until reached an error, or a line with only '\n' or an empty line
         if (allArgsFound) {
             cerr << "Frame has too many arguments" << endl;
             errorFound = true;
@@ -194,7 +203,6 @@ Frame MessageEncoderDecoder::decodeFrameByArgs(vector<vector<string>> &frameArgs
         // update the headers map with the values from the frame
         for (const auto &pair : headers) {
             string header = pair.first;
-            string value = pair.second;
             if (frameArgs[i][0] == header){
                 headers[header] = frameArgs[i][1];
                 argsFound[i-1] = true;
@@ -216,32 +224,26 @@ Frame MessageEncoderDecoder::decodeFrameByArgs(vector<vector<string>> &frameArgs
         for (const auto &pair : headers) {
             string header = pair.first;
             string value = pair.second;
-            if (!argsFound[i-1]){
+            if (value == ""){
                 cout << header << " ";
             }
-        }
+        cout << endl;
         errorFound = true;
+        }
     }
 
     if (errorFound){
         return Frame();
     }
-
     int messageStartLineIndex = i+1; // The index of the line where the message body starts
     string messageBody = concatenateMessageBody(frameArgs, messageStartLineIndex);
-
-    return Frame(type, headers, messageBody);
+    return Frame(stringToFrameType(frameArgs[0][0]), headers, messageBody);
 }
 
 string MessageEncoderDecoder::concatenateMessageBody(vector<vector<string>> &frameArgs, int messageStartLineIndex){
     string message = "";
     for (size_t i = messageStartLineIndex; i < frameArgs.size(); i++) {
-        size_t numOfArgsInLine = frameArgs[i].size();
-        for (size_t j = 0; j < numOfArgsInLine; j++) {
-            message += frameArgs[i][j];
-            if (j < numOfArgsInLine - 1) // This means that ":" was part of the MessageBody, add it back.
-                message += ":";
-        }
+        message += frameArgs[i][0] +"\n";
     }
     return message;
 }

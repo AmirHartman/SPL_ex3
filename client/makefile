@@ -19,6 +19,7 @@ bin/Frames.o: src/Frames.cpp
 TEST_FILE_TO_RUN := bin/Testers/MessageEncoderDecoderTester
 
 MessageEncoderDecoderTester: bin/MessageEncoderDecoder.o bin/Frames.o src/Testers/MessageEncoderDecoderTester.cpp
+	@mkdir -p bin/Testers
 	g++ bin/MessageEncoderDecoder.o bin/Frames.o src/Testers/MessageEncoderDecoderTester.cpp -o bin/Testers/MessageEncoderDecoderTester $(LDFLAGS)
 
 
@@ -30,7 +31,7 @@ test:
 # Clean command
 .PHONY: clean
 clean:
-	rm -rf bin/* bin/Testers/*
+	rm -rf bin/*
 
 .PHONY: run
 run: 

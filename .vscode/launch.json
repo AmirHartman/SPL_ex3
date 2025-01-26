@@ -70,7 +70,7 @@
         }
         ,
         {
-            "name": "(gdb) Launch MessageEncoderDecoderTester",
+            "name": "Debug MsgEncDec",
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/client/bin/Testers/MessageEncoderDecoderTester",
@@ -92,7 +92,7 @@
                     "ignoreFailures": true
                 }
             ],
-            "preLaunchTask": "make MessageEncoderDecoderTester"
+            "preLaunchTask": "make MsgEncDecTester"
         }
     ]
 }

@@ -42,13 +42,13 @@ private:
     vector<string> parseStringByDelimeter(const string &frame, char delimeter);
 
     // Parsing a frame to a vector of vectors of strings by the delimiters '\n' and ':'
-    vector<vector<string>> parseFrameByArgs(const string &frame);
+    vector<vector<string>> parseStringFrameToArgs(const string &frame);
 
     // Concatenating a vector of strings to a single string. Used to concatenate back the message body of a frame.
     string concatenateMessageBody(vector<vector<string>> &frameArgs, int messageStartLineIndex);
 
     // Decoding a frame by an argument vector.
-    Frame decodeFrameByArgs(vector<vector<string>> &frameArgs, FrameType &type, map<string, string> &headers);
+    Frame generateFrameFromArgs(vector<vector<string>> &frameArgs, map<string, string> &headers);
 
     // TODO: check if need to delete this method
     bool checkRecieptId(unsigned int &sentRecieptId, unsigned int &receivedRecieptId);

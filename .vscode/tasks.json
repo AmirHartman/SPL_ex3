@@ -26,6 +26,15 @@
             "options": {
                 "cwd": "${workspaceFolder}/server"
             }
+        },
+        {
+            "label": "make MsgEncDecTester",
+            "type": "shell",
+            "command": "make",
+            "args": ["MessageEncoderDecoderTester"],
+            "options": {
+                "cwd": "${workspaceFolder}/client"
+            }
         }
     ],
     "version": "2.0.0"
