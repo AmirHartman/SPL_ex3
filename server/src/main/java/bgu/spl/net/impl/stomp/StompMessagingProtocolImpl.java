@@ -1,6 +1,5 @@
 package bgu.spl.net.impl.stomp;
 
-import java.util.AbstractMap.SimpleEntry;
 import java.util.concurrent.ConcurrentHashMap;
 
 import bgu.spl.net.api.StompMessagingProtocol;
@@ -26,8 +25,9 @@ public class StompMessagingProtocolImpl implements StompMessagingProtocol<String
         this.connections = connections;
     }
     
-
+    @Override
     public void process(String message){
+        System.out.println("Entering process for message: " + message);
         String commandtmp = message.split("\n")[0];
         StompCommand command = Auxiliary.stringToCommand(commandtmp);
         if (command == null){
@@ -55,48 +55,23 @@ public class StompMessagingProtocolImpl implements StompMessagingProtocol<String
             System.out.println("clientFrame:\n" + clientFrame.toString());
             //case of disconnect
             if (clientFrame instanceof ClientFrameDisconnect){
-                shouldTerminate = true;
+                clientFrame.process(connectionId, connections, handler, this);
+                connections.disconnect(connectionId);
+                this.shouldTerminate = true;
                 System.out.println("clientFrame is instance of ClientFrameDisconnect");
             }
+            else{
                 ServerFrame serverFrame = clientFrame.process(connectionId, connections, handler, this);
                 System.out.println("serverFrame:\n" + serverFrame.toString());
                 connections.send(connectionId, serverFrame.toString());
-                System.out.println("serverFrame sent to client from process, furst funtion in Connections"); 
-            }}
-
-            // public void process(String message){
-            //     String commandtmp = message.split("\n")[0];
-            //     StompCommand command = Auxiliary.stringToCommand(commandtmp);
-            //     if (command == null){
-            //         //reciept id -1 indicates an invalid frame structure
-            //         ServerFrameError error = new ServerFrameError("Invalid Command", -1, message);
-            //         connections.send(connectionId, error.toString());
-            //     }
-            //     // check client frame structure: header names, null char, body, etc.
-            //     ServerFrameError error = Auxiliary.validateClientFrame(command, message);
-            //     // malformed frame, disconnect the client due to protocol violation
-            //     if (error != null){
-            //         connections.send(connectionId, error.toString());
-            //         shouldTerminate = true;
-            //         connections.disconnect(connectionId);
-            //     }
-            //     else {// valid frame
-            //         ClientFrame clientFrame = Auxiliary.chooseClientFrame(command, message); 
-            //         //case of disconnect
-            //         if (clientFrame instanceof ClientFrameDisconnect){
-            //             shouldTerminate = true;
-            //         }
-            //             ServerFrame serverFrame = clientFrame.process(connectionId, connections, handler, this);
-            //             connections.send
-            //             (connectionId, serverFrame.toString());
-            //         }}
+                System.out.println("serverFrame sent to client from process, first send funtion in Connections"); 
+            }}}
         
 
 	@Override
     public boolean shouldTerminate() {
         return shouldTerminate;
     }
-
 
     @Override
     public void setHandler(ConnectionHandler<String> handler) {

@@ -13,9 +13,7 @@ public class ServerFrameConnected extends ServerFrame {
 
     public String toString() {
         return type.name() + "\n" 
-                + "Version:1.2\n\n\u0000"; 
-                // + "receipt:" + this.receiptId + "\n"
-                // + this.body;
+                + "Version:"+ this.version+ "\n\n\u0000"; 
     }
     
 }

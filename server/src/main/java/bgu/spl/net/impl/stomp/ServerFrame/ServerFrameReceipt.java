@@ -11,9 +11,8 @@ public class ServerFrameReceipt extends ServerFrame {
 
     public String toString() {
         return type.name() + "\n" + 
-        "receipt:" + this.receiptId + "\n" 
+        "receipt-id:" + this.receiptId + "\n" 
         + this.body;
     }
-
     
 }

@@ -38,4 +38,10 @@ public class EchoProtocol implements MessagingProtocol<String> {
     public void setHandler(ConnectionHandler<String> handler) {
         // do nothing
     }
+
+    @Override
+    public void addClient(){
+        // do nothing
+    }
+
 }

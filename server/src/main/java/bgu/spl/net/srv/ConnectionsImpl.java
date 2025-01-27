@@ -22,9 +22,10 @@ public class ConnectionsImpl<T> implements Connections<T> {
     public boolean send(int connectionId, T msg){
         if (connectionsIds.containsKey(connectionId)){
             synchronized (connectionsIds.get(connectionId)){
-            connectionsIds.get(connectionId).getValue().
-            send(msg);
-            return true;
+                System.out.println("sending message to connectionId: " + connectionId + " from first function in Connections");
+                connectionsIds.get(connectionId).getValue().
+                send(msg);
+                return true;
         }}
         return false;
     }

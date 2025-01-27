@@ -35,6 +35,12 @@ public class RemoteCommandInvocationProtocol<T> implements MessagingProtocol<Ser
         // nothing
     }
 
+    @Override
+    public void addClient(){
+        // do nothing
+    }
+
+
 
 
 }

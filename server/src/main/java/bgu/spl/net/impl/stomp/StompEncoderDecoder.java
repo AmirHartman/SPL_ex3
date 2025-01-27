@@ -13,17 +13,7 @@ public class StompEncoderDecoder implements MessageEncoderDecoder<String> {
 
     @Override
     public String decodeNextByte(byte nextByte) {
-        // לשנות ל-==0?
-        //malformed frame: no null char at the end of the frame
-        if (bytes[bytes.length-1] != '\u0000'){
-            ServerFrameError error =  new ServerFrameError("no null char at the end of the frame", -1, "malformed frame:\n" +
-                                                                                                "no null char at the end of the frame\n" +
-                                                                                                "thus, no way do decode message,\n" +
-                                                                                                "no null char at the end of the frame.\n" +
-                                                                                                "error in StompEncoderDecoder");
-            return error.toString();
-        }
-        if (nextByte == '\u0000') {
+         if (nextByte == '\u0000') {
             return popString();
         }
 
@@ -40,7 +30,6 @@ public class StompEncoderDecoder implements MessageEncoderDecoder<String> {
         if (len >= bytes.length) {
             bytes = Arrays.copyOf(bytes, len * 2);
         }
-
         bytes[len++] = nextByte;
     }
 
