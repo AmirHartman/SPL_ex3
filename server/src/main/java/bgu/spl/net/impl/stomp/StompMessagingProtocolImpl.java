@@ -27,7 +27,6 @@ public class StompMessagingProtocolImpl implements StompMessagingProtocol<String
     
     @Override
     public void process(String message){
-        System.out.println("Entering process for message: " + message);
         String commandtmp = message.split("\n")[0];
         StompCommand command = Auxiliary.stringToCommand(commandtmp);
         if (command == null){

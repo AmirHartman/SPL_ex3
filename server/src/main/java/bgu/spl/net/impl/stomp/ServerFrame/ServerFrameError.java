@@ -14,8 +14,8 @@ public class ServerFrameError extends ServerFrame {
     
     public String toString() {
         return type.name() + "\n"  
-                + "Receipt-id:" + this.receiptId + "\n"
-                + "Message:" + this.message + "\n" 
+                + "receipt-id:" + this.receiptId + "\n"
+                + "message:" + this.message + "\n" 
                 + this.body;
     }    
     

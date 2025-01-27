@@ -11,7 +11,7 @@ public interface Connections<T> {
 
     void disconnect(int connectionId);
 
-    boolean isConnected(int connectionId);
+    // boolean isConnected(int connectionId);
 
     boolean correctPassword(String username, String password);
 
