@@ -92,7 +92,6 @@ public class ClientFrameConnect extends ClientFrame {
                 "host:" + host + "\n" +
                 "login:" + username + "\n" +
                 "passcode:" + passcode + "\n" +
-                // "receipt:" + receiptId + "\n" +
                 this.body;
         }
 }

@@ -127,10 +127,5 @@ public class NonBlockingConnectionHandler<T> implements ConnectionHandler<T> {
         messages.add(msg);
     }
 
-    @Override
-    public String getUserName(){
-        return username;
-    }
-
 }
 

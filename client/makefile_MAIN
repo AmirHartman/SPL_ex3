@@ -1,0 +1,42 @@
+CFLAGS:=-c -Wall -Weffc++ -g -std=c++11 -Iinclude
+LDFLAGS:=-lboost_system -lpthread
+OFILES:=bin/ConnectionHandler.o bin/Frames.o bin/MessageEncoderDecoder.o
+
+# Main program
+all: StompWCIClient
+
+StompWCIClient: $(OFILES)
+	g++ -o bin/StompWCIClient $(OFILES) $(LDFLAGS)
+
+bin/ConnectionHandler.o: src/ConnectionHandler.cpp
+	g++ $(CFLAGS) -o bin/ConnectionHandler.o src/ConnectionHandler.cpp
+
+# bin/event.o: src/event.cpp
+# 	g++ $(CFLAGS) -o bin/event.o src/event.cpp
+
+bin/Frames.o: src/Frames.cpp
+	g++ $(CFLAGS) -o bin/Frames.o src/Frames.cpp
+
+bin/MessageEncoderDecoder.o: src/MessageEncoderDecoder.cpp
+	g++ $(CFLAGS) -o bin/MessageEncoderDecoder.o src/MessageEncoderDecoder.cpp
+
+# bin/CommandsHandler.o: src/CommandsHandler.cpp
+# 	g++ $(CFLAGS) -o bin/CommandsHandler.o src/CommandsHandler.cpp
+
+
+# clean command
+.PHONY: clean
+clean:
+	rm -f bin/*.o bin/StompWCIClient bin/Testers/*
+
+
+# run command (runs the main program)
+# usage: make run
+.PHONY: run
+run:
+	bin/StompWCIClient
+
+# valgrind command
+.PHONY: valgrind
+valgrind:
+	valgrind --leak-check=full bin/StompWCIClient $(args)

@@ -49,3 +49,19 @@ tpc:
     mvn exec:java -Dexec.mainClass="bgu.spl.net.impl.stomp.StompServer" -Dexec.args="8888 tpc"
 rector:
     mvn exec:java -Dexec.mainClass="bgu.spl.net.impl.stomp.StompServer" -Dexec.args="7777 reactor"
+
+
+
+
+
+
+bugs - tpc
+1. send doesnt work well
+2. logout - everything works, but need to try complex tests
+3. after send is operating correctly, test report and summery again
+4. everything else works perfectly
+
+bugs - reactor
+1. login, works only when everything is correct - doent work for wrong password and user already logged in (not from the same terminal) - DEADLOCK!
+2. logged our - seems to work fine but eas only tested for true tests, no negative tests yet (very minimal true tests)
+3. the rest of the commands were not yet tested

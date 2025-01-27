@@ -13,10 +13,10 @@ public class TestProcess{
      * structure isnt valid
      */
     testvalidateClientFrameConnect();
-    // testvalidateClientFrameDisconnect();
-    // testvalidateClientFrameSubscribe();
-    // testvalidateClientFrameUnsubscribe();
-    // testvalidateClientFrameSend();
+    testvalidateClientFrameDisconnect();
+    testvalidateClientFrameSubscribe();
+    testvalidateClientFrameUnsubscribe();
+    testvalidateClientFrameSend();
 
     /**
      * the client is already connected
