@@ -6,6 +6,7 @@ import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.util.concurrent.ConcurrentLinkedDeque;
 
 public class BlockingConnectionHandler<T> implements Runnable, ConnectionHandler<T> {
 
@@ -15,6 +16,10 @@ public class BlockingConnectionHandler<T> implements Runnable, ConnectionHandler
     private BufferedInputStream in;
     private BufferedOutputStream out;
     private volatile boolean connected = true;
+    private ConcurrentLinkedDeque<T> messages = new ConcurrentLinkedDeque<>();
+
+    // הוספתי, צריך?X
+    private String username = null;
 
     public BlockingConnectionHandler(Socket sock, MessageEncoderDecoder<T> reader, MessagingProtocol<T> protocol) {
         this.sock = sock;
@@ -33,7 +38,8 @@ public class BlockingConnectionHandler<T> implements Runnable, ConnectionHandler
             while (!protocol.shouldTerminate() && connected && (read = in.read()) >= 0) {
                 T nextMessage = encdec.decodeNextByte((byte) read);
                 if (nextMessage != null) {
-                    T response = protocol.process(nextMessage);
+                    protocol.process(nextMessage);
+                    T response = messages.pollFirst();
                     if (response != null) {
                         out.write(encdec.encode(response));
                         out.flush();
@@ -55,6 +61,20 @@ public class BlockingConnectionHandler<T> implements Runnable, ConnectionHandler
 
     @Override
     public void send(T msg) {
-        //IMPLEMENT IF NEEDED
+        messages.add(msg);
+        // בשעות קבלה להבין מה הכוונה שאסור שיהיה תלוי במימוש הסטומפ שלנו 
+        // לא משנה איך נתייחס ל"סנד" עדיין הוא יהיה תלוי במימוש שלנו גם אם נקרא לשיטה בתוך הפרוטוקול
+        // String command = ((String)msg).substring(0, ((String)msg).indexOf('\n'));
+        // if (command.equals("ERROR")){
+        //     messages.addFirst(msg);
+        // }
+        // else{
+        //     messages.add(msg);
+        // }
+    }
+
+    @Override
+    public String getUserName(){
+        return username;
     }
 }

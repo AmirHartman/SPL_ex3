@@ -1,0 +1,78 @@
+package bgu.spl.net.impl.stomp;
+
+import bgu.spl.net.impl.stomp.ServerFrame.ServerFrame;
+import bgu.spl.net.impl.stomp.ServerFrame.ServerFrameConnected;
+import bgu.spl.net.impl.stomp.ServerFrame.ServerFrameError;
+import bgu.spl.net.srv.ConnectionHandler;
+import bgu.spl.net.srv.Connections;
+
+
+public class ClientFrameConnect extends ClientFrame {
+    private String acceptVersion = "1.2";
+    private String host = "stomp.cs.bgu.ac.il";
+    private String username;
+    private String passcode;
+
+    public ClientFrameConnect(String username, String passcode, int receiptId){
+        super(StompCommand.CONNECT);
+        this.username = username;
+        this.passcode = passcode;
+        this.receiptId = receiptId;
+    }
+
+
+    public ClientFrameConnect(String toFrame){
+        super(toFrame);
+        String[] lines = toFrame.split("\n");
+        // initialize headers
+        for (int i = 1; i < lines.length; i++){
+            String[] header = lines[i].split(":");
+            switch (header[0]){
+                case "username":
+                    this.username = header[1];
+                    break;
+                case "passcode":
+                    this.passcode = header[1];  
+                    break;
+                case "receipt":
+                    try {
+                        this.receiptId = Integer.parseInt(header[1]);
+                    } catch (Exception e) {
+                        System.out.println("unable to create frameConnect, invalid receipt id");
+                    } 
+                    break;
+            }
+        }
+    }
+
+    public String getUsername(){
+        return this.username;
+    }
+
+    public String getPasscode(){
+        return this.passcode;
+    }
+
+    @Override
+    public ServerFrame process (int connectionId, Connections <String> connections, ConnectionHandler<String> handler, StompMessagingProtocolImpl protocol){
+        if (!connections.correctPassword(username, passcode)){
+            return new ServerFrameError("Wrong Password", receiptId, toString());
+        }
+        if (!connections.connect(connectionId, handler, username, passcode)){
+            return new ServerFrameError("User already logged in", receiptId, toString());
+        }
+        return new ServerFrameConnected(receiptId);
+    }
+
+
+    public String toString (){
+        return "CONNECT\n" +
+                "accept-version:" + acceptVersion + "\n" +
+                "host:" + host + "\n" +
+                "username:" + username + "\n" +
+                "passcode:" + passcode + "\n" +
+                "receipt:" + receiptId + "\n" +
+                this.body;
+        }
+}
+
