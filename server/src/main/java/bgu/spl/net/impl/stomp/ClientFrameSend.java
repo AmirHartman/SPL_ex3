@@ -28,8 +28,8 @@ public class ClientFrameSend extends ClientFrame {
             String[] header = lines[i].split(":");
             switch (header[0]){
                 case "destination":
-                    String[] topic = header[1].split("/");
-                    this.destination = topic[2];
+                    // String[] topic = header[1].split("/");
+                    this.destination = header[1];
                     break;
                 case "receipt":
                     try {
@@ -71,7 +71,7 @@ public class ClientFrameSend extends ClientFrame {
 
     public String toString (){
         return "SEND\n" +
-                "destination:/topic/" + destination + "\n" +
+                "destination:" + destination + "\n" +
                 "receipt:" + receiptId + "\n" +
                 this.body;
     }

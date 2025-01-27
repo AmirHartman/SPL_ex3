@@ -22,9 +22,7 @@ public class ConnectionsImpl<T> implements Connections<T> {
     public boolean send(int connectionId, T msg){
         if (connectionsIds.containsKey(connectionId)){
             synchronized (connectionsIds.get(connectionId)){
-                System.out.println("sending message to connectionId: " + connectionId + " from first function in Connections");
-                connectionsIds.get(connectionId).getValue().
-                send(msg);
+                connectionsIds.get(connectionId).getValue().send(msg);
                 return true;
         }}
         return false;
@@ -64,13 +62,8 @@ public class ConnectionsImpl<T> implements Connections<T> {
     }
 
     @Override
-    public boolean isConnected(String username){
-        if (users.containsKey(username)){
-            synchronized (users.get(username)){
-                return users.get(username).getValue();
-            }
-        }
-        return false;
+    public boolean isConnected(int connectionId){
+        return connectionsIds.containsKey(connectionId);
     }
 
     @Override
@@ -96,12 +89,12 @@ public class ConnectionsImpl<T> implements Connections<T> {
                 // user is already logged in
                 if (user.getValue()){
                     return false;
-                } // password correctness is checked in protocol
+                } // password correctness is checked before hand
                 user.setValue(true);
             }}
         else {
             users.put(username, new SimpleEntry<>(password, true));
-        }
+        }// update the username (handler is already registered)
         connectionsIds.put(connectionId, new SimpleEntry<>(username, handler));
         return true;
     }

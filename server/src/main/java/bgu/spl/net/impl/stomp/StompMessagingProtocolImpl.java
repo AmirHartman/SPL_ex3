@@ -62,13 +62,14 @@ public class StompMessagingProtocolImpl implements StompMessagingProtocol<String
             }
             else{
                 ServerFrame serverFrame = clientFrame.process(connectionId, connections, handler, this);
-                if (serverFrame instanceof ServerFrameError && ((ServerFrameError) serverFrame).getMessage().equals("Wrong Password")){
-                    System.out.println("error frame triggered by wrong password");
-                    shouldTerminate = true;
-                }
                 System.out.println("serverFrame:\n" + serverFrame.toString());
                 connections.send(connectionId, serverFrame.toString());
                 System.out.println("serverFrame sent to client from process, first send funtion in Connections"); 
+                if (serverFrame instanceof ServerFrameError){
+                    System.out.println("error frame, should terminate");
+                    shouldTerminate = true;
+                    connections.disconnect(connectionId);
+                }
             }}}
         
 

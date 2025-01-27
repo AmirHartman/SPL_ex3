@@ -26,8 +26,8 @@ public class ClientFrameSubscribe extends ClientFrame {
             String[] header = lines[i].split(":");
             switch (header[0]){
                 case "destination":
-                    String[] topic = header[1].split("/");
-                    this.destination = topic[2];
+                    // String[] topic = header[1].split("/");
+                    this.destination = header[1];
                     break;
                 case "id":
                     try {
@@ -47,12 +47,6 @@ public class ClientFrameSubscribe extends ClientFrame {
 
     @Override
     public ServerFrame process (int connectionId, Connections <String> connections, ConnectionHandler<String> handler, StompMessagingProtocolImpl protocol){
-        if (!connections.isConnected(handler.getUserName())){
-            return new ServerFrameError("Unconnected user is trying to subscribe to a channel", receiptId, toString());
-        }
-        if (protocol.subscriberIds.containsKey(subscription)){
-            return new ServerFrameError("already subscribed to " + destination, receiptId, toString());
-        }
         protocol.subscriberIds.put(subscription, destination);
         connections.subscribe(connectionId, destination, subscription);
         return new ServerFrameReceipt(receiptId);
@@ -61,7 +55,7 @@ public class ClientFrameSubscribe extends ClientFrame {
 
     public String toString (){
         return "SUBSCRIBE\n" +
-                "destination:/topic/" + destination + "\n" +
+                "destination:" + destination + "\n" +
                 "id:" + subscription + "\n" +
                 "receipt:" + receiptId + "\n" +
                 this.body;
