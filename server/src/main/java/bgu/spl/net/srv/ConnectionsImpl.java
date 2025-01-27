@@ -48,7 +48,7 @@ public class ConnectionsImpl<T> implements Connections<T> {
         if (connectionsIds.containsKey(connectionId)){
         synchronized (connectionsIds.get(connectionId)){
         user = connectionsIds.remove(connectionId);
-        }}if (user != null & user.getKey() != null){
+        }}if (user != null && user.getKey() != null){
             synchronized (users.get(user.getKey())){
                 users.get(user.getKey()).setValue(false);
                 // unsubscribe user from all topics
@@ -61,10 +61,10 @@ public class ConnectionsImpl<T> implements Connections<T> {
         }
     }
 
-    @Override
-    public boolean isConnected(int connectionId){
-        return connectionsIds.containsKey(connectionId);
-    }
+    // @Override
+    // public boolean isConnected(int connectionId){
+    //     return connectionsIds.containsKey(connectionId);
+    // }
 
     @Override
     public boolean correctPassword(String username, String password){

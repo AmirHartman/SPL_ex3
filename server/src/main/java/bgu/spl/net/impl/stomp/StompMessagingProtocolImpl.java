@@ -62,15 +62,16 @@ public class StompMessagingProtocolImpl implements StompMessagingProtocol<String
             }
             else{
                 ServerFrame serverFrame = clientFrame.process(connectionId, connections, handler, this);
-                System.out.println("serverFrame:\n" + serverFrame.toString());
-                connections.send(connectionId, serverFrame.toString());
-                System.out.println("serverFrame sent to client from process, first send funtion in Connections"); 
-                if (serverFrame instanceof ServerFrameError){
-                    System.out.println("error frame, should terminate");
-                    shouldTerminate = true;
-                    connections.disconnect(connectionId);
-                }
-            }}}
+                if (serverFrame != null){ // null for client frame send
+                    if (serverFrame instanceof ServerFrameError){
+                        System.out.println("error frame, should terminate");
+                        shouldTerminate = true;
+                        connections.disconnect(connectionId);
+                    }
+                    System.out.println("serverFrame:\n" + serverFrame.toString());
+                    connections.send(connectionId, serverFrame.toString());
+                    System.out.println("serverFrame sent to client from process, first send funtion in Connections"); 
+            }}}}
         
 
 	@Override

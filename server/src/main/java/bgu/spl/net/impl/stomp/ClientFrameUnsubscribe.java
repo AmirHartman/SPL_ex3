@@ -41,6 +41,11 @@ public class ClientFrameUnsubscribe extends ClientFrame {
 
     @Override
     public ServerFrame process (int connectionId, Connections <String> connections, ConnectionHandler<String> handler, StompMessagingProtocolImpl protocol){
+        // if (!connections.isConnected(connectionId)){
+        //     System.out.println("user is trying to unsubscribe from a channel without being connected");
+        //     return new ServerFrameError("Unconnected user is trying to subscribe to a channel", receiptId, toString());
+        // }
+
         if (!protocol.subscriberIds.containsKey(subscription)){
             return new ServerFrameError("user is not subscribed to channel", receiptId, toString());
         }

@@ -12,43 +12,42 @@ import java.util.concurrent.ConcurrentHashMap;
 public class ClientFrameSend extends ClientFrame {
     private String destination;
 
-    public ClientFrameSend(String destination, int receiptId, String body) {
+    public ClientFrameSend(String destination, String body) {
         super(StompCommand.SEND);
         this.destination = destination;
-        this.receiptId = receiptId;
+        // this.receiptId = receiptId;
         this.body = "\n" + body + "\n\u0000";
-
-
     }
 
     public ClientFrameSend(String toFrame){
         super(toFrame);
-        String[] lines = toFrame.split("\n");
-        for (int i = 1; i < lines.length; i++){
-            String[] header = lines[i].split(":");
-            switch (header[0]){
-                case "destination":
-                    // String[] topic = header[1].split("/");
-                    this.destination = header[1];
-                    break;
-                case "receipt":
-                    try {
-                        this.receiptId = Integer.parseInt(header[1]);
-                    } catch (Exception e) {
-                        System.out.println("unable to create frameSend, invalid receipt id");
-                    } 
-                    break;
-            }
-        }
+        String[] header = toFrame.split("\n");
+        this.destination = header[1].split(":/")[1];
+        // for (int i = 1; i < lines.length; i++){
+        //     String[] header = lines[i].split(":");
+        //     switch (header[0]){
+        //         case "destination":
+        //             // String[] topic = header[1].split("/");
+        //             this.destination = header[1];
+        //             break;
+        //         case "receipt":
+        //             try {
+        //                 this.receiptId = Integer.parseInt(header[1]);
+        //             } catch (Exception e) {
+        //                 System.out.println("unable to create frameSend, invalid receipt id");
+        //             } 
+        //             break;
+        //     }
+        // }
         String[] body = toFrame.split("\n\n");
         this.body = "\n" + body[1] + "\u0000";
     }
 
     @Override
     public ServerFrame process (int connectionId, Connections <String> connections, ConnectionHandler<String> handler, StompMessagingProtocolImpl protocol){
-        if (!connections.isConnected(handler.getUserName())){
-            return new ServerFrameError("Unconnected user is trying to send a message", receiptId, toString());
-        }
+        // if (!connections.isConnected(connectionId)){
+        //     return new ServerFrameError("Unconnected user is trying to send a message", receiptId, toString());
+        // }
         ConcurrentHashMap<Integer, Integer> subscribers = connections.getSubscribers(destination);
         if (subscribers == null){// should not happen
             return new ServerFrameError("channel does not exist", receiptId, toString());
@@ -62,7 +61,7 @@ public class ClientFrameSend extends ClientFrame {
             messageFrame.setSubscribtion(subscribers.get(handlerId));
             connections.send(handlerId, messageFrame.toString());
         }
-        return new ServerFrameReceipt(receiptId); 
+        return null;
     }
 
     protected boolean validFrame(String toFrame){
@@ -72,7 +71,7 @@ public class ClientFrameSend extends ClientFrame {
     public String toString (){
         return "SEND\n" +
                 "destination:" + destination + "\n" +
-                "receipt:" + receiptId + "\n" +
+                // "receipt:" + receiptId + "\n" +
                 this.body;
     }
 
