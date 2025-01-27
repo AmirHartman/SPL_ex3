@@ -5,6 +5,7 @@ import bgu.spl.net.srv.Connections;
 // import bgu.spl.net.srv.NonBlockingConnectionHandler;
 
 public interface StompMessagingProtocol<T> extends MessagingProtocol<T> {
+public interface StompMessagingProtocol<T> extends MessagingProtocol<T> {
 	/**
 	 * Used to initiate the current client protocol with it's personal connection ID and the connections implementation
      * מותר לשנות את חתימה כדי לאתחל עם האנדלר?
