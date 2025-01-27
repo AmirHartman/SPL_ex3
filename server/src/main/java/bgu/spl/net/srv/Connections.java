@@ -15,6 +15,8 @@ public interface Connections<T> {
 
     boolean correctPassword(String username, String password);
 
+    void addClient (int connectionId, ConnectionHandler<T> handler);
+
     boolean connect(int connectionId, ConnectionHandler<T> handler, String username, String password);
 
     void subscribe(int connectionId, String topic, int subscriptionId);

@@ -5,7 +5,6 @@ import bgu.spl.net.api.MessagingProtocol;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
 
 public abstract class BaseServer<T> implements Server<T> {
@@ -34,22 +33,28 @@ public abstract class BaseServer<T> implements Server<T> {
         try (ServerSocket serverSock = new ServerSocket(port)) {
 			System.out.println("Server started");
             
+            System.out.println("Server started on port: " + port);
+
             this.sock = serverSock; //just to be able to close
-            // MessageIdGenerator messageIDGenerator = new MessageIdGenerator();
-            AtomicInteger idCounter = new AtomicInteger(0);
 
             while (!Thread.currentThread().isInterrupted()) {
+                System.out.println("Waiting for a client to connect...");
 
                 Socket clientSock = serverSock.accept();
+                System.out.println("Client connected: " + clientSock.getRemoteSocketAddress());
 
                 BlockingConnectionHandler<T> handler = new BlockingConnectionHandler<>(
                         clientSock,
                         encdecFactory.get(),
                         protocolFactory.get());
-
+                        
+                System.out.println("Handler created for client: " + clientSock.getRemoteSocketAddress());
                 execute(handler);
+                System.out.println("Handler executed for client: " + clientSock.getRemoteSocketAddress());
             }
         } catch (IOException ex) {
+            System.err.println("Error in serve(): " + ex.getMessage());
+            ex.printStackTrace();
         }
 
         System.out.println("server closed!!!");

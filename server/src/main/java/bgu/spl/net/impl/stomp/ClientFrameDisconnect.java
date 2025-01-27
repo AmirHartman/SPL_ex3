@@ -1,6 +1,7 @@
 package bgu.spl.net.impl.stomp;
 
 import bgu.spl.net.impl.stomp.ServerFrame.ServerFrame;
+import bgu.spl.net.impl.stomp.ServerFrame.ServerFrameReceipt;
 import bgu.spl.net.srv.ConnectionHandler;
 import bgu.spl.net.srv.Connections;
 
@@ -23,9 +24,10 @@ public class ClientFrameDisconnect extends ClientFrame {
 
     @Override
     public ServerFrame process (int connectionId, Connections <String> connections, ConnectionHandler<String> handler, StompMessagingProtocolImpl protocol){
-        // צריך בדיקה אם כבר מחובר? שגיאה?
-        connections.disconnect(connectionId);
-        return null;
+        ServerFrameReceipt receipt = new ServerFrameReceipt(receiptId);
+        connections.send(connectionId, receipt.toString());
+        System.out.println("message sent to send method in connections from process in ClientFrameDisconnect");
+        return receipt;
     }
 
     protected boolean validFrame(String toFrame){

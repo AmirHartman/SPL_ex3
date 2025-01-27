@@ -1,5 +1,7 @@
 package bgu.spl.net.impl.stomp;
 import bgu.spl.net.api.MessageEncoderDecoder;
+import bgu.spl.net.impl.stomp.ServerFrame.ServerFrameError;
+
 // import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
@@ -11,8 +13,7 @@ public class StompEncoderDecoder implements MessageEncoderDecoder<String> {
 
     @Override
     public String decodeNextByte(byte nextByte) {
-        // לשנות ל-==0?
-        if (nextByte == '\u0000') {
+         if (nextByte == '\u0000') {
             return popString();
         }
 
@@ -22,22 +23,20 @@ public class StompEncoderDecoder implements MessageEncoderDecoder<String> {
 
     @Override   
     public byte[] encode(String message) {
-        return (message + "\u0000").getBytes();
+        return (message).getBytes();
     }
 
     private void pushByte(byte nextByte) {
         if (len >= bytes.length) {
             bytes = Arrays.copyOf(bytes, len * 2);
         }
-
         bytes[len++] = nextByte;
     }
 
     private String popString() {
-        // לבדוק אם מחזיר עם הNULLCHAR בסוף
         String result = new String(bytes, 0, len);
         len = 0;
-        return result;
+        return result + "\u0000";
     }
     
     

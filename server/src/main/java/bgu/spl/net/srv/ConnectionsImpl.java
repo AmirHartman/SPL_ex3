@@ -21,9 +21,12 @@ public class ConnectionsImpl<T> implements Connections<T> {
     @Override
     public boolean send(int connectionId, T msg){
         if (connectionsIds.containsKey(connectionId)){
-            connectionsIds.get(connectionId).getValue().send(msg);
-            return true;
-        }
+            synchronized (connectionsIds.get(connectionId)){
+                System.out.println("sending message to connectionId: " + connectionId + " from first function in Connections");
+                connectionsIds.get(connectionId).getValue().
+                send(msg);
+                return true;
+        }}
         return false;
     }
 
@@ -43,8 +46,11 @@ public class ConnectionsImpl<T> implements Connections<T> {
     @Override
     public void disconnect(int connectionId){
         // disconnect user from the system
-        SimpleEntry<String, ConnectionHandler<T>> user = connectionsIds.remove(connectionId);
-        if (user != null){
+        SimpleEntry<String, ConnectionHandler<T>> user = null;
+        if (connectionsIds.containsKey(connectionId)){
+        synchronized (connectionsIds.get(connectionId)){
+        user = connectionsIds.remove(connectionId);
+        }}if (user != null & user.getKey() != null){
             synchronized (users.get(user.getKey())){
                 users.get(user.getKey()).setValue(false);
                 // unsubscribe user from all topics
@@ -78,6 +84,11 @@ public class ConnectionsImpl<T> implements Connections<T> {
     }
 
     @Override
+    public void addClient (int connectionId, ConnectionHandler<T> handler){
+        connectionsIds.put(connectionId, new SimpleEntry<>(null, handler));
+    }
+
+    @Override
     public boolean connect(int connectionId, ConnectionHandler<T> handler, String username, String password){
         if (users.containsKey(username)){
             synchronized (users.get(username)){
@@ -94,6 +105,8 @@ public class ConnectionsImpl<T> implements Connections<T> {
         connectionsIds.put(connectionId, new SimpleEntry<>(username, handler));
         return true;
     }
+
+
 
     @Override
     public void subscribe(int connectionId, String topic, int subscriptionId){

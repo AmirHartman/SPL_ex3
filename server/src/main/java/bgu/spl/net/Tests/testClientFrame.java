@@ -16,10 +16,10 @@ public class testClientFrame {
          * tests coth constructors
          */
         testClientFrameConnect();
-        testClientFrameDisconnect();
-        testClientFrameSend();
-        testClientFrameSubscribe();
-        testClientFrameUnsubscribe();
+        // testClientFrameDisconnect();
+        // testClientFrameSend();
+        // testClientFrameSubscribe();
+        // testClientFrameUnsubscribe();
 
         testNullChar();
         /**
@@ -31,7 +31,7 @@ public class testClientFrame {
 
 
     private static void testClientFrameConnect() {
-        ClientFrame testFrame = new ClientFrameConnect("yam", "1234", 13);
+        ClientFrame testFrame = new ClientFrameConnect("yam", "1234");
         String tst = testFrame.toString();
         System.out.println(tst);
         ClientFrame testFrame2 = new ClientFrameConnect(tst);
@@ -93,7 +93,7 @@ public class testClientFrame {
         ClientFrame unsubscribe = new ClientFrameUnsubscribe(12, 121212);
         ClientFrame subscribe = new ClientFrameSubscribe(12, "police", 121212);
         ClientFrame disconnect = new ClientFrameDisconnect(12);
-        ClientFrame connect = new ClientFrameConnect("yam", "1234", 13);
+        ClientFrame connect = new ClientFrameConnect("yam", "1234");
 
         // get the last char of each frame
         char charSend = send.toString().charAt(send.toString().length() - 1);

@@ -13,10 +13,10 @@ public class TestProcess{
      * structure isnt valid
      */
     testvalidateClientFrameConnect();
-    testvalidateClientFrameDisconnect();
-    testvalidateClientFrameSubscribe();
-    testvalidateClientFrameUnsubscribe();
-    testvalidateClientFrameSend();
+    // testvalidateClientFrameDisconnect();
+    // testvalidateClientFrameSubscribe();
+    // testvalidateClientFrameUnsubscribe();
+    // testvalidateClientFrameSend();
 
     /**
      * the client is already connected
@@ -56,7 +56,7 @@ public class TestProcess{
         System.out.println(Auxiliary.validateClientFrame(StompCommand.CONNECT, testReceiptId).toString());
         
         // test correct structure but wrong version: 1.1, should be 1.2
-        String testWrongVersion = "CONNECT\naccept-version:1.1\nhost:stomp.cs.bgu.ac.il\nlogin:yam\npasscode:123\nreceipt:1905\n\n\u0000";
+        String testWrongVersion = "CONNECT\naccept-version:1.1\nhost:stomp.cs.bgu.ac.il\nlogin:yam\npasscode:123\n\n\u0000";
         System.out.println(Auxiliary.validateClientFrame(StompCommand.CONNECT, testWrongVersion).toString());
 
         // test correct structure but wrong host: bgn, should be bgu
@@ -66,7 +66,7 @@ public class TestProcess{
 
     private static void testvalidateClientFrameDisconnect(){
         // test frame without null char
-        String testNullChar = "DISCONNECT\nreceipt:1905\n\n";
+        String testNullChar = "DISCONNECT\ndestination:/topic/dest\nreceipt:1905\n\n";
         System.out.println(Auxiliary.validateClientFrame(StompCommand.DISCONNECT, testNullChar).toString());
 
         // test fram with a body (body should be empty)
@@ -97,20 +97,25 @@ public class TestProcess{
         System.out.println(Auxiliary.validateClientFrame(StompCommand.SUBSCRIBE, testEmptyBody).toString());
 
         // test wrong number of headers
-        String testNumbeOfHeaders = "SUBSCRIBE\nid:9\n\n\u0000";
+        String testNumbeOfHeaders = "SUBSCRIBE\ndestination:/topic/dest\n\n\u0000";
         System.out.println(Auxiliary.validateClientFrame(StompCommand.SUBSCRIBE, testNumbeOfHeaders).toString());
         
         // test wrong header name
-        String testHeaderName = "SUBSCRIBE\nid:9\ndestination:dest\nreciept:1905\n\n\u0000";
+        String testHeaderName = "SUBSCRIBE\nid:9\ndestination:/topic/dest\nreciept:1905\n\n\u0000";
         System.out.println(Auxiliary.validateClientFrame(StompCommand.SUBSCRIBE, testHeaderName).toString());
 
         // test receipt id is not an integer
-        String testReceiptId = "SUBSCRIBE\nid:9\ndestination:dest\nreceipt:yam\n\n\u0000";
+        String testReceiptId = "SUBSCRIBE\nid:9\ndestination:/topic/dest\nreceipt:yam\n\n\u0000";
         System.out.println(Auxiliary.validateClientFrame(StompCommand.SUBSCRIBE, testReceiptId).toString());
 
         // test subscription id is not an integer
-        String testSubscriptionId = "SUBSCRIBE\nid:yam\ndestination:dest\nreceipt:1905\n\n\u0000";
+        String testSubscriptionId = "SUBSCRIBE\nid:yam\ndestination:/topic/dest\nreceipt:1905\n\n\u0000";
         System.out.println(Auxiliary.validateClientFrame(StompCommand.SUBSCRIBE, testSubscriptionId).toString());
+
+        // test destination starts with /topic/
+        String testDestination = "SEND\ndestination:police\nreceipt:1\n\nthis is a message\n\u0000";
+        System.out.println(Auxiliary.validateClientFrame(StompCommand.SEND, testDestination).toString());
+        
         
     }
 
@@ -142,33 +147,31 @@ public class TestProcess{
 
     private static void testvalidateClientFrameSend(){
         // test frame without null char
-        String testNullChar = "SEND\ndestination:police\nreceipt:1905\n\nthis is a message\n";
+        String testNullChar = "SEND\ndestination:/topic/police\nreceipt:1905\n\nthis is a message\n";
         System.out.println(Auxiliary.validateClientFrame(StompCommand.SEND, testNullChar).toString());
 
         // test frame with a body (body shouldn't be empty)
-        String testEmptyBody = "SEND\ndestination:police\nreceipt:1905\n\n\u0000";
+        String testEmptyBody = "SEND\ndestination:/topic/police\nreceipt:1905\n\n\u0000";
         System.out.println(Auxiliary.validateClientFrame(StompCommand.SEND, testEmptyBody).toString());
 
         // test wrong number of headers
-        String testNumbeOfHeaders = "SEND\ndestination:police\n\nthis is a message\n\u0000";
+        String testNumbeOfHeaders = "SEND\ndestination:/topic/police\n\nthis is a message\n\u0000";
         System.out.println(Auxiliary.validateClientFrame(StompCommand.SEND, testNumbeOfHeaders).toString());
         
         // test wrong header name
-        String testHeaderName = "SEND\ndestenation:police\nreciept:1905\n\nthis is a message\n\u0000";
+        String testHeaderName = "SEND\ndestenation:/topic/police\nreciept:1905\n\nthis is a message\n\u0000";
         System.out.println(Auxiliary.validateClientFrame(StompCommand.SEND, testHeaderName).toString());
 
         // test receipt id is not an integer
-        String testReceiptId = "SEND\ndestination:police\nreceipt:yam\n\nthis is a message\n\u0000";
+        String testReceiptId = "SEND\ndestination:/topic/police\nreceipt:yam\n\nthis is a message\n\u0000";
         System.out.println(Auxiliary.validateClientFrame(StompCommand.SEND, testReceiptId).toString());
+
+        // test destination starts with /topic/
+        String testDestination = "SEND\ndestination:police\nreceipt:1\n\nthis is a message\n\u0000";
+        System.out.println(Auxiliary.validateClientFrame(StompCommand.SEND, testDestination).toString());
+
 
     }
 } 
-
-
-// public String toString (){
-//     return "SEND\n" +
-//             "destination:" + destination + "\n" +
-//             "receipt:" + receiptId + "\n" +
-//             this.body;
 
     

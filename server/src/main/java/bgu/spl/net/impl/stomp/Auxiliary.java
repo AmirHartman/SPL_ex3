@@ -62,7 +62,7 @@ public class Auxiliary {
 
     private static ServerFrameError validateConnectFrame (String toFrame){
         // check the validity of the frame structure
-        ServerFrameError error = checkHeadersNumber(toFrame, 5);
+        ServerFrameError error = checkHeadersNumber(toFrame, 4);
         if (error != null) {
             return error;
         }
@@ -76,26 +76,27 @@ public class Auxiliary {
         }
         String frame = toFrame.split("\n\n")[0];
         String [] headers = frame.split("\n");
-        int receiptId = -1;
+        // int receiptId = -1;
         for (int i = 1; i < headers.length; i++){
             String[] header = headers[i].split(":");
             // find the receipt id
-            if (header[0].equals("receipt")){
-                try {
-                    receiptId = Integer.parseInt(header[1]);
-                } catch (Exception e) {
-                    return new ServerFrameError("receipt id is not an integer", -1, toFrame);
-                }
-            }
+            // if (header[0].equals("receipt")){
+            //     try {
+            //         receiptId = Integer.parseInt(header[1]);
+            //     } catch (Exception e) {
+            //         return new ServerFrameError("receipt id is not an integer", -1, toFrame);
+            //     }
+            // }
             // check the validity of header names
-            if (!header[0].equals("accept-version") & !header[0].equals("host") & !header[0].equals("login") & !header[0].equals("passcode") & !header[0].equals("receipt")){
-                return new ServerFrameError("invalid one or more header names", receiptId, toFrame);
+            // if (!header[0].equals("accept-version") & !header[0].equals("host") & !header[0].equals("login") & !header[0].equals("passcode") & !header[0].equals("receipt")){
+            if (!header[0].equals("accept-version") & !header[0].equals("host") & !header[0].equals("login") & !header[0].equals("passcode")){
+                return new ServerFrameError("invalid one or more header names", -1, toFrame);
             }// check the validity accept-version
             if (header[0].equals("accept-version") & !header[1].equals("1.2")){
-                return new ServerFrameError("Wrong version", receiptId, toFrame);
+                return new ServerFrameError("Wrong version", -1, toFrame);
             }// check the validity host
             if (header[0].equals("host") & !header[1].equals("stomp.cs.bgu.ac.il")){
-                return new ServerFrameError("Wrong host", receiptId, toFrame);
+                return new ServerFrameError("Wrong host", -1, toFrame);
             }
         }
     return null;
@@ -125,6 +126,12 @@ public class Auxiliary {
                     receiptId = Integer.parseInt(header[1]);
                 } catch (Exception e) {
                     return new ServerFrameError("receipt id is not an integer", -1, toFrame);
+                }
+            }
+            if (header[0].equals("destination")){
+                String[] topic = header[1].split("/");
+                if (topic.length != 3 || !topic[1].equals("topic")){
+                    return new ServerFrameError("invalid destination header, should be: /topic/{destination}", receiptId, toFrame);
                 }
             }
             // check the validity of header names
@@ -168,6 +175,13 @@ public class Auxiliary {
                     return new ServerFrameError("subscription id is not an integer", -1, toFrame);
                 }
             }
+            if (header[0].equals("destination")){
+                String[] topic = header[1].split("/");
+                if (topic.length != 3 || !topic[1].equals("topic")){
+                    return new ServerFrameError("invalid destination header, should be: /topic/{destination}", receiptId, toFrame);
+                }
+            }
+
             // check the validity of header names
             if (!header[0].equals("destination") & !header[0].equals("id") & !header[0].equals("receipt")){
                 return new ServerFrameError("invalid one or more header names", receiptId, toFrame);
@@ -271,7 +285,5 @@ public class Auxiliary {
         }
         return null;
     }
-
-
     
 }

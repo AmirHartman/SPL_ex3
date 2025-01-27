@@ -4,10 +4,10 @@ import bgu.spl.net.impl.stomp.ServerFrame.*;
 
 public class TestServerFrame {
     public static void main(String[] args) {
-        testServerFrameConnected();
+        // testServerFrameConnected();
         testServerFrameError();
-        testServerFrameMessage();
-        testServerFrameReceipt();
+        // testServerFrameMessage();
+        // testServerFrameReceipt();
 
         testNullChar();
 

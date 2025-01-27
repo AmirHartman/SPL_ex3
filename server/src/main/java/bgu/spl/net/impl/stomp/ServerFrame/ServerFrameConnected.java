@@ -11,17 +11,9 @@ public class ServerFrameConnected extends ServerFrame {
         this.receiptId = receiptid;
     }
 
-    public ServerFrameConnected(String string) {
-        super(StompCommand.CONNECTED);
-        this.version = "1.2";
-    }
-
-
     public String toString() {
         return type.name() + "\n" 
-                + "Version:" + this.version + "\n" 
-                + "receipt:" + this.receiptId + "\n"
-                + this.body;
+                + "Version:"+ this.version+ "\n\n\u0000"; 
     }
     
 }

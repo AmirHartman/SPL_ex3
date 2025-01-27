@@ -2,6 +2,7 @@ package bgu.spl.net.srv;
 
 import bgu.spl.net.api.MessageEncoderDecoder;
 import bgu.spl.net.api.MessagingProtocol;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
@@ -26,44 +27,53 @@ public class BlockingConnectionHandler<T> implements Runnable, ConnectionHandler
         this.encdec = reader;
         this.protocol = protocol;
         this.protocol.setHandler(this);
-
+        protocol.addClient();
     }
 
     @Override
     public void run() {
-        try (Socket sock = this.sock) { //just for automatic closing
+        System.out.println("Start run method for client: " + sock.getRemoteSocketAddress());
+        try (Socket sock = this.sock) {
             int read;
-
+           
             in = new BufferedInputStream(sock.getInputStream());
             out = new BufferedOutputStream(sock.getOutputStream());
+            System.out.println("Input and output streams initialized for client: " + sock.getRemoteSocketAddress());
 
             while (!protocol.shouldTerminate() && connected && (read = in.read()) >= 0) {
                 T nextMessage = encdec.decodeNextByte((byte) read);
                 if (nextMessage != null) {
+                    System.out.println("the decoded message from client is:\n" + (String) nextMessage);
                     protocol.process(nextMessage);
-                    T response = messages.pollFirst();
+                    T response = messages.poll();
                     if (response != null) {
+                        System.out.println("the response to the client is:\n" + (String) response);
                         out.write(encdec.encode(response));
                         out.flush();
                     }
                 }
             }
-
         } catch (IOException ex) {
             ex.printStackTrace();
+            System.err.println("Error in connection handler for client: " + sock.getRemoteSocketAddress() + " - " + ex.getMessage());
         }
-
-    }
-
+    }    
+    
     @Override
     public void close() throws IOException {
-        connected = false;
-        sock.close();
+        if (connected) { // Only close if the socket is still open
+            connected = false;
+            if (sock != null && !sock.isClosed()) {
+                sock.close(); // Close the socket
+                System.out.println("Socket closed for client.");
+            }
+        }
     }
-
+    
     @Override
     public void send(T msg) {
         messages.add(msg);
+        System.out.println("Message added to messages queue");
     }
 
     @Override
@@ -71,3 +81,4 @@ public class BlockingConnectionHandler<T> implements Runnable, ConnectionHandler
         return username;
     }
 }
+
