@@ -1,7 +1,7 @@
 package bgu.spl.net.Tests;
 import bgu.spl.net.impl.stomp.StompEncoderDecoder;
-import bgu.spl.net.impl.stomp.Frame.ClientFrame;
-import bgu.spl.net.impl.stomp.Frame.ClientFrameConnect;
+import bgu.spl.net.impl.stomp.ClientFrame;
+import bgu.spl.net.impl.stomp.ClientFrameConnect;
 
 public class TestEncoderDecoder {
     public static void main(String[] args) {

@@ -1,6 +1,6 @@
 package bgu.spl.net.impl.stomp;
 
-import java.util.AbstractMap.SimpleEntry;
+// import java.util.AbstractMap.SimpleEntry;
 import java.util.concurrent.ConcurrentHashMap;
 
 import bgu.spl.net.api.StompMessagingProtocol;
@@ -11,63 +11,22 @@ import bgu.spl.net.impl.stomp.ServerFrame.*;
 
 public class StompMessagingProtocolImpl implements StompMessagingProtocol<String>{
     private boolean shouldTerminate = false;
-    private ConcurrentHashMap<Integer, SimpleEntry<ClientFrame, ServerFrame>> receipts = new ConcurrentHashMap<>();
     //צריך מקביליות? אולי בריאקטור?
     protected ConcurrentHashMap<Integer, String> subscriberIds = new ConcurrentHashMap<>();
     private int connectionId;
     private Connections<String> connections;
-    private ConnectionHandler<String> handler;
+    private ConnectionHandler<String> handler = null;
+    private boolean crushed = false;
     
 
 
     @Override
-    public void start(int connectionId, Connections<String> connections, ConnectionHandler<String> handler) {
+    public void start(int connectionId, Connections<String> connections) {
         this.connectionId = connectionId;
         this.connections = connections;
-        this.handler = handler;
     }
     
 
-<<<<<<< HEAD
-    @Override
-    public void process(Object message) {
-        String msg = (String) message;
-        String type = msg.split("\n")[0];
-        shouldTerminate = (type.equals("DISCONNECT") | type.equals("ERROR"));
-        // do nothing
-    }
-
-    @Override
-    public boolean shouldTerminate() {
-        return shouldTerminate;
-    }
-
-    // protected String getAnswer(){
-    //     ServiceFrame frame =(ServiceFrame) messages.pollFirst();
-    //     if (frame != null){
-    //         return frame.toString();
-    //     }
-    //     return null;
-    // }
-
-    private ClientFrame chooseClientFrame(String nextMessage){
-        String frameType = nextMessage.substring(0, nextMessage.indexOf('\n'));
-        switch (frameType){
-            case "CONNECT":
-                return new ClientFrameConnect(nextMessage);
-            case "SEND":
-                return new ClientFrameSend(nextMessage);
-            case "SUBSCRIBE":
-                return new ClientFrameSubscribe(nextMessage);
-            case "UNSUBSCRIBE":
-                return new ClientFrameUnsubscribe(nextMessage);
-            case "DISCONNECT":
-                return new ClientFrameDisconnect(nextMessage);
-        }
-        return null;
-    }
-
-=======
     public void process(String message){
         String commandtmp = message.split("\n")[0];
         StompCommand command = Auxiliary.stringToCommand(commandtmp);
@@ -78,35 +37,45 @@ public class StompMessagingProtocolImpl implements StompMessagingProtocol<String
         }
         // check client frame structure: header names, null char, body, etc.
         ServerFrameError error = Auxiliary.validateClientFrame(command, message);
+        // malformed frame, disconnect the client due to protocol violation
         if (error != null){
             connections.send(connectionId, error.toString());
+            shouldTerminate = true;
+            connections.disconnect(connectionId);
         }
         else {// valid frame
             ClientFrame clientFrame = Auxiliary.chooseClientFrame(command, message); 
-            if (receipts.containsKey(clientFrame.getReceiptId())){
-                error = new ServerFrameError("receipt id isn't unique", clientFrame.getReceiptId(), message);
-                receipts.put(clientFrame.getReceiptId(), new SimpleEntry<>(clientFrame, error));
-                connections.send(connectionId, error.toString());
+            //case of disconnect
+            if (clientFrame instanceof ClientFrameDisconnect){
+                shouldTerminate = true;
             }
-            else{
-                receipts.put(clientFrame.getReceiptId(), new SimpleEntry<>(clientFrame, null));
                 ServerFrame serverFrame = clientFrame.process(connectionId, connections, handler, this);
-                // send the message to all subscribers of that topic
-                if (serverFrame instanceof ServerFrameMessage){
-                    String topic = ((ServerFrameMessage) serverFrame).getTopic();
-                    connections.send(topic, serverFrame.toString());
-                    serverFrame = new ServerFrameReceipt(clientFrame.getReceiptId());
-                }
                 connections.send(connectionId, serverFrame.toString());
-                SimpleEntry<ClientFrame,ServerFrame> entry = receipts.get(clientFrame.getReceiptId());
-                // האם יכול להיות שלא יהיה NULL?
-                entry.setValue(serverFrame);
-            }}}
-	
-   public boolean shouldTerminate(){
-    return shouldTerminate;
-   }
->>>>>>> frame
+            }}
+
+	@Override
+    public boolean shouldTerminate() {
+        return shouldTerminate;
+    }
+
+//    public boolean shouldTerminate(ClientFrame clientFrame, ServerFrame serverFrame){
+//          if (clientFrame instanceof ClientFrameDisconnect){
+//               shouldTerminate = true;
+//          }
+//          if (clientFrame instanceof ClientFrameConnect & serverFrame instanceof ServerFrameError){
+
+//          }
+//     return shouldTerminate;
+//    }
+
+    @Override
+    public void setHandler(ConnectionHandler<String> handler) {
+        this.handler = handler;
+    }
+
+    public boolean Crushed() {
+        return this.crushed;
+    }
 }
 
     

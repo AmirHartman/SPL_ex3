@@ -1,6 +1,8 @@
 package bgu.spl.net.api;
 
+import bgu.spl.net.srv.ConnectionHandler;
 import bgu.spl.net.srv.Connections;
+// import bgu.spl.net.srv.NonBlockingConnectionHandler;
 
 public interface MessagingProtocol<T> {
     
@@ -10,11 +12,13 @@ public interface MessagingProtocol<T> {
      * @param msg the received message
      * @return the response to send or null if no response is expected by the client
      */
-    T process(T msg);
+    void process(T msg);
  
     /**
      * @return true if the connection should be terminated
      */
     boolean shouldTerminate();
  
+    void setHandler(ConnectionHandler<T> handler);
+
 }

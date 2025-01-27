@@ -23,7 +23,8 @@ public class ClientFrameDisconnect extends ClientFrame {
 
     @Override
     public ServerFrame process (int connectionId, Connections <String> connections, ConnectionHandler<String> handler, StompMessagingProtocolImpl protocol){
-
+        // צריך בדיקה אם כבר מחובר? שגיאה?
+        connections.disconnect(connectionId);
         return null;
     }
 

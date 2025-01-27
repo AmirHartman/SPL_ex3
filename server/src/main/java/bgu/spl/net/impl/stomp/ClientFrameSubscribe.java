@@ -53,7 +53,7 @@ public class ClientFrameSubscribe extends ClientFrame {
             return new ServerFrameError("already subscribed to " + destination, receiptId, toString());
         }
         protocol.subscriberIds.put(subscription, destination);
-        connections.subscribe(connectionId, destination);
+        connections.subscribe(connectionId, destination, subscription);
         return new ServerFrameReceipt(receiptId);
     }
 
