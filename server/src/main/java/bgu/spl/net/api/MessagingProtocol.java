@@ -22,6 +22,10 @@ public interface MessagingProtocol<T> {
 
     void addClient();
 
+    void close();
+
+    
+
 
 
 

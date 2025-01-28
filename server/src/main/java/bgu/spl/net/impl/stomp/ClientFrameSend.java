@@ -3,7 +3,6 @@ package bgu.spl.net.impl.stomp;
 import bgu.spl.net.impl.stomp.ServerFrame.ServerFrame;
 import bgu.spl.net.impl.stomp.ServerFrame.ServerFrameError;
 import bgu.spl.net.impl.stomp.ServerFrame.ServerFrameMessage;
-import bgu.spl.net.srv.ConnectionHandler;
 import bgu.spl.net.srv.Connections;
 
 import java.util.concurrent.ConcurrentHashMap;
@@ -43,7 +42,7 @@ public class ClientFrameSend extends ClientFrame {
     }
 
     @Override
-    public ServerFrame process (int connectionId, Connections <String> connections, ConnectionHandler<String> handler, StompMessagingProtocolImpl protocol){
+    public ServerFrame process (int connectionId, Connections <String> connections, StompMessagingProtocolImpl protocol){
         // if (!connections.isConnected(connectionId)){
         //     return new ServerFrameError("Unconnected user is trying to send a message", receiptId, toString());
         // }

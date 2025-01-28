@@ -16,6 +16,8 @@ public interface Connections<T> {
     boolean correctPassword(String username, String password);
 
     void addClient (int connectionId, ConnectionHandler<T> handler);
+    
+    void removeClient (int connectionId);
 
     boolean connect(int connectionId, String username, String password);
 

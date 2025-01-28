@@ -69,3 +69,4 @@ bugs - reactor
 
 
 java -jar target/StompServer1.1.jar 8888 tpc
+mvn exec:java -Dexec.mainClass="bgu.spl.net.impl.stomp.StompServer" -Dexec.args="7777 reactor"

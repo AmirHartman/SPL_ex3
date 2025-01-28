@@ -53,7 +53,6 @@ public class ConnectionsImpl<T> implements Connections<T> {
                     break;
                 }
         }}
-        handlers.remove(connectionId);
         synchronized (topics){
                 for (String topic : topics.keySet()){
                     topics.get(topic).remove(connectionId);
@@ -71,8 +70,12 @@ public class ConnectionsImpl<T> implements Connections<T> {
 
     @Override
     public boolean correctPassword(String username, String password){
-        return passwords.get(password).equals(password);
-    }
+        synchronized (passwords){
+            if (!passwords.containsKey(username)){
+                return true;
+            }
+        return passwords.get(username).equals(password);
+    }}
 
     @Override
     public void addClient (int connectionId, ConnectionHandler<T> handler){
@@ -80,7 +83,12 @@ public class ConnectionsImpl<T> implements Connections<T> {
     }
 
     @Override
-    public boolean connect(int connectionId, ConnectionHandler<T> handler, String username, String password){
+    public void removeClient (int connectionId){
+        handlers.remove(connectionId);
+    }
+
+    @Override
+    public boolean connect(int connectionId, String username, String password){
         // user is already connected
         if (users.containsKey(username)){
             return false;

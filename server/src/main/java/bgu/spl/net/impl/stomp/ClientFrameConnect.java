@@ -3,7 +3,6 @@ package bgu.spl.net.impl.stomp;
 import bgu.spl.net.impl.stomp.ServerFrame.ServerFrame;
 import bgu.spl.net.impl.stomp.ServerFrame.ServerFrameConnected;
 import bgu.spl.net.impl.stomp.ServerFrame.ServerFrameError;
-import bgu.spl.net.srv.ConnectionHandler;
 import bgu.spl.net.srv.Connections;
 
 
