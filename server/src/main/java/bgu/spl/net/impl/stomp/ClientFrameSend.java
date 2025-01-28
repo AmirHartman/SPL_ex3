@@ -20,7 +20,8 @@ public class ClientFrameSend extends ClientFrame {
     public ClientFrameSend(String toFrame){
         super(toFrame);
         String[] header = toFrame.split("\n");
-        this.destination = header[1].split(":/")[1];
+        this.destination = header[1].split(":")[1];
+        this.destination = this.destination.substring(1);
         // for (int i = 1; i < lines.length; i++){
         //     String[] header = lines[i].split(":");
         //     switch (header[0]){
@@ -68,7 +69,7 @@ public class ClientFrameSend extends ClientFrame {
 
     public String toString (){
         return "SEND\n" +
-                "destination:" + destination + "\n" +
+                "destination:/" + destination + "\n" +
                 // "receipt:" + receiptId + "\n" +
                 this.body;
     }
