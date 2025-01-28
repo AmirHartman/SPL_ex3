@@ -57,7 +57,7 @@ public class ClientFrameSend extends ClientFrame {
         ServerFrameMessage messageFrame = new ServerFrameMessage(connections.getNextMessageId(), -1, destination, body);
         // updates subscription id for each subscriber
         for (Integer handlerId : subscribers.keySet()){
-            messageFrame.setSubscribtion(subscribers.get(handlerId));
+            messageFrame.setSubscribtion(connections.getSubscriptionId(destination, handlerId));
             connections.send(handlerId, messageFrame.toString());
         }
         return null;

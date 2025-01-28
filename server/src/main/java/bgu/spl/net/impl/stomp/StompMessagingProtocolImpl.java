@@ -30,46 +30,46 @@ public class StompMessagingProtocolImpl implements StompMessagingProtocol<String
         String commandtmp = message.split("\n")[0];
         StompCommand command = Auxiliary.stringToCommand(commandtmp);
         if (command == null){
-            System.out.println("command is null");
+            System.out.println("PROTOCOL: command is null");
             //reciept id -1 indicates an invalid frame structure
             ServerFrameError error = new ServerFrameError("Invalid Command", -1, message);
             connections.send(connectionId, error.toString());
         }
         else {
-            System.out.println("command is not null");
+            System.out.println("PROTOCOL: command is not null");
         }
         // check client frame structure: header names, null char, body, etc.
         ServerFrameError error = Auxiliary.validateClientFrame(command, message);
         // malformed frame, disconnect the client due to protocol violation
         if (error != null){
-            System.out.println("client frame isn't valid according to Auxiliary.validateClientFrame");
-            System.out.println("error is:\n" + error.toString());
+            System.out.println("PROTOCOL: client frame isn't valid according to Auxiliary.validateClientFrame");
+            System.out.println("PROTOCOL: error is:\n" + error.toString());
             connections.send(connectionId, error.toString());
             shouldTerminate = true;
             connections.disconnect(connectionId);
         }
         else {// valid frame
-            System.out.println("client frame is valid according to Auxiliary.validateClientFrame");
+            System.out.println("PROTOCOL: client frame is valid according to Auxiliary.validateClientFrame");
             ClientFrame clientFrame = Auxiliary.chooseClientFrame(command, message); 
-            System.out.println("clientFrame:\n" + clientFrame.toString());
+            System.out.println("PROTOCOL: clientFrame:\n" + clientFrame.toString());
             //case of disconnect
             if (clientFrame instanceof ClientFrameDisconnect){
                 clientFrame.process(connectionId, connections, handler, this);
                 connections.disconnect(connectionId);
                 this.shouldTerminate = true;
-                System.out.println("clientFrame is instance of ClientFrameDisconnect");
+                System.out.println("PROTOCOL: clientFrame is instance of ClientFrameDisconnect");
             }
             else{
                 ServerFrame serverFrame = clientFrame.process(connectionId, connections, handler, this);
                 if (serverFrame != null){ // null for client frame send
                     if (serverFrame instanceof ServerFrameError){
-                        System.out.println("error frame, should terminate");
+                        System.out.println("PROTOCOL: error frame, should terminate");
                         shouldTerminate = true;
                         connections.disconnect(connectionId);
                     }
-                    System.out.println("serverFrame:\n" + serverFrame.toString());
+                    System.out.println("PROTOCOL: serverFrame:\n" + serverFrame.toString());
                     connections.send(connectionId, serverFrame.toString());
-                    System.out.println("serverFrame sent to client from process, first send funtion in Connections"); 
+                    System.out.println("PROTOCOL: serverFrame sent to client from process, first send funtion in Connections"); 
             }}}}
         
 

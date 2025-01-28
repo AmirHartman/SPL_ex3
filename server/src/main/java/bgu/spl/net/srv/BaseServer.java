@@ -31,29 +31,29 @@ public abstract class BaseServer<T> implements Server<T> {
     public void serve() {
 
         try (ServerSocket serverSock = new ServerSocket(port)) {
-			System.out.println("Server started");
+			System.out.println("TPC: Server started");
             
-            System.out.println("Server started on port: " + port);
+            System.out.println("TPC: Server started on port: " + port);
 
             this.sock = serverSock; //just to be able to close
 
             while (!Thread.currentThread().isInterrupted()) {
-                System.out.println("Waiting for a client to connect...");
+                System.out.println("TPC: Waiting for a client to connect...");
 
                 Socket clientSock = serverSock.accept();
-                System.out.println("Client connected: " + clientSock.getRemoteSocketAddress());
+                System.out.println("TPC: Client connected: " + clientSock.getRemoteSocketAddress());
 
                 BlockingConnectionHandler<T> handler = new BlockingConnectionHandler<>(
                         clientSock,
                         encdecFactory.get(),
                         protocolFactory.get());
                         
-                System.out.println("Handler created for client: " + clientSock.getRemoteSocketAddress());
+                System.out.println("TPC: Handler created for client: " + clientSock.getRemoteSocketAddress());
                 execute(handler);
-                System.out.println("Handler executed for client: " + clientSock.getRemoteSocketAddress());
+                System.out.println("TPC: Handler executed for client: " + clientSock.getRemoteSocketAddress());
             }
         } catch (IOException ex) {
-            System.err.println("Error in serve(): " + ex.getMessage());
+            System.err.println("TPC: Error in serve(): " + ex.getMessage());
             ex.printStackTrace();
         }
 
