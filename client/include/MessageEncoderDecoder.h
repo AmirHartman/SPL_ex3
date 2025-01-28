@@ -25,7 +25,7 @@ class MessageEncoderDecoder{
     ______________Decode methods_______________
               (server frame decoder)
     */
-    Frame decodeFrame(const string &frame);
+    Frame generateFrameFromString(const string &frame);
 
 private:
     /* map of topics and their subscription ids

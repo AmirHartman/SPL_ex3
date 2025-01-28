@@ -1,284 +1,162 @@
 #include "../include/CommandsHandler.h"
 #include "../include/MessageEncoderDecoder.h"
 
+extern bool DEBUG_MODE;
+
 CommandsHandler::CommandsHandler() : connectionHandler(nullptr), encdec() {}
 
 void CommandsHandler::runCommand(vector<string> &args) {
-    bool error = false;
-    
+    if (args.empty()) {
+        cout << "No command was entered" << endl;
+        return;
+    }
+
+    string command = args[0];
     // check if command exists
-    if (commandsMap.find(args[0]) == commandsMap.end()) {
+    if (!(command == "login" || command == "join" || command == "exit" || command == "report" || command == "summary" || command == "logout")) {
         cout << "Command not found" << endl;
         cout << "Available commands: login, join, exit, report, summary, logout" << endl;
     }
     
-    Commands command = commandsMap[args[0]];
-    if (command != LOGIN && !checkIfLoggedIn()) {
+    // Stop the execution if the client is not logged in and trying to run other command
+    if (command != "login" && !checkIfLoggedIn()) {
         return;
     }
-    switch (command) {
-        case LOGIN:
-            if (args.size() != 5) {
-                cout << "Usage: login {host} {port} {username} {password}" << endl;
-            } else {
-                login(args[1], stoi(args[2]), args[3], args[4]);
-            }
-            break;
-        case JOIN:
-            if (args.size() != 2) {
-                cout << "Usage: join {channelName}" << endl;
-            } else {
-                error = !join(args[1]);
-            }
-            break;
-        case EXIT:
-            if (args.size() != 2) {
-                cout << "Usage: exit {channelName}" << endl;
-            } else {
-                error = !exit(args[1]);
-            }
-            break;
-        case REPORT:
-            if (args.size() != 2) {
-                cout << "Usage: report {filePath}" << endl;
-            } else {
-                error = !report(args[1]);
-            }
-            break;
-        case SUMMARY:
-            if (args.size() != 4) {
-                cout << "Usage: summary {channelName} {user} {filePath}" << endl;
-            } else {
-                error = !summary(args[1], args[2], args[3]);
-            }
-            break;
-        case LOGOUT:
-            if (args.size() != 1) {
-                cout << "Usage: logout" << endl;
-            } else {
-                error = !logout();
-            }
-            break;
-    }
 
-    if (error) {
-        cout << "An error occurred while executing the command" << endl;
-        cout << "Disconnecting from server..." << endl;
-        connectionHandler.reset();
-    }
-}
+    // Commands execution
+    if (command == "login") {
+        if (connectionHandler != nullptr) {
+            cout << "The client is already logged in, log out before trying again" << endl;
+            return;
+        }
+        if (args.size() != 5) {
+            cout << "Usage: login {host} {port} {username} {password}" << endl;
+            return;
+        } 
 
-void CommandsHandler::login(string& host, short port, string& username, string& password) {
-    if (connectionHandler != nullptr) {
-        cout << "The client is already logged in, log out before trying again" << endl;
-        return;
-    } else {
+        // login command execution
+        string host = args[1];
+        short port = stoi(args[2]);
+        string username = args[3];
+        string password = args[4];
         connectionHandler.reset(new ConnectionHandler(host, port));
-    }
+        bool isConnectedSuccessfully = false;
+        bool isLoggedSuccessfully = false;
 
-    bool isConnectedSuccessfully = false;
-    if (!connectionHandler->connect()) {
-        cout << "Could not connect to server" << endl;
-    } else {
-        Frame frame = encdec.generateConnectFrame(host, port, username, password);
-        if (!connectionHandler->sendFrameAscii(frame.toString(), '\0')){
-            cerr << "Failed to send the connect frame" << endl;
+        if (!connectionHandler->connect()) {
+            if (DEBUG_MODE) cout << "\n[DEBUG] Failed executing connect() command to " << host << ":" << port << endl << endl;
+            return;
+        }
+        isConnectedSuccessfully = true;
+        if (DEBUG_MODE) cout << "\n[DEBUG] Connected to " << host << ":" << port << endl;
+
+        Frame connectFrame = encdec.generateConnectFrame(host, port, username, password);
+        Frame answerFrame = communicateServer(connectFrame);
+        if (answerFrame.type == FrameType::CONNECTED) isLoggedSuccessfully = true;
+
+        if (!isConnectedSuccessfully || !isLoggedSuccessfully) {
+            connectionHandler.reset();
+            if (!isConnectedSuccessfully) cout << "Failed to connect to " << host << ":" << port << endl;
+            if (!isLoggedSuccessfully) cout << "Failed to login" << endl;
+        } else {
+            cout << "Logged in successfully" << endl;
         }
 
-        string answerAsString;
-        if (!connectionHandler->getFrameAscii(answerAsString, '\0')) {
-            cerr << "Failed to get the answer from the server" << endl;
+    } else if (command == "join") {
+        if (args.size() != 2) {
+            cout << "Usage: join {channelName}" << endl;
+            return;
         }
 
-        Frame answerFrame = encdec.decodeFrame(answerAsString);
-        switch(answerFrame.type) {
-            case FrameType::CONNECTED:
-                cout << "Login successful" << endl;
-                isConnectedSuccessfully = true;
-                break;
-            case FrameType::ERROR:
-                cout << "Connection to server succeeded but server returned a login error." << endl;
-                cout << "Error message: " << answerFrame.headers["message"] << endl;
-                if (answerFrame.body != "") {
-                    cout << "Additional information received from server:\n" << answerFrame.body << "\n" << endl;
-                }
-                break;
-            case FrameType::UNKNOWN:
-                cout << "Connection to server succeeded." << endl;
-                handleUNKNOWNFrame(answerAsString);
-                break;
-
-            // Mention other enum values to avoid compilation warnings
-            case FrameType::DISCONNECT:
-            case FrameType::SEND:
-            case FrameType::MESSAGE:
-            case FrameType::CONNECT:
-            case FrameType::SUBSCRIBE:
-            case FrameType::UNSUBSCRIBE:
-            case FrameType::RECEIPT:
-                break;
-        }
-
-    }
-    if (!isConnectedSuccessfully) {
-        cout << "Failed to login" << endl;
-        connectionHandler.reset();
-    }
-}
-
-bool CommandsHandler::join(string& channelName) {
-    cout << "Joining channel " << channelName << endl;
-    Frame frame = encdec.generateSubscribeFrame(channelName);
-    if (connectionHandler->sendFrameAscii(frame.toString(), '\0')) {
-        cerr << "Failed to send the subscribe frame. Connection error." << endl;
-        return false;
-    }
-    string answerAsString;
-    if (!connectionHandler->getFrameAscii(answerAsString, '\0')) {
-        cerr << "Failed to receive an answer from the server." << endl;
-        return false;
-    }
-
-    bool joinedSuccessfully = false;
-    Frame answerFrame = encdec.decodeFrame(answerAsString);
-    switch(answerFrame.type) {
-        case FrameType::RECEIPT:
-            cout << "Joined channel " << channelName << endl;
-            joinedSuccessfully = true;
-            break;
-        case FrameType::ERROR:
-            cout << "Failed to join channel " << channelName << endl;
-            cout << "Error message: " << answerFrame.headers["message"] << endl;
-            if (answerFrame.body != "") {
-                cout << "Additional information received from server:\n" << answerFrame.body << "\n" << endl;
-            }
-            break;
-        case FrameType::UNKNOWN:
-            cout << "Failed to join channel " << channelName << endl;
-            handleUNKNOWNFrame(answerAsString);
-            break;
-
-        // Mention other enum values to avoid compilation warnings
-        case CONNECT:
-        case CONNECTED:
-        case DISCONNECT:
-        case SEND:
-        case MESSAGE:
-        case SUBSCRIBE:
-        case UNSUBSCRIBE:
-            break;
-    }
-    return joinedSuccessfully;
-}
-
-bool CommandsHandler::exit(string& channelName) {
-    cout << "Exiting channel " << channelName << endl;
-    Frame frame = encdec.generateUnsubscribeFrame(channelName);
-    if (connectionHandler->sendFrameAscii(frame.toString(), '\0')) {
-        cerr << "Failed to send the unsubscribe frame. Connection error." << endl;
-        return false;
-    }
-    string answerAsString;
-    if (!connectionHandler->getFrameAscii(answerAsString, '\0')) {
-        cerr << "Failed to receive an answer from the server." << endl;
-        return false;
-    }
-
-    bool exitedSuccessfully = false;
-    Frame answerFrame = encdec.decodeFrame(answerAsString);
-    switch(answerFrame.type) {
-        case FrameType::RECEIPT:
-            cout << "Exited channel " << channelName << endl;
-            exitedSuccessfully = true;
-            break;
-        case FrameType::ERROR:
-            cout << "Failed to exit channel " << channelName << endl;
-            cout << "Error message: " << answerFrame.headers["message"] << endl;
-            if (answerFrame.body != "") {
-                cout << "Additional information received from server:\n" << answerFrame.body << "\n" << endl;
-            }
-            break;
-        case FrameType::UNKNOWN:
-            cout << "Failed to exit channel " << channelName << endl;
-            handleUNKNOWNFrame(answerAsString);
-            break;
+        string channelName = args[1];
+        cout << "Joining channel " << channelName << " ..." << endl << endl;
         
-        // Mention other enum values to avoid compilation warnings
-        case FrameType::CONNECT:
-        case FrameType::CONNECTED:
-        case FrameType::DISCONNECT:
-        case FrameType::SEND:
-        case FrameType::MESSAGE:
-        case FrameType::SUBSCRIBE:
-        case FrameType::UNSUBSCRIBE:
-            break;
-    }
-    return exitedSuccessfully;
-}
+        Frame subscribeFrame = encdec.generateSubscribeFrame(channelName);
+        Frame answerFrame = communicateServer(subscribeFrame);
+        if (answerFrame.type == FrameType::RECEIPT) {
+            cout << "Joined channel " << channelName << endl;
+        } else {
+            cout << "Failed to join channel " << channelName << endl;
+        }
 
-bool CommandsHandler::report(string& filePath) {
-    // TODO: Finish implementing this
-    names_and_events events = parseEventsFile(filePath);
-    for (Event event : events.events) {
-        // TODO: for each event, send a message to the server
-    }
-    return true;
-}
+    } else if (command == "exit") {
+        if (args.size() != 2) {
+            cout << "Usage: exit {channelName}" << endl;
+            return;
+        }
 
-bool CommandsHandler::summary(string& channelName, string& user, string& filePath) {
-    // TODO: Implement this
-    return true;
-}
+        string channelName = args[1];
+        cout << "Exiting channel " << channelName << endl;
+        Frame unsubscribeFrame = encdec.generateUnsubscribeFrame(channelName);
+        Frame answerFrame = communicateServer(unsubscribeFrame);
+        if (answerFrame.type == FrameType::RECEIPT) {
+            cout << "Exited channel " << channelName << endl;
+        } else {
+            cout << "Failed to exit channel " << channelName << endl;
+        }
 
-bool CommandsHandler::logout() {
-    cout << "Logging out" << endl;
-    Frame frame = encdec.generateDisconnectFrame();
-    if (connectionHandler->sendFrameAscii(frame.toString(), '\0')) {
-        cerr << "Failed to send the disconnect frame. Connection error." << endl;
-        return false;
-    }
-    string answerAsString;
-    if (!connectionHandler->getFrameAscii(answerAsString, '\0')) {
-        cerr << "Failed to receive an answer from the server." << endl;
-        return false;
-    }
+    } else if (command == "report") {
+        if (args.size() != 2) {
+            cout << "Usage: report {filePath}" << endl;
+            return;
+        }
 
-    bool loggedOutSuccessfully = false;
-    Frame answerFrame = encdec.decodeFrame(answerAsString);
-    switch(answerFrame.type) {
-        case FrameType::RECEIPT:
+        string filePath = args[1];
+        // TODO: Implement this
+
+    } else if (command == "summary") {
+        if (args.size() != 4) {
+            cout << "Usage: summary {channelName} {user} {filePath}" << endl;
+            return;
+        }
+
+        string channelName = args[1];
+        string user = args[2];
+        string filePath = args[3];
+        // TODO: Implement this
+
+    } else if (command == "logout") {
+        if (args.size() != 1) {
+            cout << "Usage: logout" << endl;
+            return;
+        }
+
+        if (!connectionHandler) {
+            if (DEBUG_MODE) cout << "[DEBUG] logout commands was executed but connection is offline" << endl;
+            return;
+        }
+
+        cout << "Logging out" << endl;
+        Frame disconnectFrame = encdec.generateDisconnectFrame();
+        Frame answerFrame = communicateServer(disconnectFrame);
+        if (answerFrame.type == FrameType::RECEIPT) {
             cout << "Logged out successfully" << endl;
-            loggedOutSuccessfully = true;
-            break;
-        case FrameType::ERROR:
+        } else {
             cout << "Failed to log out" << endl;
-            cout << "Error message: " << answerFrame.headers["message"] << endl;
-            if (answerFrame.body != "") {
-                cout << "Additional information received from server:\n" << answerFrame.body << "\n" << endl;
-            }
-            break;
-        case FrameType::UNKNOWN:
-            cout << "Failed to log out" << endl;
-            handleUNKNOWNFrame(answerAsString);
-            break;
+        }
 
-        // Mention other enum values to avoid compilation warnings
-        case FrameType::CONNECT:
-        case FrameType::CONNECTED:
-        case FrameType::DISCONNECT:
-        case FrameType::SEND:
-        case FrameType::MESSAGE:
-        case FrameType::SUBSCRIBE:
-        case FrameType::UNSUBSCRIBE:
-            break;
     }
-    return loggedOutSuccessfully;
 }
+
 
 void CommandsHandler::handleUNKNOWNFrame(string &answerAsString) {
-    cout << "Server's answer failed to be decoded." << endl;
-    cout << "Frame received from server (as a string):\n" << answerAsString << endl;
-    logout();
+    if (DEBUG_MODE) {
+        cout << "[DEBUG] Server's answer failed to be decoded." << endl;
+        cout << "[DEBUG] Frame received from server (as a string):\n" << answerAsString << endl;
+    }
+    cout << "\nAn error occured during communicating to server. Closing connection.." << endl;
+    vector<string> logout = {"logout"};
+    runCommand(logout); // try to logout before closing the connection
+    connectionHandler.reset();
+}
+
+void CommandsHandler::handleERRORFrame(Frame &errorFrame) {
+    cout << "Error message received from server: " << errorFrame.headers["message"] << endl;
+    if (errorFrame.body != "") {
+        cout << "Additional information received from server:\n" << errorFrame.body << "\n" << endl;
+    }
+    cout << "Disconnecting from server..." << endl;
+    connectionHandler.reset();
 }
 
 bool CommandsHandler::checkIfLoggedIn() {
@@ -287,4 +165,37 @@ bool CommandsHandler::checkIfLoggedIn() {
         return false;
     }
     return true;
+}
+
+Frame CommandsHandler::communicateServer(Frame& frameToSend) {
+    string message = frameToSend.toString();
+    Frame output = Frame();
+
+    // Send the frame to the server
+    if (!connectionHandler->sendFrameAscii(message, '\0')) {
+        cerr << "Failed to send request to the server. Connection error." << endl;
+    } else {
+        if (DEBUG_MODE) cout << "\n[DEBUG] Frame successfully sent to the server" << endl;
+    }
+
+    // Get the server's answer
+    string answerAsString;
+    if (!connectionHandler->getFrameAscii(answerAsString, '\0')) {
+        cerr << "Failed to receive an answer from the server." << endl;
+    } else {
+        if (DEBUG_MODE) cout << "[DEBUG] Answer frame successfully received from the server\n" << endl;
+        output = encdec.generateFrameFromString(answerAsString);
+    }
+
+    // If answer could not be decoded
+    if (output.type == FrameType::UNKNOWN) {
+        handleUNKNOWNFrame(answerAsString);
+    }
+
+    // If answer is an error frame
+    if (output.type == FrameType::ERROR) {
+        handleERRORFrame(output);
+    }
+
+    return output;
 }

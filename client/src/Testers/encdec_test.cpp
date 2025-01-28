@@ -93,8 +93,8 @@ static void testServerFrames(MessageEncoderDecoder encdec){
     Frame connectedFrame(FrameType::CONNECTED, headers, "");
     cout << "ConnectedFrame converted to string using toString():" << endl;
     printFrame(connectedFrame.toString());
-    cout << "Printing the frame using decodeFrame():" << endl;
-    decodedFrame = encdec.decodeFrame(connectedFrame.toString());
+    cout << "Printing the frame using generateFrameFromString():" << endl;
+    decodedFrame = encdec.generateFrameFromString(connectedFrame.toString());
     if (decodedFrame.type == FrameType::UNKNOWN){
         cout << "Error decoding frame" << endl;
     } else {
@@ -111,8 +111,8 @@ static void testServerFrames(MessageEncoderDecoder encdec){
     Frame messageFrame(FrameType::MESSAGE, headers, messageBody);
     cout << "MessageFrame converted to string using toString():" << endl;
     printFrame(messageFrame.toString());
-    cout << "Printing the frame using decodeFrame():" << endl;
-    decodedFrame = encdec.decodeFrame(messageFrame.toString());
+    cout << "Printing the frame using generateFrameFromString():" << endl;
+    decodedFrame = encdec.generateFrameFromString(messageFrame.toString());
     if (decodedFrame.type == FrameType::UNKNOWN){
         cout << "Error decoding frame" << endl;
     } else {
@@ -126,8 +126,8 @@ static void testServerFrames(MessageEncoderDecoder encdec){
     Frame receiptFrame(FrameType::RECEIPT, headers, "");
     cout << "ReceiptFrame converted to string using toString():" << endl;
     printFrame(receiptFrame.toString());
-    cout << "Printing the frame using decodeFrame():" << endl;
-    decodedFrame = encdec.decodeFrame(receiptFrame.toString());
+    cout << "Printing the frame using generateFrameFromString():" << endl;
+    decodedFrame = encdec.generateFrameFromString(receiptFrame.toString());
     if (decodedFrame.type == FrameType::UNKNOWN){
         cout << "Error decoding frame" << endl;
     } else {
@@ -144,8 +144,8 @@ static void testServerFrames(MessageEncoderDecoder encdec){
     Frame errorFrame(FrameType::ERROR, headers, messageBody);
     cout << "ErrorFrame converted to string using toString():" << endl;
     printFrame(errorFrame.toString());
-    cout << "Printing the frame using decodeFrame():" << endl;
-    decodedFrame = encdec.decodeFrame(errorFrame.toString());
+    cout << "Printing the frame using generateFrameFromString():" << endl;
+    decodedFrame = encdec.generateFrameFromString(errorFrame.toString());
     if (decodedFrame.type == FrameType::UNKNOWN){
         cout << "Error decoding frame" << endl;
     } else {

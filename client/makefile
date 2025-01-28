@@ -33,11 +33,17 @@ clean:
 
 .PHONY: run
 run: 
+	@$(MAKE)
 	@clear
 	@echo
 	@echo "Running StompWCIClient"
 	@echo
-	@./bin/StompWCIClient
+	@if [ "$(DEBUG)" = "true" ]; then \
+		echo "Launching StompWCIClient in debug mode"; \
+		./bin/StompWCIClient debug; \
+	else \
+		./bin/StompWCIClient; \
+	fi
 
 
 # Testers____________________________________________________________
@@ -47,15 +53,15 @@ run:
 # To clarify that I have learned the material and didn't just copy the makefile from an engine I will explain the args used:
 
 # This is just a simple variables declaration in makefile
-BIN_TEST_DIR := bin/Testers
-SRC_TEST_DIR := src/Testers
+# BIN_TEST_DIR := bin/Testers
+# SRC_TEST_DIR := src/Testers
 
-# Here I am creating a build rule for the test files. This will be used to build the test file after the file was chosen.
-# the structure is a simple target: dependencies structure, as learned in class, using variables.
-# The mkdir command is used to create a directory if it doesn't exist.
-$(BIN_TEST_DIR)/$(TEST): $(SRC_TEST_DIR)/$(TEST).cpp $(OFILES)
-	@mkdir -p $(BIN_TEST_DIR)
-	g++ -o $(BIN_TEST_DIR)/$(TEST) $(SRC_TEST_DIR)/$(TEST).cpp $(OFILES) $(LDFLAGS)
+# # Here I am creating a build rule for the test files. This will be used to build the test file after the file was chosen.
+# # the structure is a simple target: dependencies structure, as learned in class, using variables.
+# # The mkdir command is used to create a directory if it doesn't exist.
+# $(BIN_TEST_DIR)/$(TEST): $(SRC_TEST_DIR)/$(TEST).cpp $(OFILES)
+# 	@mkdir -p $(BIN_TEST_DIR)
+# 	g++ -o $(BIN_TEST_DIR)/$(TEST) $(SRC_TEST_DIR)/$(TEST).cpp $(OFILES) $(LDFLAGS)
 
 # 1. .PHONY is a command that tells makefile that this command is not a file name, but a command name (also given in the skeleton makefile)
 # 2. if: if statement like in other languages, here we use [] instead of () we are used to.
@@ -76,23 +82,22 @@ $(BIN_TEST_DIR)/$(TEST): $(SRC_TEST_DIR)/$(TEST).cpp $(OFILES)
 # 17. $(MAKE): used to run the make command from the shell. It will build the test file, using the build rule we created earlier.
 # 18. $(BIN_TEST_DIR)/$(TEST): used to run the test file we just built.
 
-.PHONY: test
-test: 
-	@if [ -z "$(TEST)" ]; then \
-		echo "Please provide a test name"; \
-		echo "Available tests: "; \
-		for file in $(SRC_TEST_DIR)/*.cpp; do \
-			test_name=$$(basename $$file .cpp) ;\
-			echo " - $$test_name"; \
-		done; \
-		echo "Usage: make test TEST=<test_name>"; \
-		exit 1; \
-	fi
-		$(MAKE) $(BIN_TEST_DIR)/$(TEST)
-		@echo
-		@echo "Running test $(TEST):"
-		@echo
-		@$(BIN_TEST_DIR)/$(TEST)
-	
+# .PHONY: test
+# test: 
+# 	@if [ -z "$(TEST)" ]; then \
+# 		echo "Please provide a test name"; \
+# 		echo "Available tests: "; \
+# 		for file in $(SRC_TEST_DIR)/*.cpp; do \
+# 			test_name=$$(basename $$file .cpp) ;\
+# 			echo " - $$test_name"; \
+# 		done; \
+# 		echo "Usage: make test TEST=<test_name>"; \
+# 		exit 1; \
+# 	fi
+# 		$(MAKE) $(BIN_TEST_DIR)/$(TEST)
+# 		@echo
+# 		@echo "Running test $(TEST):"
+# 		@echo
+# 		@$(BIN_TEST_DIR)/$(TEST)
 
 
