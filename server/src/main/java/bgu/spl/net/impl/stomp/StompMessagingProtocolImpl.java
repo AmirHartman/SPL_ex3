@@ -54,13 +54,13 @@ public class StompMessagingProtocolImpl implements StompMessagingProtocol<String
             System.out.println("PROTOCOL: clientFrame:\n" + clientFrame.toString());
             //case of disconnect
             if (clientFrame instanceof ClientFrameDisconnect){
-                clientFrame.process(connectionId, connections, handler, this);
+                clientFrame.process(connectionId, connections, this);
                 connections.disconnect(connectionId);
                 this.shouldTerminate = true;
                 System.out.println("PROTOCOL: clientFrame is instance of ClientFrameDisconnect");
             }
             else{
-                ServerFrame serverFrame = clientFrame.process(connectionId, connections, handler, this);
+                ServerFrame serverFrame = clientFrame.process(connectionId, connections, this);
                 if (serverFrame != null){ // null for client frame send
                     if (serverFrame instanceof ServerFrameError){
                         System.out.println("PROTOCOL: error frame, should terminate");

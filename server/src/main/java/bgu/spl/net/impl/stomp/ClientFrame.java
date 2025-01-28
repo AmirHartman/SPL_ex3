@@ -33,7 +33,7 @@ public abstract class ClientFrame {
         return receiptId;
     }
 
-    public abstract ServerFrame process (int connectionId, Connections <String> connections, ConnectionHandler<String> handler, StompMessagingProtocolImpl protocol);
+    public abstract ServerFrame process (int connectionId, Connections <String> connections, StompMessagingProtocolImpl protocol);
 
 
 

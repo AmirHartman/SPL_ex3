@@ -75,11 +75,11 @@ public class ClientFrameConnect extends ClientFrame {
     }
 
     @Override
-    public ServerFrame process (int connectionId, Connections <String> connections, ConnectionHandler<String> handler, StompMessagingProtocolImpl protocol){
+    public ServerFrame process (int connectionId, Connections <String> connections, StompMessagingProtocolImpl protocol){
         if (!connections.correctPassword(username, passcode)){
             return new ServerFrameError("Wrong Password", receiptId, toString());
         }
-        if (!connections.connect(connectionId, handler, username, passcode)){
+        if (!connections.connect(connectionId, username, passcode)){
             return new ServerFrameError("User already logged in", receiptId, toString());
         }
         return new ServerFrameConnected(receiptId);
