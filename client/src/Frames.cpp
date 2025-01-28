@@ -1,11 +1,11 @@
 #include "../include/Frames.h"
 
-unsigned int idCounter::subscriptionId = 0;
-unsigned int idCounter::receiptId = 0;
-unsigned int idCounter::generateSubscriptionId() {
+int idCounter::subscriptionId = 1; // start the count from 1 because 0 is defualt value in c++ (will indicate an error)
+int idCounter::receiptId = 1;
+int idCounter::generateSubscriptionId() {
     return subscriptionId++;
 }
-unsigned int idCounter::generateReceiptId() {
+int idCounter::generateReceiptId() {
     return receiptId++;
 }
 

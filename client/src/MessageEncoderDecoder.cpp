@@ -1,6 +1,6 @@
 #include "../include/MessageEncoderDecoder.h"
 
-MessageEncoderDecoder::MessageEncoderDecoder() : topicSubscriptionMap(map<string, unsigned int>()) {}
+MessageEncoderDecoder::MessageEncoderDecoder() : topicSubscriptionMap(map<string, int>()) {}
     
 
 // Encode methods
@@ -45,7 +45,7 @@ Frame MessageEncoderDecoder::generateSendFrame(const string &destination, const 
  * @return SUBSCRIBE frame.
  */
 Frame MessageEncoderDecoder::generateSubscribeFrame(const string &topic){
-    unsigned int subscriptionId = idCounter::generateSubscriptionId();
+    int subscriptionId = idCounter::generateSubscriptionId();
     topicSubscriptionMap[topic] = subscriptionId;
 
     map<string, string> headers;
@@ -63,7 +63,8 @@ Frame MessageEncoderDecoder::generateSubscribeFrame(const string &topic){
  * @return UNSUBSCRIBE frame.
  */
 Frame MessageEncoderDecoder::generateUnsubscribeFrame(const string &topic){
-    unsigned int subscriptionId = topicSubscriptionMap[topic];
+    
+    int subscriptionId = topicSubscriptionMap[topic];
     topicSubscriptionMap.erase(topic);
 
     map<string, string> headers;
@@ -252,7 +253,7 @@ string MessageEncoderDecoder::concatenateMessageBody(vector<vector<string>> &fra
     return message;
 }
 
-bool MessageEncoderDecoder::checkRecieptId(unsigned int &sentRecieptId, unsigned int &receivedRecieptId){
+bool MessageEncoderDecoder::checkRecieptId(int &sentRecieptId, int &receivedRecieptId){
     if (sentRecieptId != receivedRecieptId){
         cerr << "Receipt id from the server mismatch the id sent." << endl;
         cout << "Sent receipt id: " << sentRecieptId << "Received receipt id: " << receivedRecieptId << endl;

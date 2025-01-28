@@ -8,50 +8,46 @@
 using namespace std;
 
 class MessageEncoderDecoder{
-  public:
-    MessageEncoderDecoder();
-    /*
-    ______________Encode methods______________
-            (client frame generators)
-    */
-    Frame generateConnectFrame(const string &host,short &port,const string &username, const string &password);
-    Frame generateSendFrame(const string &destination, const string &message);
-    Frame generateSubscribeFrame(const string &topic);
-    Frame generateUnsubscribeFrame(const string &topic);
-    Frame generateDisconnectFrame();
-
-
-    /*
-    ______________Decode methods_______________
-              (server frame decoder)
-    */
-    Frame generateFrameFromString(const string &frame);
-
 private:
-    /* map of topics and their subscription ids
-        could implement without it but it makes the code more readable.
-    */
-    map<string, unsigned int> topicSubscriptionMap;
 
+  /*
+    __________private auxiliary methods__________
+  */
 
-    /*
-      __________private auxiliary methods__________
-    */
+  // Parsing a string to a vector of strings by a delimiter
+  vector<string> parseStringByDelimeter(const string &frame, char delimeter);
 
-    // Parsing a string to a vector of strings by a delimiter
-    vector<string> parseStringByDelimeter(const string &frame, char delimeter);
+  // Parsing a frame to a vector of vectors of strings by the delimiters '\n' and ':'
+  vector<vector<string>> parseStringFrameToArgs(const string &frame);
 
-    // Parsing a frame to a vector of vectors of strings by the delimiters '\n' and ':'
-    vector<vector<string>> parseStringFrameToArgs(const string &frame);
+  // Concatenating a vector of strings to a single string. Used to concatenate back the message body of a frame.
+  string concatenateMessageBody(vector<vector<string>> &frameArgs, int messageStartLineIndex);
 
-    // Concatenating a vector of strings to a single string. Used to concatenate back the message body of a frame.
-    string concatenateMessageBody(vector<vector<string>> &frameArgs, int messageStartLineIndex);
+  // TODO: check if need to delete this method
+  bool checkRecieptId(int &sentRecieptId, int &receivedRecieptId);
 
-    // Decoding a frame by an argument vector.
-    Frame generateFrameFromArgs(vector<vector<string>> &frameArgs, map<string, string> &headers);
+public:
+  MessageEncoderDecoder();
+  /*
+  ______________Encode methods______________
+          (client frame generators)
+  */
+  Frame generateConnectFrame(const string &host,short &port,const string &username, const string &password);
+  Frame generateSendFrame(const string &destination, const string &message);
+  Frame generateSubscribeFrame(const string &topic);
+  Frame generateUnsubscribeFrame(const string &topic);
+  Frame generateDisconnectFrame();
 
-    // TODO: check if need to delete this method
-    bool checkRecieptId(unsigned int &sentRecieptId, unsigned int &receivedRecieptId);
+  /*
+  ______________Decode methods_______________
+            (server frame decoder)
+  */
+  Frame generateFrameFromString(const string &frame);
 
+  /* map of topics and their subscription ids
+      could implement without it but it makes the code more readable.
+  */
+  map<string,int> topicSubscriptionMap;
+    
 };
 

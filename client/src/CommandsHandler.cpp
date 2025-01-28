@@ -92,6 +92,11 @@ void CommandsHandler::runCommand(vector<string> &args) {
         }
 
         string channelName = args[1];
+        if (encdec.topicSubscriptionMap.find(channelName) == encdec.topicSubscriptionMap.end()) {
+            cout << "Couldn't find the channel '" << channelName << "' in the subscribed channels" << endl;
+            return;
+        }
+
         cout << "Exiting channel " << channelName << endl;
         Frame unsubscribeFrame = encdec.generateUnsubscribeFrame(channelName);
         Frame answerFrame = communicateServer(unsubscribeFrame);
@@ -137,10 +142,10 @@ void CommandsHandler::runCommand(vector<string> &args) {
         Frame answerFrame = communicateServer(disconnectFrame);
         if (answerFrame.type == FrameType::RECEIPT) {
             cout << "Logged out successfully" << endl;
+            connectionHandler.reset(nullptr);
         } else {
             cout << "Failed to log out" << endl;
         }
-
     }
 }
 
@@ -185,7 +190,7 @@ Frame CommandsHandler::communicateServer(Frame& frameToSend) {
         error = true;
     } else if (!error && answerFrame.type == FrameType::ERROR) {
         // Server's answer is an error frame
-        cout << "Error message received from server: " << answerFrame.headers["message"] << endl;
+        cout << "Error message received from server: " << answerFrame.headers["message"] << endl << endl;
         if (answerFrame.body != "") {
             cout << "Additional information received from server:\n" << answerFrame.body << "\n" << endl;
         }

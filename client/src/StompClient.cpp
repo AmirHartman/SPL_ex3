@@ -5,6 +5,12 @@
 
 bool DEBUG_MODE = false;
 queue<vector<string>> commandsQueue; // Shared data
+CommandsHandler commandsHandler; // commands handler
+
+void clearScreen() {
+    system("clear");
+    cout << "\n";
+}
 
 void runTests() {
     int userChoice = -1;
@@ -20,6 +26,7 @@ void runTests() {
         cout << "Enter a number: ";
         cin >> userChoice;
         cout << "__________________________" << endl;
+        clearScreen();
 
         // TODO: implement the tests
         switch (userChoice) {
@@ -43,7 +50,7 @@ void runTests() {
     }
 }
 
-bool adminCommands() {
+void adminCommands() {
     int userChoice = -1;
     while (userChoice != 0) {
         cout << "__________________________" << endl;
@@ -51,11 +58,13 @@ bool adminCommands() {
         cout << "1. admin auto login -> automate login to 127.0.0.1:7777 as {username:admin, password:1234}" << endl;
         cout << "2. run test" << endl;
         cout << "0. go back" << endl;
+        cout << "__________________________" << endl;
         cout << "Enter a number: ";
         cin >> userChoice;
-        cout << "__________________________" << endl;
+        clearScreen();
         if (userChoice == 1) {
-            return true;
+            vector<string> admin_login = {"login", "127.0.0.1", "7777", "admin", "1234"};
+            commandsHandler.runCommand(admin_login);
         } else if (userChoice == 2) {
             runTests();
         } else if (userChoice == 0) {
@@ -64,12 +73,9 @@ bool adminCommands() {
             cout << "Invalid command" << endl;
         }
     }
-    return false;
 }
 
 void runNormalMode() {
-    CommandsHandler commandsHandler;
-
     cout << "Client started\n" << endl;
     cout << "Commands available: login, join, exit, report, summary, logout" << endl;
     cout << "To exit the client, type 'quit'\n" << endl;
@@ -93,7 +99,6 @@ void runNormalMode() {
 }
 
 void runDebugMode() {
-    CommandsHandler commandsHandler;
     cout << "Started client in debug mode!" << endl;
 
     int userChoice = -1;
@@ -107,10 +112,12 @@ void runDebugMode() {
         cout << "5. summary" << endl;
         cout << "6. logout\n" << endl;
         cout << "7. admin commands\n" << endl;
-        cout << "0. quit\n" << endl;
+        cout << "0. quit" << endl;
+        cout << "__________________________" << endl;
         cout << "Enter a number: ";
         cin >> userChoice;
-        cout << "__________________________" << endl;
+        clearScreen();
+        
 
         if (userChoice < 0 || userChoice > 7 || cin.fail()) {
             cout << "Invalid command" << endl;
@@ -119,18 +126,11 @@ void runDebugMode() {
             userChoice = -1;
             continue;
         } else if (userChoice == 0) {
-            if (commandsHandler.checkIfLoggedIn()) {
-                vector<string> logout = {"logout"}; // logout before exiting
-                commandsHandler.runCommand(logout);
-            }
             cout << "Exiting client\n\n" << endl;
             break;
         } else if (userChoice == 7) {
-            bool should_run_admin_login = adminCommands();
-            if (should_run_admin_login) {
-                vector<string> admin_login = {"login", "127.0.0.1", "7777", "admin", "1234"};
-                commandsHandler.runCommand(admin_login);
-            }
+            clearScreen();
+            adminCommands();
         } else { // userChoice is between 1 and 6 -> run the command
             vector<string> args;
             switch (userChoice) {
@@ -202,5 +202,11 @@ int main(int argc, char *argv[]) {
         runDebugMode();
     } else {
         runNormalMode();
+    }
+
+    // Make sure to logout before exiting. If the client is already logged out, will skip the logout command.
+    if (commandsHandler.checkIfLoggedIn()) {
+        vector<string> logout = {"logout"}; 
+        commandsHandler.runCommand(logout);
     }
 }

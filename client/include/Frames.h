@@ -8,11 +8,11 @@ using namespace std;
 // class for generating unique ids
 // the ids are static means they are shared between all instances of the class (like a global variable)
 struct idCounter { 
-    static unsigned int subscriptionId;
-    static unsigned int receiptId;
+    static int subscriptionId;
+    static int receiptId;
 
-    static unsigned int generateSubscriptionId();
-    static unsigned int generateReceiptId();
+    static int generateSubscriptionId();
+    static int generateReceiptId();
 };
 
 
