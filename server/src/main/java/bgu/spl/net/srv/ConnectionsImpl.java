@@ -102,8 +102,9 @@ public class ConnectionsImpl<T> implements Connections<T> {
     public void subscribe(int connectionId, String topic, int subscriptionId){
         synchronized (topics){
             topics.putIfAbsent(topic, new ConcurrentHashMap<>());
-            topics.get(topic).put(connectionId, subscriptionId);
-            }}
+            if (!topics.get(topic).containsKey(connectionId)){
+                topics.get(topic).put(connectionId, subscriptionId);
+            }}}
 
     @Override
     public boolean unsubscribe(int connectionId, String topic){
