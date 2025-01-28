@@ -54,9 +54,6 @@ public class BlockingConnectionHandler<T> implements Runnable, ConnectionHandler
             ex.printStackTrace();
             System.err.println("Error in connection handler for client: " + sock.getRemoteSocketAddress() + " - " + ex.getMessage());
         }
-        finally{
-            protocol.close();
-        }
     }    
     
     @Override

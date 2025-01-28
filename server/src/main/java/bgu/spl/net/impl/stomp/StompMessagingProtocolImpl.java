@@ -10,7 +10,6 @@ import bgu.spl.net.impl.stomp.ServerFrame.*;
 
 public class StompMessagingProtocolImpl implements StompMessagingProtocol<String>{
     private boolean shouldTerminate = false;
-    //צריך מקביליות? אולי בריאקטור?
     protected ConcurrentHashMap<Integer, String> subscriberIds = new ConcurrentHashMap<>();
     private int connectionId;
     private Connections<String> connections;
@@ -62,14 +61,15 @@ public class StompMessagingProtocolImpl implements StompMessagingProtocol<String
             else{
                 ServerFrame serverFrame = clientFrame.process(connectionId, connections, this);
                 if (serverFrame != null){ // null for client frame send
+                    System.out.println("PROTOCOL: serverFrame:\n" + serverFrame.toString());
+                    connections.send(connectionId, serverFrame.toString());
+                    System.out.println("PROTOCOL: serverFrame sent to client from process, first send funtion in Connections"); 
                     if (serverFrame instanceof ServerFrameError){
                         System.out.println("PROTOCOL: error frame, should terminate");
                         shouldTerminate = true;
                         connections.disconnect(connectionId);
+                        connections.removeClient(connectionId);
                     }
-                    System.out.println("PROTOCOL: serverFrame:\n" + serverFrame.toString());
-                    connections.send(connectionId, serverFrame.toString());
-                    System.out.println("PROTOCOL: serverFrame sent to client from process, first send funtion in Connections"); 
             }}}}
         
 
@@ -91,12 +91,6 @@ public class StompMessagingProtocolImpl implements StompMessagingProtocol<String
     public void addClient(){
         connections.addClient(this.connectionId, this.handler);
     }
-
-    @Override
-    public void close(){
-        connections.removeClient(connectionId);
-    }
-
 
 }
 
