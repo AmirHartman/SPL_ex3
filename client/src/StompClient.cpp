@@ -112,12 +112,17 @@ void runDebugMode() {
         cin >> userChoice;
         cout << "__________________________" << endl;
 
-        if (userChoice < 0 || userChoice > 7) {
+        if (userChoice < 0 || userChoice > 7 || cin.fail()) {
             cout << "Invalid command" << endl;
+            cin.clear(); // reset the fail flag
+            while (cin.get() != '\n') ; // clear the buffer
+            userChoice = -1;
             continue;
         } else if (userChoice == 0) {
-            vector<string> logout = {"logout"}; // logout before exiting
-            commandsHandler.runCommand(logout);
+            if (commandsHandler.checkIfLoggedIn()) {
+                vector<string> logout = {"logout"}; // logout before exiting
+                commandsHandler.runCommand(logout);
+            }
             cout << "Exiting client\n\n" << endl;
             break;
         } else if (userChoice == 7) {

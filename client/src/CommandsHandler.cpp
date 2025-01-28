@@ -20,12 +20,18 @@ void CommandsHandler::runCommand(vector<string> &args) {
     
     // Stop the execution if the client is not logged in and trying to run other command
     if (command != "login" && !checkIfLoggedIn()) {
+        if (DEBUG_MODE) cout << "[DEBUG] Client is not logged in, stopping the command execution" << endl;
+        if (command == "logout") {
+            cout << "You are not logged in" << endl;
+        } else {
+            cout << "You must login first" << endl;
+        }
         return;
     }
 
     // Commands execution
     if (command == "login") {
-        if (connectionHandler != nullptr) {
+        if (checkIfLoggedIn()) {
             cout << "The client is already logged in, log out before trying again" << endl;
             return;
         }
@@ -55,7 +61,7 @@ void CommandsHandler::runCommand(vector<string> &args) {
         if (answerFrame.type == FrameType::CONNECTED) isLoggedSuccessfully = true;
 
         if (!isConnectedSuccessfully || !isLoggedSuccessfully) {
-            connectionHandler.reset();
+            connectionHandler.reset(nullptr);
             if (!isConnectedSuccessfully) cout << "Failed to connect to " << host << ":" << port << endl;
             if (!isLoggedSuccessfully) cout << "Failed to login" << endl;
         } else {
@@ -121,7 +127,7 @@ void CommandsHandler::runCommand(vector<string> &args) {
             return;
         }
 
-        if (!connectionHandler) {
+        if (!checkIfLoggedIn()) {
             if (DEBUG_MODE) cout << "[DEBUG] logout commands was executed but connection is offline" << endl;
             return;
         }
@@ -138,64 +144,63 @@ void CommandsHandler::runCommand(vector<string> &args) {
     }
 }
 
-
-void CommandsHandler::handleUNKNOWNFrame(string &answerAsString) {
-    if (DEBUG_MODE) {
-        cout << "[DEBUG] Server's answer failed to be decoded." << endl;
-        cout << "[DEBUG] Frame received from server (as a string):\n" << answerAsString << endl;
-    }
-    cout << "\nAn error occured during communicating to server. Closing connection.." << endl;
-    vector<string> logout = {"logout"};
-    runCommand(logout); // try to logout before closing the connection
-    connectionHandler.reset();
-}
-
-void CommandsHandler::handleERRORFrame(Frame &errorFrame) {
-    cout << "Error message received from server: " << errorFrame.headers["message"] << endl;
-    if (errorFrame.body != "") {
-        cout << "Additional information received from server:\n" << errorFrame.body << "\n" << endl;
-    }
-    cout << "Disconnecting from server..." << endl;
-    connectionHandler.reset();
-}
-
-bool CommandsHandler::checkIfLoggedIn() {
-    if (!connectionHandler) {
-        cout << "You must login first" << endl;
-        return false;
-    }
-    return true;
-}
-
 Frame CommandsHandler::communicateServer(Frame& frameToSend) {
     string message = frameToSend.toString();
-    Frame output = Frame();
+    bool error = false;
+
+    // Check if connected
+    if (!checkIfLoggedIn()) {
+        cout << "[DEBUG] Tried to communicate the server without being logged in." << endl;
+        error = true;
+    }
 
     // Send the frame to the server
-    if (!connectionHandler->sendFrameAscii(message, '\0')) {
+    if (!error && !connectionHandler->sendFrameAscii(message, '\0')) {
         cerr << "Failed to send request to the server. Connection error." << endl;
+        error = true;
     } else {
         if (DEBUG_MODE) cout << "\n[DEBUG] Frame successfully sent to the server" << endl;
     }
 
     // Get the server's answer
+    Frame answerFrame;
     string answerAsString;
-    if (!connectionHandler->getFrameAscii(answerAsString, '\0')) {
+    if (!error && !connectionHandler->getFrameAscii(answerAsString, '\0')) {
         cerr << "Failed to receive an answer from the server." << endl;
+        error = true;
     } else {
         if (DEBUG_MODE) cout << "[DEBUG] Answer frame successfully received from the server\n" << endl;
-        output = encdec.generateFrameFromString(answerAsString);
+        answerFrame = encdec.generateFrameFromString(answerAsString);
     }
 
-    // If answer could not be decoded
-    if (output.type == FrameType::UNKNOWN) {
-        handleUNKNOWNFrame(answerAsString);
+    // Error handling:
+    if (!error && answerFrame.type == FrameType::UNKNOWN) {
+        // Server's answer failed to be decoded -- in this case, the client should disconnect manually (in other cases, the server will disconnect the client)
+        if (DEBUG_MODE) {
+            cout << "[DEBUG] Server's answer failed to be decoded." << endl;
+            cout << "[DEBUG] Frame received from server (as a string):\n" << answerAsString << endl;
+        }
+        vector<string> logout = {"logout"};
+        runCommand(logout); 
+        error = true;
+    } else if (!error && answerFrame.type == FrameType::ERROR) {
+        // Server's answer is an error frame
+        cout << "Error message received from server: " << answerFrame.headers["message"] << endl;
+        if (answerFrame.body != "") {
+            cout << "Additional information received from server:\n" << answerFrame.body << "\n" << endl;
+        }
+        error = true;
     }
 
-    // If answer is an error frame
-    if (output.type == FrameType::ERROR) {
-        handleERRORFrame(output);
+    if (error) {
+        cout << "\nAn error occured during communicating to server. Closing connection.." << endl;
+        connectionHandler.reset(nullptr);
+        return Frame();
     }
 
-    return output;
+    return answerFrame;
+}
+
+bool CommandsHandler::checkIfLoggedIn() {
+    return connectionHandler != nullptr;
 }

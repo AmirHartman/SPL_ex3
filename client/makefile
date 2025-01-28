@@ -3,7 +3,7 @@ LDFLAGS := -lboost_system -lpthread
 
 OFILES := bin/MessageEncoderDecoder.o bin/Frames.o bin/event.o bin/connectionHandler.o bin/CommandsHandler.o
 
-all: StompWCIClient
+all: createBin StompWCIClient
 
 StompWCIClient: $(OFILES) bin/StompClient.o
 	g++ -o bin/StompWCIClient $(OFILES) bin/StompClient.o $(LDFLAGS)
@@ -26,6 +26,10 @@ bin/MessageEncoderDecoder.o: src/MessageEncoderDecoder.cpp
 bin/Frames.o: src/Frames.cpp
 	g++ $(CFLAGS) -o bin/Frames.o src/Frames.cpp
 
+
+.PHONY: createBin
+createBin:
+	@mkdir -p bin
 
 .PHONY: clean
 clean:
