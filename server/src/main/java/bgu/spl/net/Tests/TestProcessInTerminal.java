@@ -28,6 +28,11 @@ public class TestProcessInTerminal{
         protocol.process(connect1);
         protocol.process(connect2);
 
+        try {
+            handler.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
     }
 }

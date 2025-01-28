@@ -3,7 +3,6 @@ package bgu.spl.net.impl.stomp;
 import bgu.spl.net.impl.stomp.ServerFrame.ServerFrame;
 import bgu.spl.net.impl.stomp.ServerFrame.ServerFrameError;
 import bgu.spl.net.impl.stomp.ServerFrame.ServerFrameReceipt;
-import bgu.spl.net.srv.ConnectionHandler;
 import bgu.spl.net.srv.Connections;
 
 
@@ -26,7 +25,8 @@ public class ClientFrameSubscribe extends ClientFrame {
             String[] header = lines[i].split(":");
             switch (header[0]){
                 case "destination":
-                    // String[] topic = header[1].split("/");
+                // לבדיקה עם אמיר
+                //     this.destination = header[1].substring(1);
                     this.destination = header[1];
                     break;
                 case "id":
@@ -46,15 +46,15 @@ public class ClientFrameSubscribe extends ClientFrame {
         }}}
 
     @Override
-    public ServerFrame process (int connectionId, Connections <String> connections, ConnectionHandler<String> handler, StompMessagingProtocolImpl protocol){
-        // if (!connections.isConnected(connectionId)){
-        //     System.out.println("user is trying to subscribe to a channel without being connected");
-        //     return new ServerFrameError("Unconnected user is trying to subscribe to a channel", receiptId, toString());
-        // }
-        if (protocol.subscriberIds.containsKey(subscription)){
-            System.out.println("user is already subscribed to channel");
-            return new ServerFrameError("already subscribed to " + destination, receiptId, toString());
+    public ServerFrame process (int connectionId, Connections <String> connections, StompMessagingProtocolImpl protocol){
+        if (!connections.isConnected(connectionId)){
+            System.out.println("user is trying to subscribe to a channel without being connected");
+            return new ServerFrameError("Unconnected user is trying to subscribe to a channel", receiptId, toString());
         }
+        // if (protocol.subscriberIds.containsKey(subscription)){
+        //     System.out.println("user is already subscribed to channel");
+        //     return new ServerFrameError("already subscribed to " + destination, receiptId, toString());
+        // }
         protocol.subscriberIds.put(subscription, destination);
         connections.subscribe(connectionId, destination, subscription);
         return new ServerFrameReceipt(receiptId);

@@ -34,6 +34,7 @@ public class NonBlockingConnectionHandler<T> implements ConnectionHandler<T> {
         this.encdec = reader;
         this.protocol = protocol;
         this.protocol.setHandler(this);
+        protocol.addClient();
         this.reactor = reactor;
     }
 
@@ -54,11 +55,13 @@ public class NonBlockingConnectionHandler<T> implements ConnectionHandler<T> {
                     while (buf.hasRemaining()) {
                         T nextMessage = encdec.decodeNextByte(buf.get());
                         if (nextMessage != null) {
+                            System.out.println("NonBlocking: received message: " + nextMessage);
                             protocol.process(nextMessage);
                             T response = messages.pollFirst();
                                     if (response != null) {
-                                writeQueue.add(ByteBuffer.wrap(encdec.encode(response)));
-                                reactor.updateInterestedOps(chan, SelectionKey.OP_READ | SelectionKey.OP_WRITE);
+                                        System.out.println("NonBlocking: sending response: " + response);
+                                        writeQueue.add(ByteBuffer.wrap(encdec.encode(response)));
+                                        reactor.updateInterestedOps(chan, SelectionKey.OP_READ | SelectionKey.OP_WRITE);
                             }
                         }
                     }
@@ -71,7 +74,6 @@ public class NonBlockingConnectionHandler<T> implements ConnectionHandler<T> {
             close();
             return null;
         }
-
     }
 
     public void close() {
