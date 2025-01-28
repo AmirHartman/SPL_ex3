@@ -19,9 +19,6 @@ public class BlockingConnectionHandler<T> implements Runnable, ConnectionHandler
     private volatile boolean connected = true;
     private ConcurrentLinkedDeque<T> messages = new ConcurrentLinkedDeque<>();
 
-    // הוספתי, צריך?X
-    private String username = null;
-
     public BlockingConnectionHandler(Socket sock, MessageEncoderDecoder<T> reader, MessagingProtocol<T> protocol) {
         this.sock = sock;
         this.encdec = reader;
@@ -76,9 +73,5 @@ public class BlockingConnectionHandler<T> implements Runnable, ConnectionHandler
         System.out.println("Message added to messages queue");
     }
 
-    @Override
-    public String getUserName(){
-        return username;
-    }
 }
 

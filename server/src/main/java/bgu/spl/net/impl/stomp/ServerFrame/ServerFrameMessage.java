@@ -21,9 +21,9 @@ public class ServerFrameMessage extends ServerFrame {
 
     public String toString() {
         return type.name() + "\n"  
-                + "message-id:" + this.messageID + "\n" 
+                + "message-id/:" + this.messageID + "\n" 
                 + "subscribtion:" + this.subscribtion + "\n" 
-                + "destination:/topic/" + this.destination + "\n" + this.body;
+                + "destination:" + this.destination + "\n" + this.body;
     }
 
     public void setSubscribtion(int subscribtion) {

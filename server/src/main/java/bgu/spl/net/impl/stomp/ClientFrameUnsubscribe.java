@@ -18,19 +18,34 @@ public class ClientFrameUnsubscribe extends ClientFrame {
     // לתקן בבוקר
     public ClientFrameUnsubscribe(String toFrame){
         super(toFrame);
-        String[] header = toFrame.split("\n");
-        try {
-            this.subscription = Integer.parseInt(header[1].split(":")[1]);
-        } catch (Exception e) {
-            System.out.println("unable to create frameUnsubscribe, invalid subscription id");
-        }
-    }
+        String[] lines = toFrame.split("\n");
+        // initialize headers
+        for (int i = 1; i < lines.length; i++){
+            String[] header = lines[i].split(":");
+            switch (header[0]){
+                case "id":
+                    try {
+                        this.subscription = Integer.parseInt(header[1]);
+                    } catch (Exception e) {
+                        System.out.println("unable to create frameUnsubscribe, invalid subscription id");
+                    } 
+                    break;
+                case "receipt":
+                    try {
+                        this.receiptId = Integer.parseInt(header[1]);
+                    } catch (Exception e) {
+                        System.out.println("unable to create frameUnsubscribe, invalid receipt id");
+                    } 
+                    break;
+            }}}
 
     @Override
     public ServerFrame process (int connectionId, Connections <String> connections, ConnectionHandler<String> handler, StompMessagingProtocolImpl protocol){
-        if (!connections.isConnected(handler.getUserName())){
-            return new ServerFrameError("Unconnected user is trying to unsubscribe from a channel", receiptId, toString());
-        }
+        // if (!connections.isConnected(connectionId)){
+        //     System.out.println("user is trying to unsubscribe from a channel without being connected");
+        //     return new ServerFrameError("Unconnected user is trying to subscribe to a channel", receiptId, toString());
+        // }
+
         if (!protocol.subscriberIds.containsKey(subscription)){
             return new ServerFrameError("user is not subscribed to channel", receiptId, toString());
         }

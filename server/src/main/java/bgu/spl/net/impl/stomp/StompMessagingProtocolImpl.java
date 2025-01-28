@@ -27,7 +27,6 @@ public class StompMessagingProtocolImpl implements StompMessagingProtocol<String
     
     @Override
     public void process(String message){
-        System.out.println("Entering process for message: " + message);
         String commandtmp = message.split("\n")[0];
         StompCommand command = Auxiliary.stringToCommand(commandtmp);
         if (command == null){
@@ -62,10 +61,16 @@ public class StompMessagingProtocolImpl implements StompMessagingProtocol<String
             }
             else{
                 ServerFrame serverFrame = clientFrame.process(connectionId, connections, handler, this);
-                System.out.println("serverFrame:\n" + serverFrame.toString());
-                connections.send(connectionId, serverFrame.toString());
-                System.out.println("serverFrame sent to client from process, first send funtion in Connections"); 
-            }}}
+                if (serverFrame != null){ // null for client frame send
+                    if (serverFrame instanceof ServerFrameError){
+                        System.out.println("error frame, should terminate");
+                        shouldTerminate = true;
+                        connections.disconnect(connectionId);
+                    }
+                    System.out.println("serverFrame:\n" + serverFrame.toString());
+                    connections.send(connectionId, serverFrame.toString());
+                    System.out.println("serverFrame sent to client from process, first send funtion in Connections"); 
+            }}}}
         
 
 	@Override

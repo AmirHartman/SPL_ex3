@@ -16,10 +16,10 @@ public class testClientFrame {
          * tests coth constructors
          */
         testClientFrameConnect();
-        // testClientFrameDisconnect();
+        testClientFrameDisconnect();
         // testClientFrameSend();
-        // testClientFrameSubscribe();
-        // testClientFrameUnsubscribe();
+        testClientFrameSubscribe();
+        testClientFrameUnsubscribe();
 
         testNullChar();
         /**
@@ -52,16 +52,16 @@ public class testClientFrame {
         System.out.println(testFrame3.toString());
     }
 
-    private static void testClientFrameSend() {
-        ClientFrame testFrame = new ClientFrameSend("police", 12, "this is a test message");
-        String tst = testFrame.toString();
-        System.out.println(tst);
-        ClientFrame testFrame2 = new ClientFrameSend(tst);
-        String tst2 = testFrame2.toString();
-        System.out.println(tst2);
-        ClientFrame testFrame3 = new ClientFrameSend(tst2);
-        System.out.println(testFrame3.toString());
-    }
+    // private static void testClientFrameSend() {
+    //     ClientFrame testFrame = new ClientFrameSend("police", 12, "this is a test message");
+    //     String tst = testFrame.toString();
+    //     System.out.println(tst);
+    //     ClientFrame testFrame2 = new ClientFrameSend(tst);
+    //     String tst2 = testFrame2.toString();
+    //     System.out.println(tst2);
+    //     ClientFrame testFrame3 = new ClientFrameSend(tst2);
+    //     System.out.println(testFrame3.toString());
+    // }
 
     private static void testClientFrameSubscribe() {
         ClientFrame testFrame = new ClientFrameSubscribe(12, "police", 121212);
@@ -89,14 +89,14 @@ public class testClientFrame {
 
     private static void testNullChar() {
         // initialize frames for test
-        ClientFrame send = new ClientFrameSend("police", 12, "this is a test message");
+        // ClientFrame send = new ClientFrameSend("police", 12, "this is a test message");
         ClientFrame unsubscribe = new ClientFrameUnsubscribe(12, 121212);
         ClientFrame subscribe = new ClientFrameSubscribe(12, "police", 121212);
         ClientFrame disconnect = new ClientFrameDisconnect(12);
         ClientFrame connect = new ClientFrameConnect("yam", "1234");
 
         // get the last char of each frame
-        char charSend = send.toString().charAt(send.toString().length() - 1);
+        // char charSend = send.toString().charAt(send.toString().length() - 1);
         char charUnsubscribe = unsubscribe.toString().charAt(unsubscribe.toString().length() - 1);
         char charSubscribe = subscribe.toString().charAt(subscribe.toString().length() - 1);
         char charDisconnect = disconnect.toString().charAt(disconnect.toString().length() - 1);
@@ -104,7 +104,7 @@ public class testClientFrame {
 
 
         // print the last char of each frame
-        System.out.println("Is last char of send frame is null char? " + (charSend == '\u0000'));
+        // System.out.println("Is last char of send frame is null char? " + (charSend == '\u0000'));
         System.out.println("Is last char of unsubscribe frame is null char? " + (charUnsubscribe == '\u0000'));
         System.out.println("Is last char of subscribe frame is null char? " + (charSubscribe == '\u0000'));
         System.out.println("Is last char of disconnect frame is null char? " + (charDisconnect == '\u0000'));

@@ -18,4 +18,8 @@ public class ServerFrameError extends ServerFrame {
                 + "message:" + this.message + "\n" 
                 + this.body;
     }    
+    
+    public String getMessage() {
+        return message;
+    }
 }
