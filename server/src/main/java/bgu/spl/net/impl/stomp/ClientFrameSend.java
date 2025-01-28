@@ -3,7 +3,6 @@ package bgu.spl.net.impl.stomp;
 import bgu.spl.net.impl.stomp.ServerFrame.ServerFrame;
 import bgu.spl.net.impl.stomp.ServerFrame.ServerFrameError;
 import bgu.spl.net.impl.stomp.ServerFrame.ServerFrameMessage;
-import bgu.spl.net.srv.ConnectionHandler;
 import bgu.spl.net.srv.Connections;
 
 import java.util.concurrent.ConcurrentHashMap;
@@ -21,7 +20,8 @@ public class ClientFrameSend extends ClientFrame {
     public ClientFrameSend(String toFrame){
         super(toFrame);
         String[] header = toFrame.split("\n");
-        this.destination = header[1].split(":/")[1];
+        this.destination = header[1].split(":")[1];
+        this.destination = this.destination.substring(1);
         // for (int i = 1; i < lines.length; i++){
         //     String[] header = lines[i].split(":");
         //     switch (header[0]){
@@ -43,7 +43,7 @@ public class ClientFrameSend extends ClientFrame {
     }
 
     @Override
-    public ServerFrame process (int connectionId, Connections <String> connections, ConnectionHandler<String> handler, StompMessagingProtocolImpl protocol){
+    public ServerFrame process (int connectionId, Connections <String> connections, StompMessagingProtocolImpl protocol){
         // if (!connections.isConnected(connectionId)){
         //     return new ServerFrameError("Unconnected user is trying to send a message", receiptId, toString());
         // }
@@ -57,7 +57,7 @@ public class ClientFrameSend extends ClientFrame {
         ServerFrameMessage messageFrame = new ServerFrameMessage(connections.getNextMessageId(), -1, destination, body);
         // updates subscription id for each subscriber
         for (Integer handlerId : subscribers.keySet()){
-            messageFrame.setSubscribtion(subscribers.get(handlerId));
+            messageFrame.setSubscribtion(connections.getSubscriptionId(destination, handlerId));
             connections.send(handlerId, messageFrame.toString());
         }
         return null;
@@ -69,7 +69,7 @@ public class ClientFrameSend extends ClientFrame {
 
     public String toString (){
         return "SEND\n" +
-                "destination:" + destination + "\n" +
+                "destination:/" + destination + "\n" +
                 // "receipt:" + receiptId + "\n" +
                 this.body;
     }

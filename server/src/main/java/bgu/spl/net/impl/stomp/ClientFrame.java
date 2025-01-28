@@ -1,7 +1,6 @@
 package bgu.spl.net.impl.stomp;
 
 import bgu.spl.net.impl.stomp.ServerFrame.*;
-import bgu.spl.net.srv.ConnectionHandler;
 import bgu.spl.net.srv.Connections;
 
 
@@ -33,7 +32,7 @@ public abstract class ClientFrame {
         return receiptId;
     }
 
-    public abstract ServerFrame process (int connectionId, Connections <String> connections, ConnectionHandler<String> handler, StompMessagingProtocolImpl protocol);
+    public abstract ServerFrame process (int connectionId, Connections <String> connections, StompMessagingProtocolImpl protocol);
 
 
 

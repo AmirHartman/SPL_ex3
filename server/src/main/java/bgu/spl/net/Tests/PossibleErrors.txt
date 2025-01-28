@@ -65,3 +65,8 @@ bugs - reactor
 1. login, works only when everything is correct - doent work for wrong password and user already logged in (not from the same terminal) - DEADLOCK!
 2. logged our - seems to work fine but eas only tested for true tests, no negative tests yet (very minimal true tests)
 3. the rest of the commands were not yet tested
+
+
+
+java -jar target/StompServer1.1.jar 8888 tpc
+mvn exec:java -Dexec.mainClass="bgu.spl.net.impl.stomp.StompServer" -Dexec.args="7777 reactor"

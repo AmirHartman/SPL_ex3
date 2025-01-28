@@ -46,32 +46,40 @@ public class Reactor<T> implements Server<T> {
             serverSock.bind(new InetSocketAddress(port));
             serverSock.configureBlocking(false);
             serverSock.register(selector, SelectionKey.OP_ACCEPT);
-			System.out.println("Server started");
+			System.out.println("REACTOR: Server started");
 
             while (!Thread.currentThread().isInterrupted()) {
+                System.out.println("REACTOR: Waiting for a client to connect...");
 
                 selector.select();
+                System.out.println("REACTOR: Selector triggered events");
                 runSelectionThreadTasks();
 
                 for (SelectionKey key : selector.selectedKeys()) {
 
                     if (!key.isValid()) {
+                        System.out.println("REACTOR: Invalid selection key, skipping...");
                         continue;
                     } else if (key.isAcceptable()) {
                         handleAccept(serverSock, selector);
+                        System.out.println("REACTOR: Key is acceptable, handling accept...");
                     } else {
+                        System.out.println("REACTOR: Key is readable/writable, handling read/write...");
                         handleReadWrite(key);
                     }
                 }
 
                 selector.selectedKeys().clear(); //clear the selected keys set so that we can know about new events
+                System.out.println("REACTOR: Selector keys cleared, ready for new events");
 
             }
 
         } catch (ClosedSelectorException ex) {
+            System.out.println("REACTOR: Selector closed, shutting down...");
             //do nothing - server was requested to be closed
         } catch (IOException ex) {
             //this is an error
+            System.err.println("REACTOR: Error in serve(): " + ex.getMessage());
             ex.printStackTrace();
         }
 
