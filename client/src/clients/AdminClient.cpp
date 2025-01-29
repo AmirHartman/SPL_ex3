@@ -1,18 +1,16 @@
-#include <thread>
-#include <queue>
+#include "../../include/StompClient.h"
 
-#include "../include/CommandsHandler.h"
-
-bool DEBUG_MODE = false;
-queue<vector<string>> commandsQueue; // Shared data
-CommandsHandler commandsHandler; // commands handler
-
-void clearScreen() {
+void AdminClient::clearScreen() {
     system("clear");
     cout << "\n";
 }
 
-void runTests() {
+void AdminClient::adminLogin(){
+    vector<string> admin_login = {"login", "127.0.0.1", "7777", "admin", "1234"};
+    stomp.proccess(admin_login);
+}
+
+void AdminClient::runTests() {
     int userChoice = -1;
     cin >> userChoice;
     while (1) {
@@ -22,7 +20,7 @@ void runTests() {
         cout << "2. commands test" << endl;
         cout << "3. connection handler test" << endl;
         cout << "4. event test\n" << endl;
-        cout << "0. go back" << endl;
+        cout << "0. go back to main menu" << endl;
         cout << "Enter a number: ";
         cin >> userChoice;
         cout << "__________________________" << endl;
@@ -50,7 +48,9 @@ void runTests() {
     }
 }
 
-void adminCommands() {
+void AdminClient::adminCommands() {
+    adminLogin();
+    
     int userChoice = -1;
     while (userChoice != 0) {
         cout << "__________________________" << endl;
@@ -63,10 +63,11 @@ void adminCommands() {
         cin >> userChoice;
         clearScreen();
         if (userChoice == 1) {
-            vector<string> admin_login = {"login", "127.0.0.1", "7777", "admin", "1234"};
-            commandsHandler.runCommand(admin_login);
+            adminLogin();
+            break;
         } else if (userChoice == 2) {
             runTests();
+            break;
         } else if (userChoice == 0) {
             break;
         } else {
@@ -75,30 +76,7 @@ void adminCommands() {
     }
 }
 
-void runNormalMode() {
-    cout << "Client started\n" << endl;
-    cout << "Commands available: login, join, exit, report, summary, logout" << endl;
-    cout << "To exit the client, type 'quit'\n" << endl;
-    cout << "Please enter a command" << endl;
-
-    string command;
-    while (getline(cin, command)) {
-        cout << endl;
-        vector<string> commandVector;
-        stringstream ss(command);
-        string word;
-        while (ss >> word) {
-            commandVector.push_back(word);
-        }
-        if (commandVector[0] == "quit") {
-            cout << "Exiting client" << endl;
-            break;
-        }
-        commandsHandler.runCommand(commandVector);
-    }
-}
-
-void runDebugMode() {
+void AdminClient::run() {
     cout << "Started client in debug mode!" << endl;
 
     int userChoice = -1;
@@ -161,7 +139,7 @@ void runDebugMode() {
                 case 4:
                     args.resize(2);
                     args[0] = "report";
-                    cout << "Enter file path: ";
+                    cout << "Enter file name: ";
                     cin >> args[1];
                     break;
                 case 5:
@@ -171,7 +149,7 @@ void runDebugMode() {
                     cin >> args[1];
                     cout << "Enter user: ";
                     cin >> args[2];
-                    cout << "Enter file path: ";
+                    cout << "Enter file name: ";
                     cin >> args[3];
                     break;
                 case 6:
@@ -179,34 +157,7 @@ void runDebugMode() {
                     args[0] = "logout";
                     break;
             }
-            commandsHandler.runCommand(args);
+            stomp.proccess(args);
         }
-    }
-}
-
-int main(int argc, char *argv[]) {
-    // Check if the client should run in debug mode
-    if (argc > 1) {
-        if (string(argv[1]) == "debug" && argc == 2) {
-            DEBUG_MODE = true;
-        } else {
-            cout << "Invalid arguments" << endl;
-            return 1;
-        }
-    }
-
-    // TODO: start the client on a different thread (for the input loop)
-    // Start the client
-
-    if (DEBUG_MODE) {
-        runDebugMode();
-    } else {
-        runNormalMode();
-    }
-
-    // Make sure to logout before exiting. If the client is already logged out, will skip the logout command.
-    if (commandsHandler.checkIfLoggedIn()) {
-        vector<string> logout = {"logout"}; 
-        commandsHandler.runCommand(logout);
     }
 }
