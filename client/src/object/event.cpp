@@ -1,5 +1,5 @@
-#include "../include/event.h"
-#include "../include/json.hpp"
+#include "../../include/event.h"
+#include "../../include/json.hpp"
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -111,6 +111,9 @@ Event::Event(const std::string &frame_body): channel_name(""), city(""),
     }
     general_information = general_information_from_string;
 }
+
+names_and_events::names_and_events() : channel_name(""), events(){}
+names_and_events::names_and_events(std::string channel_name, std::vector<Event> events) : channel_name(channel_name), events(events){}
 
 names_and_events parseEventsFile(std::string json_path)
 {
