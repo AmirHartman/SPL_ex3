@@ -44,5 +44,9 @@ public class EchoProtocol implements MessagingProtocol<String> {
         // do nothing
     }
 
+    @Override
+    public void close(){
+        // do nothing
+    }
 
 }
