@@ -1,6 +1,7 @@
 CFLAGS := -c -Wall -Weffc++ -g -std=c++11 -Iinclude
 LDFLAGS := -lboost_system -lpthread
 
+<<<<<<< HEAD
 OFILES := bin/MessageEncoderDecoder.o bin/Frames.o bin/event.o bin/connectionHandler.o bin/CommandsHandler.o
 
 all: StompWCIClient
@@ -13,30 +14,74 @@ bin/StompClient.o: src/StompClient.cpp
 
 bin/CommandsHandler.o: src/CommandsHandler.cpp
 	g++ $(CFLAGS) -o bin/CommandsHandler.o src/CommandsHandler.cpp
+=======
+OFILES := bin/MessageEncoderDecoder.o bin/frame.o bin/event.o bin/connectionHandler.o bin/StompProtocol.o bin/StompClient.o bin/UserClient.o bin/AdminClient.o bin/main.o
+
+all: createBin StompEMIClient
+
+StompEMIClient: $(OFILES) 
+	g++ -o bin/StompEMIClient $(OFILES) $(LDFLAGS)
+
+bin/main.o: src/main.cpp
+	g++ $(CFLAGS) -o bin/main.o src/main.cpp
+
+bin/StompClient.o: src/clients/StompClient.cpp
+	g++ $(CFLAGS) -o bin/StompClient.o src/clients/StompClient.cpp
+
+bin/AdminClient.o: src/clients/AdminClient.cpp
+	g++ $(CFLAGS) -o bin/AdminClient.o src/clients/AdminClient.cpp
+
+bin/UserClient.o: src/clients/UserClient.cpp
+	g++ $(CFLAGS) -o bin/UserClient.o src/clients/UserClient.cpp
+
+bin/StompProtocol.o: src/StompProtocol.cpp
+	g++ $(CFLAGS) -o bin/StompProtocol.o src/StompProtocol.cpp
+>>>>>>> tst
 
 bin/connectionHandler.o: src/connectionHandler.cpp
 	g++ $(CFLAGS) -o bin/connectionHandler.o src/connectionHandler.cpp
 
+<<<<<<< HEAD
 bin/event.o: src/event.cpp
 	g++ $(CFLAGS) -o bin/event.o src/event.cpp
+=======
+bin/event.o: src/object/event.cpp
+	g++ $(CFLAGS) -o bin/event.o src/object/event.cpp
+>>>>>>> tst
 
 bin/MessageEncoderDecoder.o: src/MessageEncoderDecoder.cpp
 	g++ $(CFLAGS) -o bin/MessageEncoderDecoder.o src/MessageEncoderDecoder.cpp
 
+<<<<<<< HEAD
 bin/Frames.o: src/Frames.cpp
 	g++ $(CFLAGS) -o bin/Frames.o src/Frames.cpp
 
+=======
+bin/frame.o: src/object/frame.cpp
+	g++ $(CFLAGS) -o bin/frame.o src/object/frame.cpp
+>>>>>>> tst
 
 .PHONY: clean
 clean:
 	rm -rf bin/*
 
+<<<<<<< HEAD
 .PHONY: run
 run: 
+=======
+.PHONY: createBin
+createBin:
+	@mkdir -p bin
+
+.PHONY: run
+run: 
+	@$(MAKE)
+>>>>>>> tst
 	@clear
 	@echo
 	@echo "Running StompWCIClient"
 	@echo
+<<<<<<< HEAD
 	@./bin/StompWCIClient
 
 
@@ -95,4 +140,12 @@ test:
 		@$(BIN_TEST_DIR)/$(TEST)
 	
 
+=======
+	@if [ "$(DEBUG)" = "true" ]; then \
+		echo "Launching StompWCIClient in debug mode"; \
+		./bin/StompWCIClient debug; \
+	else \
+		./bin/StompWCIClient; \
+	fi
+>>>>>>> tst
 

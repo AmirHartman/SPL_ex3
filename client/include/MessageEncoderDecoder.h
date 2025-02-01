@@ -1,4 +1,5 @@
 #pragma once
+<<<<<<< HEAD
 
 #include <vector>
 #include <iostream>
@@ -10,6 +11,27 @@ using namespace std;
 class MessageEncoderDecoder{
   public:
     MessageEncoderDecoder();
+=======
+#include "frame.h"
+#include <iostream>
+#include <sstream>
+#include <vector>
+#include <deque>
+
+using namespace std;
+
+extern bool DEBUG_MODE;
+
+class MessageEncoderDecoder{
+  public:
+    MessageEncoderDecoder();
+
+    /* map of topics and their subscription ids
+        could implement without it but it makes the code more readable.
+    */
+    map<string,int> topicSubscriptionMap;
+
+>>>>>>> tst
     /*
     ______________Encode methods______________
             (client frame generators)
@@ -20,11 +42,15 @@ class MessageEncoderDecoder{
     Frame generateUnsubscribeFrame(const string &topic);
     Frame generateDisconnectFrame();
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> tst
     /*
     ______________Decode methods_______________
               (server frame decoder)
     */
+<<<<<<< HEAD
     Frame decodeFrame(const string &frame);
 
 private:
@@ -53,5 +79,16 @@ private:
     // TODO: check if need to delete this method
     bool checkRecieptId(unsigned int &sentRecieptId, unsigned int &receivedRecieptId);
 
+=======
+    Frame generateFrameFromString(const string &frame);
+    
+  private:
+    // Parsing a frame to a vector of vectors of strings by the delimiters '\n' and ':'
+    vector<vector<string>> parseStringFrameToArgs(const string &frame);
+    // Concatenating a vector of strings to a single string. Used to concatenate back the message body of a frame.
+    string concatenateMessageBody(vector<vector<string>> &frameArgs, int messageStartLineIndex);
+    // Parsing a string to a vector of strings by a delimiter
+    vector<string> parseStringByDelimeter(const string &frame, char delimiter);
+>>>>>>> tst
 };
 

@@ -44,7 +44,16 @@ public:
 struct names_and_events {
     std::string channel_name;
     std::vector<Event> events;
+<<<<<<< HEAD
 };
 
+=======
+    
+    names_and_events();
+    names_and_events(std::string channel_name, std::vector<Event> events);
+};
+
+
+>>>>>>> tst
 // function that parses the json file and returns a names_and_events object
 names_and_events parseEventsFile(std::string json_path);

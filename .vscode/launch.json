@@ -61,8 +61,39 @@
             "projectName": "server",
             "preLaunchTask": "mvn compile"
         },
+                {
+            "type": "java",
+            "name": "Launch Current File",
+            "request": "launch",
+            "mainClass": "${file}"
+        },
         {
-            "name": "(gdb) Launch stomp client",
+            "name": "Debug stomp client -- AdminClient",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/client/bin/StompEMIClient",
+            "args": ["debug"],
+            "stopAtEntry": false,
+            "cwd": "${fileDirname}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                },
+                {
+                    "description": "Set Disassembly Flavor to Intel",
+                    "text": "-gdb-set disassembly-flavor intel",
+                    "ignoreFailures": true
+                }
+            ],
+            "preLaunchTask": "make"
+        },
+        {
+            "name": "Debug stomp client -- UserClient",
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/client/bin/StompWCIClient",
@@ -84,41 +115,7 @@
                     "ignoreFailures": true
                 }
             ],
-            "preLaunchTask": "make StompWCIClient"
-        },
-        {
-            "name": "(gdb) Launch echo client",
-            "type": "cppdbg",
-            "request": "launch",
-            "program": "${workspaceFolder}/client/bin/EchoClient",
-            "args": [
-                "127.0.0.1",
-                "7777"
-            ],
-            "stopAtEntry": false,
-            "cwd": "${fileDirname}",
-            "environment": [],
-            "externalConsole": false,
-            "MIMode": "gdb",
-            "setupCommands": [
-                {
-                    "description": "Enable pretty-printing for gdb",
-                    "text": "-enable-pretty-printing",
-                    "ignoreFailures": true
-                },
-                {
-                    "description": "Set Disassembly Flavor to Intel",
-                    "text": "-gdb-set disassembly-flavor intel",
-                    "ignoreFailures": true
-                }
-            ],
-            "preLaunchTask": "make EchoClient"
-        },
-        {
-            "type": "java",
-            "name": "Launch Current File",
-            "request": "launch",
-            "mainClass": "${file}"
+            "preLaunchTask": "make"
         }
         ,
         {

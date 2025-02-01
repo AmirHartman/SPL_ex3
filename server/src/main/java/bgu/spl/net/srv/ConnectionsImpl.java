@@ -141,7 +141,26 @@ public class ConnectionsImpl<T> implements Connections<T> {
 
 
 
+//טסטים
+    @Override
+    public ConcurrentHashMap<String, ConcurrentHashMap<Integer, Integer>> getTopics(){
+        return topics;
+    }
 
+    @Override
+    public ConcurrentHashMap<String, Integer> getUsers(){
+        return users;
+    }
+
+    @Override
+    public ConcurrentHashMap<String, String> getPasswords(){
+        return passwords;
+    }
+
+    @Override
+    public ConcurrentHashMap<Integer, ConnectionHandler<T>> getHandlers(){
+        return handlers;
+    }
 
 
 
