@@ -93,7 +93,7 @@ public class Auxiliary {
     }
 
     private static ServerFrameError validateSendtFrame (String toFrame){
-        ServerFrameError error = checkHeadersNumber(toFrame, 1);
+        ServerFrameError error = checkHeadersNumber(toFrame, 2);
         if (error != null) {
             return error;
         }
@@ -106,29 +106,28 @@ public class Auxiliary {
             return new ServerFrameError("no body in the frame", -1, toFrame);
         }
         String frame = toFrame.split("\n\n")[0];
-        String [] headers = frame.split("\n");
-        String[] header = headers[1].split(":");
-        if (!header[0].equals("destination")){
-            return new ServerFrameError("invalid header name", -1, toFrame);
-        }
         // String [] headers = frame.split("\n");
-        // int receiptId = -1;
-        // for (int i = 1; i < headers.length; i++){
-        //     String[] header = headers[i].split(":");
-        //     // find the receipt id
-        //     // if (header[0].equals("receipt")){
-        //     //     try {
-        //     //         receiptId = Integer.parseInt(header[1]);
-        //     //     } catch (Exception e) {
-        //     //         return new ServerFrameError("receipt id is not an integer", -1, toFrame);
-        //     //     }
-        //     // }
-        //     // check the validity of header names
-        //     // if (!header[0].equals("destination") & !header[0].equals("receipt")){
-        //     if (!header[0].equals("destination")){
-        //         return new ServerFrameError("invalid one or more header names", receiptId, toFrame);
-        //     }
+        // String[] header = headers[1].split(":");
+        // if (!header[0].equals("destination")){
+        //     return new ServerFrameError("invalid header name", -1, toFrame);
         // }
+        String [] headers = frame.split("\n");
+        int receiptId = -1;
+        for (int i = 1; i < headers.length; i++){
+            String[] header = headers[i].split(":");
+            // find the receipt id
+            if (header[0].equals("receipt")){
+                try {
+                    receiptId = Integer.parseInt(header[1]);
+                } catch (Exception e) {
+                    return new ServerFrameError("receipt id is not an integer", -1, toFrame);
+                }
+            }
+            // check the validity of header names
+            if (!header[0].equals("destination") & !header[0].equals("receipt")){
+                return new ServerFrameError("invalid one or more header names", receiptId, toFrame);
+            }
+        }
         return null;
     }
 
@@ -245,29 +244,44 @@ public class Auxiliary {
 
     private static ServerFrameError checkHeadersNumber (String toFrame, int headersNumber){
         String [] frame = toFrame.split("\n\n");
-        int headersNum = frame[0].split(":").length-1;
-        if (headersNum != headersNumber){
-            return new ServerFrameError("number of headers is invalid", -1, toFrame);
-        }
+        int receiptId = findReceiptId(frame[0]);
+            int headersNum = frame[0].split("\n").length-1;
+            if (headersNum != headersNumber){
+                return new ServerFrameError("number of headers is invalid", receiptId, toFrame);
+            }
         return null;
     }
 
 
     private static ServerFrameError checkNullChar (String toFrame){
         String [] frame = toFrame.split("\n\n");
+        int receiptId = findReceiptId(frame[0]);
         if (frame.length == 1 || !(frame[1].charAt(frame[1].length()-1) == '\u0000')){
-            return new ServerFrameError("no null char at the end of the frame", -1, toFrame);
+            return new ServerFrameError("no null char at the end of the frame", receiptId, toFrame);
         }
         return null;
     }
 
     private static ServerFrameError isFrameBodyEmpty (String toFrame){
         String [] frame = toFrame.split("\n\n");
+        int receiptId = findReceiptId(frame[0]);
         String body = frame[1];
         if (body.length() > 0 && !body.equals("\u0000")){
-            return new ServerFrameError("body isn't empty", -1, toFrame);
+            return new ServerFrameError("body isn't empty", receiptId, toFrame);
         }
         return null;
     }
+
+    private static int findReceiptId (String frame){
+        String [] headers = frame.split("\n");
+        int receiptId = -1;
+        for (int i = 1; i < headers.length; i++){
+            try {
+                receiptId = Integer.parseInt(headers[i].split(":")[1]);
+            } catch (Exception e) {}
+        }
+        return receiptId;
+    }
+
     
 }

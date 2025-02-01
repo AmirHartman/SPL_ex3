@@ -19,5 +19,4 @@ public interface StompMessagingProtocol<T> extends MessagingProtocol<T> {
 
     void setHandler(ConnectionHandler<T> handler);
 
-    void close();
 }
