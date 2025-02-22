@@ -54,7 +54,7 @@ public class ActorThreadPool {
         return pendingRunnables;
     }
 
-    private void execute(Runnable r, Object act) {// בפול עצמו, ראן של כל אחד מהחוטים
+    private void execute(Runnable r, Object act) {
         threads.execute(() -> {
             try {
                 r.run();

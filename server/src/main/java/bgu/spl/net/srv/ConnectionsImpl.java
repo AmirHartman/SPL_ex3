@@ -46,13 +46,21 @@ public class ConnectionsImpl<T> implements Connections<T> {
 
     @Override
     public void disconnect(int connectionId){
+        String username = null;
         synchronized (users){
-            for (String username : users.keySet()){
-                if (users.get(username) == connectionId){
-                    users.remove(username);
+            for (String usernameTmp : users.keySet()){
+                if (users.get(usernameTmp) == connectionId){
+                    username = usernameTmp;
+                    users.remove(usernameTmp);
                     break;
                 }
         }}
+        if (username == null){
+            return;
+        } else {
+            passwords.remove(username);
+        }
+            handlers.remove(connectionId);
         synchronized (topics){
                 for (String topic : topics.keySet()){
                     topics.get(topic).remove(connectionId);

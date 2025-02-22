@@ -99,7 +99,7 @@ public class StompMessagingProtocolImpl implements StompMessagingProtocol<String
 
     @Override
     public void close(){
-        connections.removeClient(this.connectionId);
+        connections.disconnect(this.connectionId);
     }
 
 
