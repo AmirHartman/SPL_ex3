@@ -45,7 +45,7 @@ Frame MessageEncoderDecoder::generateConnectFrame(const string &host,short &port
 Frame MessageEncoderDecoder::generateSendFrame(const string &destination, const string &messageBody){
     map<string, string> headers;
     headers["destination"] = "/" + destination;
-    // headers["destination"] = destination;
+    headers["receipt"] = to_string(idCounter::generateReceiptId());
 
     return Frame(FrameType::SEND, headers, messageBody);
 }
