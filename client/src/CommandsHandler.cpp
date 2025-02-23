@@ -1,7 +1,15 @@
 #include "../include/CommandsHandler.h"
 
 // make sure to import the right command to impl this
-vector<string> parseStringByDelimeter(const string &frame, char delimiter);
+vector<string> parseStringByDelimeter(const string &frame, char delimiter){
+    vector<string> parsedString;
+    stringstream stream(frame);
+    string token;
+    while (getline(stream, token, delimiter)) {
+        parsedString.push_back(token);
+    }
+    return parsedString;
+}
     
 
 CommandsHandler::CommandsHandler(StompProtocol& _stomp) : stomp(_stomp) {}

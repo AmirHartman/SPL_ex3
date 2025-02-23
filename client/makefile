@@ -1,7 +1,7 @@
 CFLAGS := -c -Wall -Weffc++ -g -std=c++11 -Iinclude
 LDFLAGS := -lboost_system -lpthread
 
-OFILES := bin/MessageEncoderDecoder.o bin/frame.o bin/event.o bin/connectionHandler.o bin/StompProtocol.o bin/StompClient.o bin/UserClient.o bin/AdminClient.o bin/main.o
+OFILES := bin/MessageEncoderDecoder.o bin/frame.o bin/event.o bin/connectionHandler.o bin/StompProtocol.o bin/CommandsHandler.o bin/main.o
 
 all: createBin StompEMIClient
 
@@ -34,6 +34,9 @@ bin/MessageEncoderDecoder.o: src/MessageEncoderDecoder.cpp
 
 bin/frame.o: src/object/frame.cpp
 	g++ $(CFLAGS) -o bin/frame.o src/object/frame.cpp
+
+bin/CommandsHandler.o: src/CommandsHandler.cpp
+	g++ $(CFLAGS) -o bin/CommandsHandler.o src/CommandsHandler.cpp
 
 .PHONY: clean
 clean:

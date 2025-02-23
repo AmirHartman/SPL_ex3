@@ -6,9 +6,9 @@ class StompClient {
         StompClient();
         virtual ~StompClient();
         virtual void run() = 0;
-        void ensureLogout();
+        // void ensureLogout();
     protected:
-        StompProtocol stomp;
+        CommandsHandler command;
 };
 
 class UserClient : public StompClient {
