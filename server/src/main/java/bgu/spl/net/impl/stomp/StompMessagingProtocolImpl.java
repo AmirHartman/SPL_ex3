@@ -55,11 +55,13 @@ public class StompMessagingProtocolImpl implements StompMessagingProtocol<String
             if (clientFrame instanceof ClientFrameDisconnect){
                 clientFrame.process(connectionId, connections, this);
                 connections.disconnect(connectionId);
+                System.out.println("PROTOCOL: client is connected: " + connections.isConnected(connectionId));
                 this.shouldTerminate = true;
                 System.out.println("PROTOCOL: clientFrame is instance of ClientFrameDisconnect");
             }
             else{
                 ServerFrame serverFrame = clientFrame.process(connectionId, connections, this);
+                System.out.println("PROTOCOL: client is connected: " + connections.isConnected(connectionId));
                 if (serverFrame != null){ // null for client frame send
                     System.out.println("PROTOCOL: serverFrame:\n" + serverFrame.toString());
                     connections.send(connectionId, serverFrame.toString());
@@ -70,9 +72,12 @@ public class StompMessagingProtocolImpl implements StompMessagingProtocol<String
                         connections.disconnect(connectionId);
                         connections.removeClient(connectionId);
                     }
-            }}}}
+                }
+            }   
+        }
+    }
+    
         
-
 	@Override
     public boolean shouldTerminate() {
         return shouldTerminate;
@@ -91,6 +96,12 @@ public class StompMessagingProtocolImpl implements StompMessagingProtocol<String
     public void addClient(){
         connections.addClient(this.connectionId, this.handler);
     }
+
+    @Override
+    public void close(){
+        connections.disconnect(this.connectionId);
+    }
+
 
 }
 

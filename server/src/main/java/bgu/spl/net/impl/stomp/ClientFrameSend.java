@@ -1,16 +1,15 @@
 package bgu.spl.net.impl.stomp;
 
-import bgu.spl.net.impl.stomp.ServerFrame.ServerFrame;
-import bgu.spl.net.impl.stomp.ServerFrame.ServerFrameError;
-import bgu.spl.net.impl.stomp.ServerFrame.ServerFrameMessage;
+import bgu.spl.net.impl.stomp.ServerFrame.*;
 import bgu.spl.net.srv.Connections;
+
 
 import java.util.concurrent.ConcurrentHashMap;
 
 public class ClientFrameSend extends ClientFrame {
     private String destination;
 
-    public ClientFrameSend(String destination, String body) {
+    public ClientFrameSend(String destination, String body, int receiptId) {
         super(StompCommand.SEND);
         this.destination = destination;
         // this.receiptId = receiptId;
@@ -19,34 +18,29 @@ public class ClientFrameSend extends ClientFrame {
 
     public ClientFrameSend(String toFrame){
         super(toFrame);
-        String[] header = toFrame.split("\n");
-        this.destination = header[1].split(":")[1];
-        this.destination = this.destination.substring(1);
-        // for (int i = 1; i < lines.length; i++){
-        //     String[] header = lines[i].split(":");
-        //     switch (header[0]){
-        //         case "destination":
-        //             // String[] topic = header[1].split("/");
-        //             this.destination = header[1];
-        //             break;
-        //         case "receipt":
-        //             try {
-        //                 this.receiptId = Integer.parseInt(header[1]);
-        //             } catch (Exception e) {
-        //                 System.out.println("unable to create frameSend, invalid receipt id");
-        //             } 
-        //             break;
-        //     }
-        // }
+        String[] headers = toFrame.split("\n\n");
+        String [] lines = headers[0].split("\n");
+        for (int i = 1; i < lines.length; i++){
+            String[] header = lines[i].split(":");
+            switch (header[0]){
+                case "destination":
+                    this.destination = header[1].substring(1);
+                    break;
+                case "receipt":
+                    try {
+                        this.receiptId = Integer.parseInt(header[1]);
+                    } catch (Exception e) {
+                        System.out.println("unable to create frameSend, invalid receipt id");
+                    } 
+                    break;
+            }
+        }
         String[] body = toFrame.split("\n\n");
         this.body = "\n" + body[1] + "\u0000";
     }
 
     @Override
     public ServerFrame process (int connectionId, Connections <String> connections, StompMessagingProtocolImpl protocol){
-        // if (!connections.isConnected(connectionId)){
-        //     return new ServerFrameError("Unconnected user is trying to send a message", receiptId, toString());
-        // }
         ConcurrentHashMap<Integer, Integer> subscribers = connections.getSubscribers(destination);
         if (subscribers == null){// should not happen
             return new ServerFrameError("channel does not exist", receiptId, toString());
@@ -57,10 +51,12 @@ public class ClientFrameSend extends ClientFrame {
         ServerFrameMessage messageFrame = new ServerFrameMessage(connections.getNextMessageId(), -1, destination, body);
         // updates subscription id for each subscriber
         for (Integer handlerId : subscribers.keySet()){
-            messageFrame.setSubscribtion(connections.getSubscriptionId(destination, handlerId));
-            connections.send(handlerId, messageFrame.toString());
+            if (handlerId != connectionId){
+                messageFrame.setSubscribtion(connections.getSubscriptionId(destination, handlerId));
+                connections.send(handlerId, messageFrame.toString());
+            }
         }
-        return null;
+        return new ServerFrameReceipt(receiptId);
     }
 
     protected boolean validFrame(String toFrame){
@@ -70,7 +66,7 @@ public class ClientFrameSend extends ClientFrame {
     public String toString (){
         return "SEND\n" +
                 "destination:/" + destination + "\n" +
-                // "receipt:" + receiptId + "\n" +
+                "receipt:" + receiptId + "\n" +
                 this.body;
     }
 

@@ -7,7 +7,7 @@ import bgu.spl.net.srv.Connections;
 public abstract class ClientFrame {
     protected StompCommand type;
     protected String body;
-    protected int receiptId = -1; // indication of an invalid recepit id
+    protected int receiptId = -1; // indication of an invalid recepit id or error in connect frame
 
     public ClientFrame(StompCommand type) {
         this.type = type;

@@ -31,5 +31,10 @@ public interface Connections<T> {
 
     ConcurrentHashMap<Integer, Integer> getSubscribers(String topic);
 
-
+    //טסטים
+    ConcurrentHashMap<String, ConcurrentHashMap<Integer, Integer>> getTopics();
+    ConcurrentHashMap<String, Integer> getUsers();
+    ConcurrentHashMap<String, String> getPasswords();
+    ConcurrentHashMap<Integer, ConnectionHandler<T>> getHandlers();
+    
 }
