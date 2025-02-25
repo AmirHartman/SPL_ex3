@@ -1,3 +1,5 @@
+#pragma once
+
 #include "StompProtocol.h"
 
 class CommandsHandler {
@@ -5,7 +7,7 @@ public:
     CommandsHandler(StompProtocol& _stomp);
     void execute(vector<string> &command);
     void terminate();
-
+    
 private:
     StompProtocol& stomp;
 

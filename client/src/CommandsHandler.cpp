@@ -12,7 +12,7 @@ vector<string> parseStringByDelimeter(const string &frame, char delimiter){
 }
     
 
-CommandsHandler::CommandsHandler(StompProtocol& _stomp) : stomp(_stomp) {}
+CommandsHandler::CommandsHandler(StompProtocol& _stomp) : stomp(_stomp){}
 
 void CommandsHandler::execute(vector<string> &args) {
     // _____________General input check_____________
@@ -51,7 +51,7 @@ void CommandsHandler::execute(vector<string> &args) {
             return;
         } 
         cout << "Logging in..." << endl;
-        stomp.connect(args[1], stoi(args[2]), args[3], args[4]);
+        stomp.out.connect(args[1], stoi(args[2]), args[3], args[4]);
     }
 
     //__________________________ JOIN __________________________
@@ -61,7 +61,7 @@ void CommandsHandler::execute(vector<string> &args) {
             return;
         }
         cout << "Joining channel \"" << args[1] << "\"..." << endl << endl;
-        stomp.join(args[1]);
+        stomp.out.join(args[1]);
     }
 
     //__________________________ EXIT __________________________
@@ -71,7 +71,7 @@ void CommandsHandler::execute(vector<string> &args) {
             return;
         }
         cout << "Exiting channel \"" << args[1] << "\"..." << endl << endl;
-        stomp.exit(args[1]);
+        stomp.out.exit(args[1]);
     }
 
     //__________________________ REPORT __________________________
@@ -84,7 +84,7 @@ void CommandsHandler::execute(vector<string> &args) {
         names_and_events namesAndEvents;
         if (parse_json_events_file(args[1], namesAndEvents)) {
             cout << "Reporting events..." << endl;
-            stomp.report(namesAndEvents);
+            stomp.out.report(namesAndEvents);
         }
     }
 
@@ -94,22 +94,25 @@ void CommandsHandler::execute(vector<string> &args) {
     }
 
     // __________________________ LOGOUT __________________________
-    if (args.size() != 1) {
-        cout << "Usage: logout" << endl;
-        return;
+    if (command == "logout") {
+        if (args.size() != 1) {
+            cout << "Usage: logout" << endl;
+            return;
+        }
+        
+        if (!stomp.isLoggedIn()) {
+            if (DEBUG_MODE) cout << "[DEBUG] logout commands was executed but connection is offline" << endl;
+            return;
+        }
+        
+        cout << "Logging out..." << endl;
+        stomp.out.logout();
     }
-
-    if (!stomp.isLoggedIn()) {
-        if (DEBUG_MODE) cout << "[DEBUG] logout commands was executed but connection is offline" << endl;
-        return;
-    }
-
-    cout << "Logging out..." << endl;
-    stomp.logout();
+    
 }
 
 void CommandsHandler::terminate() {
-    stomp.logout();
+    stomp.out.logout();
 }
 
 vector<string> CommandsHandler::handle_file_path(string &input_string) {

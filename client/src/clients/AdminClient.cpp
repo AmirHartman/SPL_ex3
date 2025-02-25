@@ -1,5 +1,7 @@
 #include "../../include/StompClient.h"
 
+AdminClient::AdminClient(CommandsHandler& _command_handler, StompProtocol& _stomp) : StompClient(_command_handler, _stomp) {}
+
 void AdminClient::clearScreen() {
     system("clear");
     cout << "\n";
@@ -7,7 +9,7 @@ void AdminClient::clearScreen() {
 
 void AdminClient::adminLogin(){
     vector<string> admin_login = {"login", "127.0.0.1", "7777", "admin", "1234"};
-    stomp.proccess(admin_login);
+    command_handler.execute(admin_login);
 }
 
 void AdminClient::runTests() {
@@ -49,7 +51,7 @@ void AdminClient::runTests() {
 }
 
 void AdminClient::adminCommands() {
-    adminLogin();
+    // adminLogin();
     
     int userChoice = -1;
     while (userChoice != 0) {
@@ -77,10 +79,15 @@ void AdminClient::adminCommands() {
 }
 
 void AdminClient::run() {
+
+    screen_access.try_lock();
     cout << "Started client in debug mode!" << endl;
+    screen_access.unlock();
 
     int userChoice = -1;
     while (userChoice != 0) {
+        this_thread::sleep_for(chrono::milliseconds(100));
+        screen_access.try_lock();
         cout << "__________________________" << endl;
         cout << "Please choose a command to execute:" << endl;
         cout << "1. login" << endl;
@@ -93,10 +100,11 @@ void AdminClient::run() {
         cout << "0. quit" << endl;
         cout << "__________________________" << endl;
         cout << "Enter a number: ";
+        screen_access.unlock();
         cin >> userChoice;
+        screen_access.try_lock();
         clearScreen();
         
-
         if (userChoice < 0 || userChoice > 7 || cin.fail()) {
             cout << "Invalid command" << endl;
             cin.clear(); // reset the fail flag
@@ -157,7 +165,8 @@ void AdminClient::run() {
                     args[0] = "logout";
                     break;
             }
-            stomp.proccess(args);
+            command_handler.execute(args);
         }
+        screen_access.unlock();
     }
 }

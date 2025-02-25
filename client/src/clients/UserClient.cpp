@@ -1,5 +1,7 @@
 #include "../../include/StompClient.h"
 
+UserClient::UserClient(CommandsHandler& _command, StompProtocol& _stomp) : StompClient(_command, _stomp) {}
+
 void UserClient::run() {
     cout << "Client started\n" << endl;
     cout << "Commands available: login, join, exit, report, summary, logout" << endl;
@@ -19,6 +21,6 @@ void UserClient::run() {
             cout << "Exiting client" << endl;
             break;
         }
-        stomp.proccess(commandVector);
+        command_handler.execute(commandVector);
     }
 }
