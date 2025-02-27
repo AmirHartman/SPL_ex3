@@ -96,7 +96,7 @@
             "name": "Debug stomp client -- UserClient",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/client/bin/StompWCIClient",
+            "program": "${workspaceFolder}/client/bin/StompEMIClient",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${fileDirname}",
