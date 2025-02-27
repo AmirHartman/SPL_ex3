@@ -1,12 +1,11 @@
-#include "../../include/StompClient.h"
 #include "StompClient.h"
 
-StompClient::StompClient() : stomp(StompProtocol()) {}
+StompClient::StompClient(CommandsHandler& _command, StompProtocol& _stomp) : command_handler(_command), stomp(_stomp) {}
 StompClient::~StompClient() {}
 
 void StompClient::ensureLogout() {
     if (stomp.isLoggedIn()) {
-        vector<string> logout = {"logout"};
-        stomp.proccess(logout);
+        stomp.out.logout();
     }
+    stomp.closeConnection();
 }

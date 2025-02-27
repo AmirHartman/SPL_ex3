@@ -65,7 +65,6 @@ Frame MessageEncoderDecoder::generateSubscribeFrame(const string &topic){
 Frame MessageEncoderDecoder::generateUnsubscribeFrame(const string &topic){
     
     int subscriptionId = topicSubscriptionMap[topic];
-    topicSubscriptionMap.erase(topic);
 
     map<string, string> headers;
     headers["id"] = to_string(subscriptionId);

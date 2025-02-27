@@ -75,6 +75,7 @@ FrameType stringToFrameType(const string &type){
 Frame::Frame() : type(UNKNOWN), headers(), body("") {}
 Frame::Frame(FrameType type, map<string,string> headers, string body) : type(type),headers(headers), body(body) {}
 
+
 string Frame::toString(){
     string output = frameTypeToString(type) + "\n";
     for (const auto &pair : headers) {
