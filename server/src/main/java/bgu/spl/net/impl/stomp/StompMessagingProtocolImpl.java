@@ -92,6 +92,13 @@ public class StompMessagingProtocolImpl implements StompMessagingProtocol<String
         connections.addClient(this.connectionId, this.handler);
     }
 
+    @Override
+    public void close(){
+        connections.disconnect(this.connectionId);
+    }
+    
+
+
 }
 
     

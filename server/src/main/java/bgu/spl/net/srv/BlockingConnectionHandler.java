@@ -54,7 +54,11 @@ public class BlockingConnectionHandler<T> implements Runnable, ConnectionHandler
             ex.printStackTrace();
             System.err.println("Error in connection handler for client: " + sock.getRemoteSocketAddress() + " - " + ex.getMessage());
         }
-    }    
+        finally {
+            System.out.println("closing connection for client");
+            protocol.close();
+        }
+    }   
     
     @Override
     public void close() throws IOException {
@@ -66,7 +70,9 @@ public class BlockingConnectionHandler<T> implements Runnable, ConnectionHandler
             }
         }
     }
+
     
+
     @Override
     public void send(T msg) {
         messages.add(msg);

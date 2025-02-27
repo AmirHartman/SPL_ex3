@@ -53,6 +53,7 @@ public class ConnectionsImpl<T> implements Connections<T> {
                     break;
                 }
         }}
+        handlers.remove(connectionId);
         synchronized (topics){
                 for (String topic : topics.keySet()){
                     topics.get(topic).remove(connectionId);
@@ -139,10 +140,18 @@ public class ConnectionsImpl<T> implements Connections<T> {
     }
 
 
-
-
-
-
-
-
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
