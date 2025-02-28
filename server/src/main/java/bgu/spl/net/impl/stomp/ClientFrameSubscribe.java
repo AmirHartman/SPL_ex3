@@ -25,9 +25,8 @@ public class ClientFrameSubscribe extends ClientFrame {
             String[] header = lines[i].split(":");
             switch (header[0]){
                 case "destination":
-                // לבדיקה עם אמיר
-                //     this.destination = header[1].substring(1);
-                    this.destination = header[1];
+                    this.destination = header[1].substring(1);
+                    // this.destination = header[1];
                     break;
                 case "id":
                     try {
