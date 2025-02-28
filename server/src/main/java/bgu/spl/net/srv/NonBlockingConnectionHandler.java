@@ -82,6 +82,7 @@ public class NonBlockingConnectionHandler<T> implements ConnectionHandler<T> {
         } catch (IOException ex) {
             ex.printStackTrace();
         }
+        protocol.close();
     }
 
     public boolean isClosed() {

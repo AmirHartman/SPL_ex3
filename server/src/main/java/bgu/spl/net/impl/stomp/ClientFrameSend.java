@@ -60,7 +60,6 @@ public class ClientFrameSend extends ClientFrame {
         return new ServerFrameReceipt(receiptId);
     }
 
-
     protected boolean validFrame(String toFrame){
         return false;
     }
