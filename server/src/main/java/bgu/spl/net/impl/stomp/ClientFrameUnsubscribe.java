@@ -26,26 +26,21 @@ public class ClientFrameUnsubscribe extends ClientFrame {
                     try {
                         this.subscription = Integer.parseInt(header[1]);
                     } catch (Exception e) {
-                        System.out.println("unable to create frameUnsubscribe, invalid subscription id");
+                        System.out.println("unable to create frame UNSUBSCRIBE, invalid subscription id");
                     } 
                     break;
                 case "receipt":
                     try {
                         this.receiptId = Integer.parseInt(header[1]);
                     } catch (Exception e) {
-                        System.out.println("unable to create frameUnsubscribe, invalid receipt id");
+                        System.out.println("unable to create frame UNSUBSCRIBE, invalid receipt id");
                     } 
                     break;
             }}}
 
     @Override
     public ServerFrame process (int connectionId, Connections <String> connections, StompMessagingProtocolImpl protocol){
-        // if (!connections.isConnected(connectionId)){
-        //     System.out.println("user is trying to unsubscribe from a channel without being connected");
-        //     return new ServerFrameError("Unconnected user is trying to subscribe to a channel", receiptId, toString());
-        // }
-
-        if (!protocol.subscriberIds.containsKey(subscription)){
+        if (!protocol.subscriberIds.containsKey(subscription)){// should never happen 
             return new ServerFrameError("user is not subscribed to channel", receiptId, toString());
         }
         String topic = protocol.subscriberIds.remove(subscription);

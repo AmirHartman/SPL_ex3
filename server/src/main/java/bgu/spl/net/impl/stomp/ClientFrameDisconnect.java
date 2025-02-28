@@ -17,7 +17,7 @@ public class ClientFrameDisconnect extends ClientFrame {
         try {
             this.receiptId = Integer.parseInt(header[1].split(":")[1]);
         } catch (Exception e) {
-            System.out.println("unable to create frameDisconnect, invalid receipt id");
+            System.out.println("unable to create frame DISCONNECT, invalid receipt id");
         }
     }
 

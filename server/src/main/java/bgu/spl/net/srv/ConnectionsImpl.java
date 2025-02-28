@@ -84,11 +84,6 @@ public class ConnectionsImpl<T> implements Connections<T> {
     }
 
     @Override
-    public void removeClient (int connectionId){
-        handlers.remove(connectionId);
-    }
-
-    @Override
     public boolean connect(int connectionId, String username, String password){
         // user is already connected
         if (users.containsKey(username)){

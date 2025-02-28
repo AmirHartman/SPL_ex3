@@ -48,7 +48,7 @@ public class Auxiliary {
             case CONNECT:
                 return validateConnectFrame(toFrame);
             case SEND:
-                return validateSendtFrame(toFrame);
+                return validateSendFrame(toFrame);
             case SUBSCRIBE:
                 return validateSubscribeFrame(toFrame);
             case UNSUBSCRIBE:
@@ -92,7 +92,7 @@ public class Auxiliary {
     return null;
     }
 
-    private static ServerFrameError validateSendtFrame (String toFrame){
+    private static ServerFrameError validateSendFrame (String toFrame){
         ServerFrameError error = checkHeadersNumber(toFrame, 1);
         if (error != null) {
             return error;
@@ -106,29 +106,28 @@ public class Auxiliary {
             return new ServerFrameError("no body in the frame", -1, toFrame);
         }
         String frame = toFrame.split("\n\n")[0];
-        String [] headers = frame.split("\n");
-        String[] header = headers[1].split(":");
-        if (!header[0].equals("destination")){
-            return new ServerFrameError("invalid header name", -1, toFrame);
-        }
         // String [] headers = frame.split("\n");
-        // int receiptId = -1;
-        // for (int i = 1; i < headers.length; i++){
-        //     String[] header = headers[i].split(":");
-        //     // find the receipt id
-        //     // if (header[0].equals("receipt")){
-        //     //     try {
-        //     //         receiptId = Integer.parseInt(header[1]);
-        //     //     } catch (Exception e) {
-        //     //         return new ServerFrameError("receipt id is not an integer", -1, toFrame);
-        //     //     }
-        //     // }
-        //     // check the validity of header names
-        //     // if (!header[0].equals("destination") & !header[0].equals("receipt")){
-        //     if (!header[0].equals("destination")){
-        //         return new ServerFrameError("invalid one or more header names", receiptId, toFrame);
-        //     }
+        // String[] header = headers[1].split(":");
+        // if (!header[0].equals("destination")){
+        //     return new ServerFrameError("invalid header name", -1, toFrame);
         // }
+        String [] headers = frame.split("\n");
+        int receiptId = -1;
+        for (int i = 1; i < headers.length; i++){
+            String[] header = headers[i].split(":");
+            // find the receipt id
+            if (header[0].equals("receipt")){
+                try {
+                    receiptId = Integer.parseInt(header[1]);
+                } catch (Exception e) {
+                    return new ServerFrameError("receipt id is not an integer", -1, toFrame);
+                }
+            }
+            // check the validity of header names
+            if (!header[0].equals("destination") & !header[0].equals("receipt")){
+                return new ServerFrameError("invalid one or more header names", receiptId, toFrame);
+            }
+        }
         return null;
     }
 

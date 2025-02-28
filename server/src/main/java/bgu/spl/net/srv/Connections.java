@@ -17,8 +17,6 @@ public interface Connections<T> {
 
     void addClient (int connectionId, ConnectionHandler<T> handler);
     
-    void removeClient (int connectionId);
-
     boolean connect(int connectionId, String username, String password);
 
     void subscribe(int connectionId, String topic, int subscriptionId);

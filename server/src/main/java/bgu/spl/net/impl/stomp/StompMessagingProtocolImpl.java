@@ -14,7 +14,6 @@ public class StompMessagingProtocolImpl implements StompMessagingProtocol<String
     private int connectionId;
     private Connections<String> connections;
     private ConnectionHandler<String> handler = null;
-    private boolean crushed = false;
     
 
 
@@ -60,7 +59,7 @@ public class StompMessagingProtocolImpl implements StompMessagingProtocol<String
             }
             else{
                 ServerFrame serverFrame = clientFrame.process(connectionId, connections, this);
-                if (serverFrame != null){ // null for client frame send
+                if (serverFrame != null){ // should never happen
                     System.out.println("PROTOCOL: serverFrame:\n" + serverFrame.toString());
                     connections.send(connectionId, serverFrame.toString());
                     System.out.println("PROTOCOL: serverFrame sent to client from process, first send funtion in Connections"); 
@@ -68,7 +67,6 @@ public class StompMessagingProtocolImpl implements StompMessagingProtocol<String
                         System.out.println("PROTOCOL: error frame, should terminate");
                         shouldTerminate = true;
                         connections.disconnect(connectionId);
-                        connections.removeClient(connectionId);
                     }
             }}}}
         
@@ -81,10 +79,6 @@ public class StompMessagingProtocolImpl implements StompMessagingProtocol<String
     @Override
     public void setHandler(ConnectionHandler<String> handler) {
         this.handler = handler;
-    }
-
-    public boolean Crushed() {
-        return this.crushed;
     }
 
     @Override

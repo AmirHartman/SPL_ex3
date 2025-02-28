@@ -40,21 +40,17 @@ public class ClientFrameSubscribe extends ClientFrame {
                     try {
                         this.receiptId = Integer.parseInt(header[1]);
                     } catch (Exception e) {
-                        System.out.println("unable to create frameSubscribe, invalid receipt id");
+                        System.out.println("unable to create frame SUBSCRIBE, invalid receipt id");
                     } 
                     break;
         }}}
 
     @Override
     public ServerFrame process (int connectionId, Connections <String> connections, StompMessagingProtocolImpl protocol){
-        if (!connections.isConnected(connectionId)){
+        if (!connections.isConnected(connectionId)){// should never happen
             System.out.println("user is trying to subscribe to a channel without being connected");
             return new ServerFrameError("Unconnected user is trying to subscribe to a channel", receiptId, toString());
         }
-        // if (protocol.subscriberIds.containsKey(subscription)){
-        //     System.out.println("user is already subscribed to channel");
-        //     return new ServerFrameError("already subscribed to " + destination, receiptId, toString());
-        // }
         protocol.subscriberIds.put(subscription, destination);
         connections.subscribe(connectionId, destination, subscription);
         return new ServerFrameReceipt(receiptId);
