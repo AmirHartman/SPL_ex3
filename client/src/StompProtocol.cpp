@@ -1,18 +1,15 @@
 #include "../include/StompProtocol.h"
 
-StompProtocol::StompProtocol(): connectionHandler(nullptr), encdec(), in(*this), out(*this), awaiting_frames_for_receipt(), is_connected(false), mtx(), cv() {}
+StompProtocol::StompProtocol(): in(*this), out(*this), connectionHandler(nullptr), encdec(), awaiting_frames_for_receipt(), is_connected(false), mtx(), cv() {}
 StompProtocol::In::In(StompProtocol& _parent) : p(_parent) {}
 StompProtocol::Out::Out(StompProtocol& _parent) : p(_parent) {}
 
 void StompProtocol::closeConnection() {
-    if (connectionHandler != nullptr) {
+    if (is_connected) {
         cout << "Closing connection...\n" << endl;
-        try {
-            out.logout();
-        } catch (const std::exception& e) {}
+        is_connected = false;
         connectionHandler->close();
         connectionHandler.reset(nullptr);
-        is_connected = false;
     }
 }
 
@@ -233,7 +230,7 @@ void StompProtocol::In::start_reading() {
         screen_access.try_lock();
         if (DEBUG_MODE) cout << "[DEBUG] Starting to read from the socket." << endl;
         screen_access.unlock();
-        while(p.is_connected) {
+        while(p.is_connected && !should_terminate) {
             Frame server_answer = readFrameFromSocket();
             screen_access.try_lock();
             proccess(server_answer);

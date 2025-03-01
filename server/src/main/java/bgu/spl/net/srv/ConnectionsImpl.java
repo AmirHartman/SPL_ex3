@@ -46,21 +46,14 @@ public class ConnectionsImpl<T> implements Connections<T> {
 
     @Override
     public void disconnect(int connectionId){
-        String username = null;
         synchronized (users){
-            for (String usernameTmp : users.keySet()){
-                if (users.get(usernameTmp) == connectionId){
-                    username = usernameTmp;
-                    users.remove(usernameTmp);
+            for (String username : users.keySet()){
+                if (users.get(username) == connectionId){
+                    users.remove(username);
                     break;
                 }
         }}
-        if (username == null){
-            return;
-        } else {
-            passwords.remove(username);
-        }
-            handlers.remove(connectionId);
+        handlers.remove(connectionId);
         synchronized (topics){
                 for (String topic : topics.keySet()){
                     topics.get(topic).remove(connectionId);
@@ -88,11 +81,6 @@ public class ConnectionsImpl<T> implements Connections<T> {
     @Override
     public void addClient (int connectionId, ConnectionHandler<T> handler){
         handlers.put(connectionId, handler);
-    }
-
-    @Override
-    public void removeClient (int connectionId){
-        handlers.remove(connectionId);
     }
 
     @Override
@@ -147,29 +135,18 @@ public class ConnectionsImpl<T> implements Connections<T> {
     }
 
 
-
-
-//טסטים
-    @Override
-    public ConcurrentHashMap<String, ConcurrentHashMap<Integer, Integer>> getTopics(){
-        return topics;
-    }
-
-    @Override
-    public ConcurrentHashMap<String, Integer> getUsers(){
-        return users;
-    }
-
-    @Override
-    public ConcurrentHashMap<String, String> getPasswords(){
-        return passwords;
-    }
-
-    @Override
-    public ConcurrentHashMap<Integer, ConnectionHandler<T>> getHandlers(){
-        return handlers;
-    }
-
-
-
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+

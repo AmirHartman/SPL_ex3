@@ -17,17 +17,16 @@ public class ClientFrameDisconnect extends ClientFrame {
         try {
             this.receiptId = Integer.parseInt(header[1].split(":")[1]);
         } catch (Exception e) {
-            System.out.println("unable to create frameDisconnect, invalid receipt id");
+            System.out.println("unable to create frame DISCONNECT, invalid receipt id");
         }
     }
 
     @Override
     public ServerFrame process (int connectionId, Connections <String> connections, StompMessagingProtocolImpl protocol){
-        connections.disconnect(connectionId);
-        // ServerFrameReceipt receipt = new ServerFrameReceipt(receiptId);
-        // connections.send(connectionId, receipt.toString());
-        // System.out.println("message sent to send method in connections from process in ClientFrameDisconnect");
-        return new ServerFrameReceipt(receiptId);
+        ServerFrameReceipt receipt = new ServerFrameReceipt(receiptId);
+        connections.send(connectionId, receipt.toString());
+        System.out.println("message sent to send method in connections from process in ClientFrameDisconnect");
+        return receipt;
     }
 
     protected boolean validFrame(String toFrame){

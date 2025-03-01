@@ -72,7 +72,6 @@ public class NonBlockingConnectionHandler<T> implements ConnectionHandler<T> {
         } else {
             releaseBuffer(buf);
             close();
-            protocol.close();
             return null;
         }
     }
@@ -83,6 +82,7 @@ public class NonBlockingConnectionHandler<T> implements ConnectionHandler<T> {
         } catch (IOException ex) {
             ex.printStackTrace();
         }
+        protocol.close();
     }
 
     public boolean isClosed() {

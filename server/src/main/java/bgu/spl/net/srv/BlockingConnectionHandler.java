@@ -58,7 +58,7 @@ public class BlockingConnectionHandler<T> implements Runnable, ConnectionHandler
             System.out.println("closing connection for client");
             protocol.close();
         }
-    }    
+    }   
     
     @Override
     public void close() throws IOException {
@@ -70,7 +70,9 @@ public class BlockingConnectionHandler<T> implements Runnable, ConnectionHandler
             }
         }
     }
+
     
+
     @Override
     public void send(T msg) {
         messages.add(msg);

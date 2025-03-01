@@ -4,7 +4,7 @@ import bgu.spl.net.api.MessagingProtocol;
 import bgu.spl.net.srv.Connections;
 import bgu.spl.net.srv.ConnectionHandler;
 
-import java.io.Serializable;
+// import java.io.Serializable;
 import java.time.LocalDateTime;
 
 public class EchoProtocol implements MessagingProtocol<String> {
@@ -48,5 +48,6 @@ public class EchoProtocol implements MessagingProtocol<String> {
     public void close(){
         // do nothing
     }
+
 
 }

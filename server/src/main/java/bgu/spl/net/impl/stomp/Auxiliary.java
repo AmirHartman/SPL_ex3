@@ -48,7 +48,7 @@ public class Auxiliary {
             case CONNECT:
                 return validateConnectFrame(toFrame);
             case SEND:
-                return validateSendtFrame(toFrame);
+                return validateSendFrame(toFrame);
             case SUBSCRIBE:
                 return validateSubscribeFrame(toFrame);
             case UNSUBSCRIBE:
@@ -92,7 +92,7 @@ public class Auxiliary {
     return null;
     }
 
-    private static ServerFrameError validateSendtFrame (String toFrame){
+    private static ServerFrameError validateSendFrame (String toFrame){
         ServerFrameError error = checkHeadersNumber(toFrame, 1);
         if (error != null) {
             return error;
@@ -244,44 +244,29 @@ public class Auxiliary {
 
     private static ServerFrameError checkHeadersNumber (String toFrame, int headersNumber){
         String [] frame = toFrame.split("\n\n");
-        int receiptId = findReceiptId(frame[0]);
-            int headersNum = frame[0].split("\n").length-1;
-            if (headersNum != headersNumber){
-                return new ServerFrameError("number of headers is invalid", receiptId, toFrame);
-            }
+        int headersNum = frame[0].split(":").length-1;
+        if (headersNum != headersNumber){
+            return new ServerFrameError("number of headers is invalid", -1, toFrame);
+        }
         return null;
     }
 
 
     private static ServerFrameError checkNullChar (String toFrame){
         String [] frame = toFrame.split("\n\n");
-        int receiptId = findReceiptId(frame[0]);
         if (frame.length == 1 || !(frame[1].charAt(frame[1].length()-1) == '\u0000')){
-            return new ServerFrameError("no null char at the end of the frame", receiptId, toFrame);
+            return new ServerFrameError("no null char at the end of the frame", -1, toFrame);
         }
         return null;
     }
 
     private static ServerFrameError isFrameBodyEmpty (String toFrame){
         String [] frame = toFrame.split("\n\n");
-        int receiptId = findReceiptId(frame[0]);
         String body = frame[1];
         if (body.length() > 0 && !body.equals("\u0000")){
-            return new ServerFrameError("body isn't empty", receiptId, toFrame);
+            return new ServerFrameError("body isn't empty", -1, toFrame);
         }
         return null;
     }
-
-    private static int findReceiptId (String frame){
-        String [] headers = frame.split("\n");
-        int receiptId = -1;
-        for (int i = 1; i < headers.length; i++){
-            try {
-                receiptId = Integer.parseInt(headers[i].split(":")[1]);
-            } catch (Exception e) {}
-        }
-        return receiptId;
-    }
-
     
 }

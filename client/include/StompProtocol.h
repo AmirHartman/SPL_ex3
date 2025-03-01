@@ -22,6 +22,18 @@ public:
     bool isLoggedIn();
     void closeConnection();
     
+    class In {
+        public:
+            In(StompProtocol& _parent);
+            void start_reading();
+            
+        private:
+            StompProtocol& p;
+            Frame readFrameFromSocket();
+            void proccess(Frame &server_answer);
+            void proccessReceipt(Frame &server_answer);
+        };
+
     class Out {
         public:
         Out(StompProtocol& _parent);
@@ -37,27 +49,16 @@ public:
         private:
         bool sendFrame(Frame& frame);
     };
-    
-    class In {
-    public:
-        In(StompProtocol& _parent);
-        void start_reading();
-        
-    private:
-        StompProtocol& p;
-        Frame readFrameFromSocket();
-        void proccess(Frame &server_answer);
-        void proccessReceipt(Frame &server_answer);
-    };
+
 
     In in;
     Out out;
 
 private:
-    unique_ptr<ConnectionHandler> connectionHandler;
-    MessageEncoderDecoder encdec;
     friend class In;
     friend class Out;
+    unique_ptr<ConnectionHandler> connectionHandler;
+    MessageEncoderDecoder encdec;
     map<int, Frame> awaiting_frames_for_receipt;
     atomic<bool> is_connected;
     mutex mtx;

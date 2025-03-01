@@ -10,7 +10,7 @@ class StompClient {
         StompClient(CommandsHandler& _command_handler, StompProtocol& _stomp);
         virtual ~StompClient();
         virtual void run() = 0;
-        void ensureLogout();
+        void close();
     protected:
         CommandsHandler &command_handler;
         StompProtocol &stomp;

@@ -24,12 +24,5 @@ public interface MessagingProtocol<T> {
 
     void close();
 
-    
-
-
-    
-
-
-
 
 }

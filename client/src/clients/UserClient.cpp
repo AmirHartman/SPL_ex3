@@ -19,6 +19,7 @@ void UserClient::run() {
         }
         if (commandVector[0] == "quit") {
             cout << "Exiting client" << endl;
+            close();
             break;
         }
         command_handler.execute(commandVector);

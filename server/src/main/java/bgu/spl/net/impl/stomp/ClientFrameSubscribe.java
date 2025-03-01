@@ -25,7 +25,6 @@ public class ClientFrameSubscribe extends ClientFrame {
             String[] header = lines[i].split(":");
             switch (header[0]){
                 case "destination":
-                // לבדיקה עם אמיר
                     this.destination = header[1].substring(1);
                     // this.destination = header[1];
                     break;
@@ -40,14 +39,14 @@ public class ClientFrameSubscribe extends ClientFrame {
                     try {
                         this.receiptId = Integer.parseInt(header[1]);
                     } catch (Exception e) {
-                        System.out.println("unable to create frameSubscribe, invalid receipt id");
+                        System.out.println("unable to create frame SUBSCRIBE, invalid receipt id");
                     } 
                     break;
         }}}
 
     @Override
     public ServerFrame process (int connectionId, Connections <String> connections, StompMessagingProtocolImpl protocol){
-        if (!connections.isConnected(connectionId)){
+        if (!connections.isConnected(connectionId)){// should never happen
             System.out.println("user is trying to subscribe to a channel without being connected");
             return new ServerFrameError("Unconnected user is trying to subscribe to a channel", receiptId, toString());
         }
@@ -59,7 +58,7 @@ public class ClientFrameSubscribe extends ClientFrame {
 
     public String toString (){
         return "SUBSCRIBE\n" +
-                "destination:/" + destination + "\n" +
+                "destination:" + destination + "\n" +
                 "id:" + subscription + "\n" +
                 "receipt:" + receiptId + "\n" +
                 this.body;

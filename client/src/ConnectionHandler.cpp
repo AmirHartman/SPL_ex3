@@ -39,6 +39,19 @@ bool ConnectionHandler::getBytes(char bytes[], unsigned int bytesToRead) {
 		while (!error && bytesToRead > tmp) {
 			tmp += socket_.read_some(boost::asio::buffer(bytes + tmp, bytesToRead - tmp), error);
 		}
+		// Check for socket closure errors
+		if (error == boost::asio::error::eof) {
+			std::cerr << "Connection closed by peer\n";
+			return false;
+		}
+		if (error == boost::asio::error::operation_aborted) {
+			std::cerr << "Read operation aborted\n";
+			return false;
+		}
+		if (error == boost::asio::error::bad_descriptor) {
+			std::cerr << "Socket closed, waking thread\n";
+			return false;
+		}
 		if (error)
 			throw boost::system::system_error(error);
 	} catch (std::exception &e) {
