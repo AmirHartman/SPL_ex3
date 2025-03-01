@@ -11,6 +11,7 @@ using namespace std;
 extern bool DEBUG_MODE;
 extern atomic<bool> should_terminate;
 extern mutex screen_access;
+extern condition_variable cv;
 
 class In;
 class Out;
@@ -19,19 +20,17 @@ class StompProtocol {
 public:
     StompProtocol();
     
-    bool isLoggedIn();
     void closeConnection();
     
     class In {
         public:
             In(StompProtocol& _parent);
-            void start_reading();
+            Frame read_from_socket();
+            bool proccess(Frame &server_answer);
             
         private:
             StompProtocol& p;
-            Frame readFrameFromSocket();
-            void proccess(Frame &server_answer);
-            void proccessReceipt(Frame &server_answer);
+            bool proccessReceipt(Frame &server_answer);
         };
 
     class Out {
@@ -39,7 +38,7 @@ public:
         Out(StompProtocol& _parent);
         StompProtocol& p;
         
-        void connect(string& host, short port, string& username, string& password);
+        bool connect(string& host, short port, string& username, string& password);
         void join(string& channelName);
         void exit(string& channelName);
         void report(names_and_events& namesAndEvents);
@@ -47,6 +46,7 @@ public:
         void logout();
         
         private:
+        bool login(string& username, string& password);
         bool sendFrame(Frame& frame);
     };
 
@@ -60,9 +60,5 @@ private:
     unique_ptr<ConnectionHandler> connectionHandler;
     MessageEncoderDecoder encdec;
     map<int, Frame> awaiting_frames_for_receipt;
-    atomic<bool> is_connected;
-    mutex mtx;
-    condition_variable cv;
-
 };
 

@@ -7,24 +7,23 @@ extern mutex screen_access;
 
 class StompClient {
     public:
-        StompClient(CommandsHandler& _command_handler, StompProtocol& _stomp);
+        StompClient(CommandsHandler& _command_handler);
         virtual ~StompClient();
         virtual void run() = 0;
         void close();
     protected:
         CommandsHandler &command_handler;
-        StompProtocol &stomp;
 };
 
 class UserClient : public StompClient {
     public:
-        UserClient(CommandsHandler& _command_handler, StompProtocol& _stomp);
+        UserClient(CommandsHandler& _command_handler);
         virtual void run() override;
 };
 
 class AdminClient : public StompClient {
     public:
-        AdminClient(CommandsHandler& _command_handler, StompProtocol& _stomp);
+        AdminClient(CommandsHandler& _command_handler);
         virtual void run() override;
     private:
         void clearScreen();

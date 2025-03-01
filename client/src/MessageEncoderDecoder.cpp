@@ -32,7 +32,7 @@ string MessageEncoderDecoder::concatenateMessageBody(vector<vector<string>> &fra
 
 // _____ Public methods
 // Encode methods
-Frame MessageEncoderDecoder::generateConnectFrame(const string &host,short &port,const string &username, const string &password){
+Frame MessageEncoderDecoder::generateConnectFrame(const string &username, const string &password){
     map<string, string> headers;
     headers["host"] = "stomp.cs.bgu.ac.il";
     headers["accept-version"] = "1.2";

@@ -12,7 +12,12 @@ vector<string> parseStringByDelimeter(const string &frame, char delimiter){
 }
     
 
-CommandsHandler::CommandsHandler(StompProtocol& _stomp) : stomp(_stomp){}
+CommandsHandler::CommandsHandler() : connected(false), stomp(), reader(stomp,connected) {}
+CommandsHandler::~CommandsHandler() {
+    if (connected) {
+        stomp.out.logout();
+    }
+}
 
 void CommandsHandler::execute(vector<string> &args) {
     // _____________General input check_____________
@@ -30,7 +35,7 @@ void CommandsHandler::execute(vector<string> &args) {
     }
 
     // make sure that user is logged in before executing any command
-    if (command != "login" && !stomp.isLoggedIn()) {
+    if (command != "login" && !connected) {
         // if (DEBUG_MODE) cout << "[DEBUG] Tried to run the command " << command << " without being logged in.\nstopping the command execution\n" << endl;
         if (command == "logout") {
             cout << "You are not logged in." << endl;
@@ -42,7 +47,7 @@ void CommandsHandler::execute(vector<string> &args) {
 
     //__________________________ LOGIN __________________________
     if (command == "login") {
-        if (stomp.isLoggedIn()) {
+        if (connected) {
             cout << "The client is already logged in, log out before trying again" << endl;
             return;
         }
@@ -51,7 +56,12 @@ void CommandsHandler::execute(vector<string> &args) {
             return;
         } 
         cout << "Logging in..." << endl;
-        stomp.out.connect(args[1], stoi(args[2]), args[3], args[4]);
+        if (stomp.out.connect(args[1], stoi(args[2]), args[3], args[4])) {
+            connected = true;
+            cout << "Logged in successfully." << endl;
+            reader.start();
+        }
+
     }
 
     //__________________________ JOIN __________________________
@@ -100,19 +110,11 @@ void CommandsHandler::execute(vector<string> &args) {
             return;
         }
         
-        if (!stomp.isLoggedIn()) {
-            if (DEBUG_MODE) cout << "[DEBUG] logout commands was executed but connection is offline" << endl;
-            return;
-        }
-        
         cout << "Logging out..." << endl;
         stomp.out.logout();
+        connected = false;
     }
     
-}
-
-void CommandsHandler::terminate() {
-    stomp.out.logout();
 }
 
 vector<string> CommandsHandler::handle_file_path(string &input_string) {
