@@ -93,7 +93,7 @@ public class Auxiliary {
     }
 
     private static ServerFrameError validateSendFrame (String toFrame){
-        ServerFrameError error = checkHeadersNumber(toFrame, 1);
+        ServerFrameError error = checkHeadersNumber(toFrame, 2);
         if (error != null) {
             return error;
         }
