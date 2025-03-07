@@ -4,15 +4,15 @@ import bgu.spl.net.impl.stomp.StompCommand;
 
 public class ServerFrameMessage extends ServerFrame {
     private int messageID;
-    private int subscribtion;
+    private int subscription;
     private String destination;
 
-    public ServerFrameMessage (int messageID, int subscribtion, String destination, String body) {
+    public ServerFrameMessage (int messageID, int subscription, String destination, String body) {
         super(StompCommand.MESSAGE);
         this.messageID = messageID;
-        this.subscribtion = subscribtion;
+        this.subscription = subscription;
         this.destination = destination;
-        this.body = "\n" + body + "\n\u0000";
+        this.body = "\n" + body;
     }
 
     public String getTopic() {
@@ -22,12 +22,12 @@ public class ServerFrameMessage extends ServerFrame {
     public String toString() {
         return type.name() + "\n"  
                 + "message-id:" + this.messageID + "\n" 
-                + "subscribtion:" + this.subscribtion + "\n" 
+                + "subscription:" + this.subscription + "\n" 
                 + "destination:/" + this.destination + "\n" + this.body;
     }
 
-    public void setSubscribtion(int subscribtion) {
-        this.subscribtion = subscribtion;
+    public void setSubscription(int subscription) {
+        this.subscription = subscription;
     }
 
 }

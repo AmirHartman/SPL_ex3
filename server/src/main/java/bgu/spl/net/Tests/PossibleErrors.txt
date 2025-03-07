@@ -1,72 +1,24 @@
-General errors:
-1. message doesn't end with a null char - message header: "no null char at the end of the frame"
-2. the body of a frame should be empty but isnt - "body isn't empty" (for all except SEND)
-3. incorrect number of headers - "number of headers is invalid": 
-    CONNECT - 5
-    DISCONNECT - 1
-    SEND - 2
-    SUBSCRIBE - 3
-    UNSUBSCRIBE - 2
-4. one of more header names is invalid - "invalid one or more header names"
-5. receipt id is not an integer (triggered by the failure of Integer.parseInt({input})) - "receipt id is not an integer"
+full information:
+server is written in java and the client is written in c++.
+to run the program regularly, no debugging this is what i need to write in the terminal:
 
-CONNECT errors
-1. "Wrong host" - host isn't "stomp.cs.bgu.ac.il"
-2. "Wrong version" - version isnt 1.2
-3. "The client is already logged in, log out before trying again" - not completely sure but i think you implement this error (socket wise)
-4. "User already logged in" - username already exists and conncted to the server
-5. "Wrong password" - username existes connected in thepast with a different password
+step 1: compile and open the server and the client:
+for client (path: root@0d9faf9d32b5:/workspaces/SPL_ex3)
+cd ./client
+make
+./bin/StompEMIClient
 
-DISCONNECT errors:
-1. "please login first" - i didnt implement this! i think the implementation is in the client side but im not sure
-
-SUBSCRIBE errors:
-1. "Unconnected user is trying to subscribe to a channel"
-2. "already subscribed to " + {destination}
-3. "subscription id is not an integer" - like receipt id, triggered by Integer.parseInt
-
-UNSUBSCRIBE errors:
-1. "Unconnected user is trying to unsubscribe from a channel"
-2. "user is not subscribed to channel"
-3. "subscription id is not an integer" - like receipt id, triggered by Integer.parseInt
-
-SEND errors:
-1. "Unconnected user is trying to send a message"
-2. "channel does not exist"
-3. "user is not subscribed to channel"
-4. "no body in the frame" - instead of "body isn't empty" - body should never be empty
-
-
-PAY ATTENTION - errors i didnt implement but should happen:
-1. "The client is already logged in, log out before trying again" - the client is already logged in (the client itself not the user name, the socket is unavalable")
-2. "please login first" - triggered after a disconnect request from the terminal
-
-
-
-in orderto run:
+server:
+cd ./server
 mvn compile
-tpc:
-    mvn exec:java -Dexec.mainClass="bgu.spl.net.impl.stomp.StompServer" -Dexec.args="8888 tpc"
-rector:
-    mvn exec:java -Dexec.mainClass="bgu.spl.net.impl.stomp.StompServer" -Dexec.args="7777 reactor"
-
-
-
-
-
-
-bugs - tpc
-1. send doesnt work well
-2. logout - everything works, but need to try complex tests
-3. after send is operating correctly, test report and summery again
-4. everything else works perfectly
-
-bugs - reactor
-1. login, works only when everything is correct - doent work for wrong password and user already logged in (not from the same terminal) - DEADLOCK!
-2. logged our - seems to work fine but eas only tested for true tests, no negative tests yet (very minimal true tests)
-3. the rest of the commands were not yet tested
-
-
-
-java -jar target/StompServer1.1.jar 8888 tpc
 mvn exec:java -Dexec.mainClass="bgu.spl.net.impl.stomp.StompServer" -Dexec.args="7777 reactor"
+
+step 2: command in the terminal to test the actual program
+login 127.0.0.1 7777 yam 123 // login command
+join police // subscribe to channel police
+report {file_path} // sends the events in the json file that the path was given to
+
+what should happen:
+lets say clients dan, jay and ben are subscribed to channel police. dan reports (report command) on a few events to channel police. both jay and dan should recieve those reports as message frames
+
+problem: dan sends the reports sucessfullt but ben and jay dont recieve them. 

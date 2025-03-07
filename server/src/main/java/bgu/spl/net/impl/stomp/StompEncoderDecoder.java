@@ -33,10 +33,11 @@ public class StompEncoderDecoder implements MessageEncoderDecoder<String> {
     }
 
     private String popString() {
-        String result = new String(bytes, 0, len);
+        String result = new String(bytes, 0, len) + "\u0000";
         len = 0;
-        return result + "\u0000";
+        return result;
     }
+
     
     
 }

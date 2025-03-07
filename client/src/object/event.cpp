@@ -104,7 +104,7 @@ Event::Event(const std::string &frame_body): channel_name(""), city(""),
                 description = eventDescription;
             }
 
-            if(inGeneralInformation) {
+            if(inGeneralInformation & !key.empty() && key.at(0) == '\t') {
                 general_information_from_string[key.substr(1)] = val;
             }
         }
@@ -112,8 +112,25 @@ Event::Event(const std::string &frame_body): channel_name(""), city(""),
     general_information = general_information_from_string;
 }
 
+bool Event::operator==(const Event &other) const {
+    return this->channel_name == other.channel_name && this->city == other.city && this->name == other.name &&
+           this->date_time == other.date_time && this->description == other.description &&
+           this->general_information == other.general_information;
+}
+
 names_and_events::names_and_events() : channel_name(""), events(){}
 names_and_events::names_and_events(std::string channel_name, std::vector<Event> events) : channel_name(channel_name), events(events){}
+
+bool EventComparator::operator()(const Event& e1, const Event& e2) const {
+    if (e1.get_date_time() != e2.get_date_time()) {
+        return e1.get_date_time() < e2.get_date_time();
+    } if (e1.get_name() != e2.get_name()) {
+        return e1.get_name() < e2.get_name();
+    } if (e1 == e2) {
+        return false; // if all the fields are the same, return false
+    }// if events are different but the name and date are the same, insert e1 before e2
+    return true; 
+}
 
 names_and_events parseEventsFile(std::string json_path)
 {

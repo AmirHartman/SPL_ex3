@@ -15,7 +15,7 @@ public class ClientFrameSend extends ClientFrame {
         super(StompCommand.SEND);
         this.destination = destination;
         // this.receiptId = receiptId;
-        this.body = "\n" + body + "\n\u0000";
+        this.body = "\n" + body;
     }
 
     public ClientFrameSend(String toFrame){
@@ -37,7 +37,7 @@ public class ClientFrameSend extends ClientFrame {
             }
         }
         String body = toFrame.split("\n\n")[1];
-        this.body = "\n" + body + "\u0000";
+        this.body = "\n" + body;
     }
 
     @Override
@@ -53,7 +53,7 @@ public class ClientFrameSend extends ClientFrame {
         // updates subscription id for each subscriber
         for (Integer handlerId : subscribers.keySet()){
             if (handlerId != connectionId){
-                messageFrame.setSubscribtion(connections.getSubscriptionId(destination, handlerId));
+                messageFrame.setSubscription(connections.getSubscriptionId(destination, handlerId));
                 connections.send(handlerId, messageFrame.toString());
             }
         }

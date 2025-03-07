@@ -12,6 +12,7 @@ private:
 	const short port_;
 	boost::asio::io_service io_service_;   // Provides core I/O functionality
 	tcp::socket socket_;
+	std::string username;
 
 public:
 	ConnectionHandler(std::string host, short port);
@@ -20,6 +21,10 @@ public:
 
 	// Connect to the remote machine
 	bool connect();
+
+	std::string getUsername();
+
+	void setUsername(std::string username);
 
 	// Read a fixed number of bytes from the server - blocking.
 	// Returns false in case the connection is closed before bytesToRead bytes can be read.

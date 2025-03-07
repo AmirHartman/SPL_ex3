@@ -57,11 +57,13 @@ public class NonBlockingConnectionHandler<T> implements ConnectionHandler<T> {
                         if (nextMessage != null) {
                             System.out.println("NonBlocking: received message: " + nextMessage);
                             protocol.process(nextMessage);
-                            T response = messages.pollFirst();
+                            while (!messages.isEmpty()) {
+                                T response = messages.pollFirst();
                                     if (response != null) {
                                         System.out.println("NonBlocking: sending response: " + response);
                                         writeQueue.add(ByteBuffer.wrap(encdec.encode(response)));
                                         reactor.updateInterestedOps(chan, SelectionKey.OP_READ | SelectionKey.OP_WRITE);
+                                    }
                             }
                         }
                     }
@@ -131,4 +133,8 @@ public class NonBlockingConnectionHandler<T> implements ConnectionHandler<T> {
     }
 
 }
+
+
+//   /workspaces/SPL_ex3/events4.json
+//    login 127.0.0.1 8888
 

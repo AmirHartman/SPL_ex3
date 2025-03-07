@@ -26,6 +26,7 @@ private:
     // added this method because it was listed in the cpp file but the compiler couldn't find it
     void split_str(const std::string &line, char delim, std::vector<std::string> &lineArgs);
 
+
 public:
     Event(std::string channel_name, std::string city, std::string name, int date_time, std::string description, std::map<std::string, std::string> general_information);
     Event(const std::string & frame_body);
@@ -38,6 +39,9 @@ public:
     const std::string &get_name() const;
     int get_date_time() const;
     const std::map<std::string, std::string> &get_general_information() const;
+    // for EventComparator
+    bool operator==(const Event& other) const;
+
 };
 
 // an object that holds the names of the teams and a vector of events, to be returned by the parseEventsFile function
@@ -49,6 +53,15 @@ struct names_and_events {
     names_and_events(std::string channel_name, std::vector<Event> events);
 };
 
+// comparator for events map
+struct EventComparator {
+    bool operator()(const Event& e1, const Event& e2) const;
+};
+
+
 
 // function that parses the json file and returns a names_and_events object
 names_and_events parseEventsFile(std::string json_path);
+
+
+

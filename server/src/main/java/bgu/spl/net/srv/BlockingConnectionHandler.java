@@ -31,7 +31,7 @@ public class BlockingConnectionHandler<T> implements Runnable, ConnectionHandler
     public void run() {
         System.out.println("Start run method for client: " + sock.getRemoteSocketAddress());
         try (Socket sock = this.sock) {
-            int read;
+            int read = -1;
            
             in = new BufferedInputStream(sock.getInputStream());
             out = new BufferedOutputStream(sock.getOutputStream());
@@ -40,14 +40,27 @@ public class BlockingConnectionHandler<T> implements Runnable, ConnectionHandler
             while (!protocol.shouldTerminate() && connected && (read = in.read()) >= 0) {
                 T nextMessage = encdec.decodeNextByte((byte) read);
                 if (nextMessage != null) {
-                    System.out.println("the decoded message from client is:\n" + (String) nextMessage);
+                    System.out.println("the decoded message from client is:\n" + escapeNullCharacters((String) nextMessage));
                     protocol.process(nextMessage);
-                    T response = messages.poll();
-                    if (response != null) {
-                        System.out.println("the response to the client is:\n" + (String) response);
-                        out.write(encdec.encode(response));
-                        out.flush();
+                    synchronized (messages) {
+                        while (!messages.isEmpty()) {
+                            T response = messages.poll();
+                            System.out.println("the decoded message from client is:\n" + escapeNullCharacters((String) nextMessage));
+                            if (response != null) {
+                                out.write(encdec.encode(response));
+                                out.flush();
+                                System.out.println("the response to the client is:\n" + (String) response);
+                                System.out.println("should terminate is: " + protocol.shouldTerminate());
+
+                            }
+                        }
                     }
+                    // if (response != null) {
+                    //     System.out.println("the response to the client is:\n" + (String) response);
+                    //     out.write(encdec.encode(response));
+                    //     out.flush();
+                    //     System.out.println("should terminate is: " + protocol.shouldTerminate());
+                    // }
                 }
             }
         } catch (IOException ex) {
@@ -75,9 +88,21 @@ public class BlockingConnectionHandler<T> implements Runnable, ConnectionHandler
 
     @Override
     public void send(T msg) {
-        messages.add(msg);
-        System.out.println("Message added to messages queue");
+        synchronized (messages) {
+            messages.add(msg);
+            System.out.println("Message added to messages queue for handler id: " + protocol.getConnectionId() + "\n" + (String) msg);
+        }
     }
 
+    private String escapeNullCharacters(String input) {
+        return input.replace("\0", "\\0");  // 🔹 Replace actual null characters with visible "\0"
+    }
+    
 }
+
+//   /workspaces/SPL_ex3/events4.json
+//   login 127.0.0.1 8888    
+
+
+
 

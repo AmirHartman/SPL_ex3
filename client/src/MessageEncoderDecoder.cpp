@@ -32,7 +32,7 @@ string MessageEncoderDecoder::concatenateMessageBody(vector<vector<string>> &fra
 
 // _____ Public methods
 // Encode methods
-Frame MessageEncoderDecoder::generateConnectFrame(const string &host,short &port,const string &username, const string &password){
+Frame MessageEncoderDecoder::generateConnectFrame(const string &username, const string &password){
     map<string, string> headers;
     headers["host"] = "stomp.cs.bgu.ac.il";
     headers["accept-version"] = "1.2";
@@ -82,20 +82,23 @@ Frame MessageEncoderDecoder::generateDisconnectFrame(){
 
 // Decode methods
 Frame MessageEncoderDecoder::generateFrameFromString(const string &frame){
-    // Parse the frame to a vector of vectors of strings
-    vector<vector<string>> frameArgs = parseStringFrameToArgs(frame);
-
+    cout << "Decoding frame:\n" << frame << endl;
+    
     // Check if the frame is empty
-    if (frameArgs.size() == 0){
+    if (frame.size() == 0){
         cerr << "Error reading frame. frame is empty!" << endl;
         return Frame();
     }
+    
+    // Parse the frame to a vector of vectors of strings
+    vector<vector<string>> frameArgs = parseStringFrameToArgs(frame);
 
     // Defining the frame type
     FrameType frameType = stringToFrameType(frameArgs[0][0]);
 
     // Initialize new header map with empty values (different for each frame type) 
     map<string, string> headers;
+
     switch (frameType) {
         // Server frames:
         case CONNECTED:

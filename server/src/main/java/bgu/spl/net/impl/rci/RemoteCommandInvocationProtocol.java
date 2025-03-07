@@ -44,5 +44,10 @@ public class RemoteCommandInvocationProtocol<T> implements MessagingProtocol<Ser
     public void close(){
         // do nothing
     }
-
+        //tests
+        @Override
+        public int getConnectionId(){
+            return 0;
+        }
+    
 }

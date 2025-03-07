@@ -12,9 +12,19 @@
             }
         },
         {
+            "event_name": "Grand Theft Auto",
+            "city": "Liberty City",
+            "date_time": 1734961200,
+            "description": "Pink Lampadati Felon with license plate \"STOL3N1\". White male 1.85 with black baseball hat.",
+            "general_information": {
+                "active": true,
+                "forces_arrival_at_scene": false
+            }
+        },
+        {
             "event_name": "Vandalism",
             "city": "Los Alamos",
-            "date_time": 1735681200,
+            "date_time": 1635681200,
             "description": "Multiple cars were spray-painted in a residential neighborhood on Oak Drive. Suspect fled before police arrived.",
             "general_information": {
                 "active": false,
@@ -23,8 +33,8 @@
         },
         {
             "event_name": "Burglary",
-            "city": "Raccoon City",
-            "date_time": 1734939900,
+            "city": "Coon City",
+            "date_time": 1635681200,
             "description": "Suspect broke into a residence through a back window. Described as wearing a gray hoodie and blue jeans. Seen fleeing on foot towards Oak Street.",
             "general_information": {
                 "active": true,

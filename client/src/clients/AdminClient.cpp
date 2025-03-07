@@ -1,6 +1,6 @@
 #include "../../include/StompClient.h"
 
-AdminClient::AdminClient(CommandsHandler& _command_handler, StompProtocol& _stomp) : StompClient(_command_handler, _stomp) {}
+AdminClient::AdminClient(CommandsHandler& _command_handler) : StompClient(_command_handler) {}
 
 void AdminClient::clearScreen() {
     system("clear");

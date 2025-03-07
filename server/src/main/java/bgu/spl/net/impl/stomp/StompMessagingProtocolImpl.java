@@ -91,6 +91,11 @@ public class StompMessagingProtocolImpl implements StompMessagingProtocol<String
         connections.disconnect(this.connectionId);
     }
     
+    //for tests
+    public int getConnectionId(){
+        return connectionId;
+    }
+    
 
 
 }

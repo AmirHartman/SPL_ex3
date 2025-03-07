@@ -22,7 +22,7 @@ class MessageEncoderDecoder{
     ______________Encode methods______________
             (client frame generators)
     */
-    Frame generateConnectFrame(const string &host,short &port,const string &username, const string &password);
+    Frame generateConnectFrame(const string &username, const string &password);
     Frame generateSendFrame(const string &destination, const string &message);
     Frame generateSubscribeFrame(const string &topic);
     Frame generateUnsubscribeFrame(const string &topic);

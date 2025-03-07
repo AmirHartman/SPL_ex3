@@ -25,4 +25,9 @@ public interface MessagingProtocol<T> {
     void close();
 
 
+    // tests
+    int getConnectionId();
+
+
+
 }

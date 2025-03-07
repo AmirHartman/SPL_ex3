@@ -58,7 +58,7 @@ public class Reactor<T> implements Server<T> {
                 for (SelectionKey key : selector.selectedKeys()) {
 
                     if (!key.isValid()) {
-                        System.out.println("REACTOR: Invalid selection key, skipping...");
+                        System.out.println("REACTOR (problem): Invalid selection key, skipping...");
                         continue;
                     } else if (key.isAcceptable()) {
                         handleAccept(serverSock, selector);

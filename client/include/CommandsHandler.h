@@ -1,15 +1,19 @@
 #pragma once
 
 #include "StompProtocol.h"
+#include "SocketReader.h"
 
 class CommandsHandler {
 public:
-    CommandsHandler(StompProtocol& _stomp);
+    CommandsHandler();
+    ~CommandsHandler();
+    
     void execute(vector<string> &command);
-    void terminate();
     
 private:
-    StompProtocol& stomp;
+    StompProtocol stomp;
+    SocketReader reader;
+    bool connected;
 
     // Proccessing string input got by user (accept all options for input, with/without .json, with/without path)
     vector<string> handle_file_path(string& input_string);

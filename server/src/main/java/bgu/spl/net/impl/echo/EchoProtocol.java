@@ -49,5 +49,10 @@ public class EchoProtocol implements MessagingProtocol<String> {
         // do nothing
     }
 
+    //tests
+    @Override
+    public int getConnectionId(){
+        return 0;
+    }
 
 }

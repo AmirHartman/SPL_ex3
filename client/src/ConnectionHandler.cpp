@@ -9,7 +9,7 @@ using std::endl;
 using std::string;
 
 ConnectionHandler::ConnectionHandler(string host, short port) : host_(host), port_(port), io_service_(),
-                                                                socket_(io_service_) {}
+                                                                socket_(io_service_), username("") {}
 
 ConnectionHandler::~ConnectionHandler() {
 	close();
@@ -32,12 +32,33 @@ bool ConnectionHandler::connect() {
 	return true;
 }
 
+std::string ConnectionHandler::getUsername() {
+	return username;
+}
+
+void ConnectionHandler::setUsername(std::string username) {
+	this->username = username;
+}
+
 bool ConnectionHandler::getBytes(char bytes[], unsigned int bytesToRead) {
 	size_t tmp = 0;
 	boost::system::error_code error;
 	try {
 		while (!error && bytesToRead > tmp) {
 			tmp += socket_.read_some(boost::asio::buffer(bytes + tmp, bytesToRead - tmp), error);
+		}
+		// Check for socket closure errors
+		if (error == boost::asio::error::eof) {
+			std::cerr << "Connection closed by peer\n";
+			return false;
+		}
+		if (error == boost::asio::error::operation_aborted) {
+			std::cerr << "Read operation aborted\n";
+			return false;
+		}
+		if (error == boost::asio::error::bad_descriptor) {
+			std::cerr << "Socket closed, waking thread\n";
+			return false;
 		}
 		if (error)
 			throw boost::system::system_error(error);
@@ -82,13 +103,38 @@ bool ConnectionHandler::getFrameAscii(std::string &frame, char delimiter) {
 			if (!getBytes(&ch, 1)) {
 				return false;
 			}
-			if (ch != '\0')
+			if (ch != '\0'){
 				frame.append(1, ch);
+			}
 		} while (delimiter != ch);
+		cout << "not blocked 5" << endl;
+		// // Check if more data is still in the socket buffer
+		// size_t bytesAvailable = socket_.available();
+		// cout << "[DEBUG] Bytes still in socket buffer: " << bytesAvailable << endl;
+		// if (bytesAvailable > 0) {
+        //     char peekBuffer[bytesAvailable];  // Buffer to store the peeked data
+        //     int peekBytes = recv(socket_.native_handle(), peekBuffer, bytesAvailable, MSG_PEEK);
+        //     if (peekBytes > 0) {
+        //         cout << "[DEBUG] Full socket buffer contents (" << peekBytes << " bytes):" << endl;
+        //         for (int i = 0; i < peekBytes; i++) {
+		// 			if (peekBuffer[i] == '\0') {
+		// 				cout << "\\0";
+		// 			} else {
+        //             cout << peekBuffer[i];
+		// 			}
+        //         }
+        //         cout << endl;
+        //     } else {
+        //         cout << "[DEBUG] No more data in socket buffer after read." << endl;
+        //     }
+        // }
+		// ///////////////////end of debug////////////////////////
+
 	} catch (std::exception &e) {
 		std::cerr << "recv failed2 (Error: " << e.what() << ')' << std::endl;
 		return false;
 	}
+	cout << "not blocked 8" << endl;
 	return true;
 }
 
@@ -106,3 +152,5 @@ void ConnectionHandler::close() {
 		std::cout << "closing failed: connection already closed" << std::endl;
 	}
 }
+//   /workspaces/SPL_ex3/events4.json
+//    login 127.0.0.1 8888

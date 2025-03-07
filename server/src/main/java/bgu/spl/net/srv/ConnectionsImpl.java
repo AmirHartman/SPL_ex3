@@ -18,6 +18,7 @@ public class ConnectionsImpl<T> implements Connections<T> {
     
     @Override
     public boolean send(int connectionId, T msg){
+        // סנכרון על "טופיקס" כדי שלא ניתן יהיה לשלוח הודעות כאשר מישהו נרשם
         System.out.println("CONNECTIONS: run first send method");
         synchronized(handlers){
             if (handlers.containsKey(connectionId)){
@@ -29,7 +30,6 @@ public class ConnectionsImpl<T> implements Connections<T> {
         System.out.println("CONNECTIONS: first send method - handlers doesn't contain connectionId");
         return false;
     }
-
     @Override
     public void send(String channel, T msg){
         System.out.println("CONNECTIONS: run second send method - shpuld never happen!");
