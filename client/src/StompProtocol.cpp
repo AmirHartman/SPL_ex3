@@ -77,8 +77,54 @@ void StompProtocol::Out::report(names_and_events& namesAndEvents) {
     }
 }
 
+// void StompProtocol::Out::update_reports (int& counter, string& reports, Event &event){
 
-void StompProtocol::Out::summary() {
+//     void StompProtocol::Out::update_stats (Event &event, int& active, int& forces_arrival_at_scene){
+    
+
+void StompProtocol::Out::summary(string channel_name, string name, string file_name){
+    cout << "test in 1" << endl;
+    if (p.encdec.topicSubscriptionMap.find(channel_name) == p.encdec.topicSubscriptionMap.end()) {
+        cout << "you are not subscribed to channel " << channel_name <<  endl;
+        return;
+    }
+    cout << "test in 2" << endl;
+    events_lock.lock();
+    cout << "test in 3" << endl;
+    string file_content = "Channel " + channel_name + "\n";
+           file_content += "Stats: \n";
+    // if the channel doesn't exist or the user didn't send any reports to this channel
+    cout << "test in 4" << endl;
+    if (p.events.find(channel_name) == p.events.end() || p.events[channel_name].find(name) == p.events[channel_name].end()) {
+        file_content += "Total: 0\n\n\n";
+        file_content += "Event Reports:";
+        cout << "test in 5" << endl;
+    }
+    else {
+        cout << "test in 6" << endl;
+        set<Event, EventComparator> events = p.events[channel_name][name];
+        int total = events.size();
+        int active = 0, forces_arrival_at_scene = 0, counter = 1;
+        string reports = "Event Reports:\n\n\n";
+        // iterating over the events by order
+        for(set<Event, EventComparator>::iterator it = events.begin(); it != events.end(); ++it) { 
+            update_stats(*it, active, forces_arrival_at_scene);
+            update_reports(counter, reports, *it);       
+        }
+        file_content += "Total: " + to_string(total) + "\n";
+        file_content += "active: " + to_string(active) + "\n";
+        file_content += "forces arrival at scene: " + to_string(forces_arrival_at_scene) + "\n\n";
+        file_content += reports;
+    }
+    cout << "test in 20" << endl;
+    if (file_name.find(".text") == string::npos && file_name.find(".") == string::npos) {
+        file_name += ".text";
+    }
+    update_file(file_name, file_content);
+    cout << "test in 21" << endl;
+    events_lock.unlock();
+    cout << "test in 22" << endl;
+
 }
 
 void StompProtocol::Out::logout(){
@@ -236,6 +282,50 @@ Frame StompProtocol::In::read_from_socket(){
     }
     return answerFrame;
 }
+
+string StompProtocol::Out::epoch_to_date(int date) {
+    time_t time = date;
+    struct tm * timeinfo = localtime(&time);
+    char buffer[25];
+    strftime(buffer, 25, "%d-%m-%Y %H:%M:%S", timeinfo);
+    return string(buffer);
+}
+
+void StompProtocol::Out::update_stats (const Event &event, int& active, int& forces_arrival_at_scene){
+    const map<string, string> & general_information = event.get_general_information();
+    if (general_information.find("active") != general_information.end() && general_information.at("active") == "true") {
+        active++;
+    }
+    if (general_information.find("forces_arrival_at_scene") != general_information.end() && general_information.at("forces_arrival_at_scene") == "true") {
+        forces_arrival_at_scene++;
+    }
+}
+
+void StompProtocol::Out::update_reports (int& counter, string& reports, const Event &event){
+    reports += "Report_" + to_string(counter) + ":\n";
+    reports += "city: " + event.get_city() + "\n";
+    reports += "date time: " + epoch_to_date(event.get_date_time()) + "\n";
+    reports += "event name: " + event.get_name() + "\n";
+    //  27לוודא שמחזיר תיאור באורך של 
+    if (event.get_description().length() > 27){
+        reports += "summary: " + event.get_description().substr(0, 27) + "...\n";
+    }    else {
+        reports += "summary: " + event.get_description() + "\n";
+    }
+    reports += "\n\n";
+    counter++;
+}
+
+void StompProtocol::Out::update_file (string &file_name, string &file_content){
+    ofstream file(file_name, std::ios::trunc); 
+    if (!file) {
+        cout << "Error: Could not open file " << file_name << " for writing.\n";
+        return;
+    }
+    file << file_content;  
+    file.close();
+}
+
 
 
 

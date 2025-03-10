@@ -10,6 +10,8 @@
 #include <boost/lockfree/spsc_queue.hpp>
 #include <set>
 #include <mutex>
+#include <ctime>
+
 
 using namespace std;
 extern mutex events_lock;
@@ -38,26 +40,29 @@ public:
         private:
             StompProtocol& p;
             bool proccessReceipt(Frame &server_answer);
-
+            
         };
-
-    class Out {
-        public:
-        Out(StompProtocol& _parent);
-        StompProtocol& p;
         
-        bool connect(string& host, short port, string username, string password);
-        void join(string& channelName);
-        void exit(string& channelName);
-        void report(names_and_events& namesAndEvents);
-        void summary();
-        void logout();
-        void addEvent(Event& event);
-        
-        private:
-        bool login(string username, string password);
-        bool sendFrame(Frame& frame);
-
+        class Out {
+            public:
+            Out(StompProtocol& _parent);
+            StompProtocol& p;
+            
+            bool connect(string& host, short port, string username, string password);
+            void join(string& channelName);
+            void exit(string& channelName);
+            void report(names_and_events& namesAndEvents);
+            void summary(string channel_name, string name, string file_name);
+            void logout();
+            void addEvent(Event& event);
+            
+            private:
+            bool login(string username, string password);
+            bool sendFrame(Frame& frame);
+            static string epoch_to_date(int date);
+            void update_stats (const Event &event, int& active, int& forces_arrival_at_scene);
+            void update_reports (int& counter, string& reports, const Event &event);
+            void update_file (string &file_name, string &file_content);
     };
 
 
@@ -73,5 +78,7 @@ private:
     // key is channel, value is map of users (key) that sent reports (value).
     map<string, map<string, set<Event, EventComparator>>> events;
 
+
 };
+
 

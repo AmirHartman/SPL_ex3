@@ -62,7 +62,7 @@ mutex receipts_mutex;
 
 int main(int argc, char *argv[]) {
     DEBUG_MODE = true;
-    
+
     CommandsHandler command_handler;
     UserClient client(command_handler);
     client.run();

@@ -106,7 +106,15 @@ void CommandsHandler::execute(vector<string> &args) {
 
     // __________________________ SUMMARY __________________________
     if (command == "summary") {
-        //TODO: Implement this
+        cout << "test out 1" << endl;
+        if (args.size() != 4) {
+            cout << "Usage: summary {channel_name} {name} {file_name}" << endl;
+            return;
+        }
+        cout << "test out 2" << endl;
+        stomp.out.summary(args[1], args[2], args[3]);
+        cout << "test out 3" << endl;
+
     }
 
     // __________________________ LOGOUT __________________________
