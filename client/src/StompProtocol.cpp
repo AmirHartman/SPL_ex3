@@ -48,7 +48,7 @@ void StompProtocol::Out::join(string& channelName) {
 void StompProtocol::Out::exit(string& channelName) {
     if (p.encdec.topicSubscriptionMap.find(channelName) == p.encdec.topicSubscriptionMap.end()) {
         screen_access.try_lock();
-        cout << "Couldn't find the channel \"" << channelName << "\" in the subscribed channels" << endl;
+        cout << "you are not subscribed to channel " << channelName << endl;
         screen_access.unlock();
         return;
     }
@@ -58,15 +58,17 @@ void StompProtocol::Out::exit(string& channelName) {
 }
 
 void StompProtocol::Out::report(names_and_events& namesAndEvents) {
-    screen_access.try_lock();
-    cout << "Report for channel " << namesAndEvents.channel_name << endl;
-    screen_access.unlock();
+    if (p.encdec.topicSubscriptionMap.find(namesAndEvents.channel_name) == p.encdec.topicSubscriptionMap.end()) {
+        screen_access.try_lock();
+        cout << "You are not registered to channel " << namesAndEvents.channel_name << endl;
+        screen_access.unlock();
+        return;
+    }
     
     string message;
     for (Event event : namesAndEvents.events) {
         screen_access.lock();
         event.setEventOwnerUser(p.connectionHandler->getUsername());
-        cout << "Sending the event \"" << event.get_name() << "\" to the server..." << endl;
         message = "user:" + event.getEventOwnerUser() + "\n";
         message += "channel name:" + event.get_channel_name() + "\n";
         message += "city:" + event.get_city() + "\n";
@@ -83,6 +85,9 @@ void StompProtocol::Out::report(names_and_events& namesAndEvents) {
         screen_access.unlock();
         sendFrame(reportFrame);
     }
+    screen_access.try_lock();
+    cout << "reported" << endl;
+    screen_access.unlock();
 }
 
 // void StompProtocol::Out::update_reports (int& counter, string& reports, Event &event){
@@ -91,25 +96,21 @@ void StompProtocol::Out::report(names_and_events& namesAndEvents) {
     
 
 void StompProtocol::Out::summary(string channel_name, string name, string file_name){
-    cout << "test in 1" << endl;
     if (p.encdec.topicSubscriptionMap.find(channel_name) == p.encdec.topicSubscriptionMap.end()) {
+        screen_access.try_lock();
         cout << "you are not subscribed to channel " << channel_name <<  endl;
+        screen_access.unlock();
         return;
     }
-    cout << "test in 2" << endl;
     events_lock.lock();
-    cout << "test in 3" << endl;
     string file_content = "Channel " + channel_name + "\n";
            file_content += "Stats: \n";
     // if the channel doesn't exist or the user didn't send any reports to this channel
-    cout << "test in 4" << endl;
     if (p.events.find(channel_name) == p.events.end() || p.events[channel_name].find(name) == p.events[channel_name].end()) {
         file_content += "Total: 0\n\n\n";
         file_content += "Event Reports:";
-        cout << "test in 5" << endl;
     }
     else {
-        cout << "test in 6" << endl;
         set<Event, EventComparator> events = p.events[channel_name][name];
         int total = events.size();
         int active = 0, forces_arrival_at_scene = 0, counter = 1;
@@ -124,14 +125,11 @@ void StompProtocol::Out::summary(string channel_name, string name, string file_n
         file_content += "forces arrival at scene: " + to_string(forces_arrival_at_scene) + "\n\n";
         file_content += reports;
     }
-    cout << "test in 20" << endl;
     if (file_name.find(".text") == string::npos && file_name.find(".") == string::npos) {
         file_name += ".text";
     }
     update_file(file_name, file_content);
-    cout << "test in 21" << endl;
     events_lock.unlock();
-    cout << "test in 22" << endl;
 
 }
 
@@ -238,7 +236,7 @@ bool StompProtocol::In::proccessReceipt(Frame &server_answer) {
         }
         if (topic == "") {
             screen_access.try_lock();
-            cout << "Couldn't find the channel id " << subscriptionId << "in the subscribed channels" << endl;
+            cout << "you are not subscribed to channel " << frame_related_to_receipt.headers["destination"].substr(1) << endl;
             screen_access.unlock();
             return true;
         } else {
@@ -251,17 +249,16 @@ bool StompProtocol::In::proccessReceipt(Frame &server_answer) {
     screen_access.try_lock();
     switch(frame_related_to_receipt.type){
         case FrameType::SUBSCRIBE:
-            cout << "Subscribed to channel \"" << frame_related_to_receipt.headers["destination"] << "\"." << endl;
+            cout << "Joined channel " << frame_related_to_receipt.headers["destination"].substr(1) << endl;
             break;
         case FrameType::UNSUBSCRIBE:
-            cout << "Unsubscribed from channel \"" << frame_related_to_receipt.headers["destination"] << "\"." << endl;
+            cout << "Exited channel " << frame_related_to_receipt.headers["destination"].substr(1) << endl;
             break;
         case FrameType::SEND:
-            cout << "Event successfully sent to the server." << endl;
             break;
         case FrameType::DISCONNECT:
             should_disconnect = true;
-            cout << "Logged out successfully." << endl;
+            cout << "Logged out" << endl;
             break;
         default:
             break;
@@ -309,7 +306,6 @@ void StompProtocol::Out::update_reports (int& counter, string& reports, const Ev
     reports += "city: " + event.get_city() + "\n";
     reports += "date time: " + epoch_to_date(event.get_date_time()) + "\n";
     reports += "event name: " + event.get_name() + "\n";
-    //  27לוודא שמחזיר תיאור באורך של 
     if (event.get_description().length() > 27){
         reports += "summary: " + event.get_description().substr(0, 27) + "...\n";
     }    else {

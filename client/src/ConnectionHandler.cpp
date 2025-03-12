@@ -107,34 +107,11 @@ bool ConnectionHandler::getFrameAscii(std::string &frame, char delimiter) {
 				frame.append(1, ch);
 			}
 		} while (delimiter != ch);
-		cout << "not blocked 5" << endl;
-		// // Check if more data is still in the socket buffer
-		// size_t bytesAvailable = socket_.available();
-		// cout << "[DEBUG] Bytes still in socket buffer: " << bytesAvailable << endl;
-		// if (bytesAvailable > 0) {
-        //     char peekBuffer[bytesAvailable];  // Buffer to store the peeked data
-        //     int peekBytes = recv(socket_.native_handle(), peekBuffer, bytesAvailable, MSG_PEEK);
-        //     if (peekBytes > 0) {
-        //         cout << "[DEBUG] Full socket buffer contents (" << peekBytes << " bytes):" << endl;
-        //         for (int i = 0; i < peekBytes; i++) {
-		// 			if (peekBuffer[i] == '\0') {
-		// 				cout << "\\0";
-		// 			} else {
-        //             cout << peekBuffer[i];
-		// 			}
-        //         }
-        //         cout << endl;
-        //     } else {
-        //         cout << "[DEBUG] No more data in socket buffer after read." << endl;
-        //     }
-        // }
-		// ///////////////////end of debug////////////////////////
 
 	} catch (std::exception &e) {
 		std::cerr << "recv failed2 (Error: " << e.what() << ')' << std::endl;
 		return false;
 	}
-	cout << "not blocked 8" << endl;
 	return true;
 }
 

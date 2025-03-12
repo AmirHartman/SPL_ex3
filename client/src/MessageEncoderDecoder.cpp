@@ -82,13 +82,9 @@ Frame MessageEncoderDecoder::generateDisconnectFrame(){
 
 // Decode methods
 Frame MessageEncoderDecoder::generateFrameFromString(const string &frame){
-    cout << "Decoding frame:\n" << frame << endl;
     
     // Check if the frame is empty
     if (frame.size() == 0){
-        screen_access.try_lock();
-        cerr << "Error reading frame. frame is empty!" << endl;
-        screen_access.unlock();
         return Frame();
     }
     
