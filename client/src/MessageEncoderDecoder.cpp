@@ -86,7 +86,9 @@ Frame MessageEncoderDecoder::generateFrameFromString(const string &frame){
     
     // Check if the frame is empty
     if (frame.size() == 0){
+        screen_access.try_lock();
         cerr << "Error reading frame. frame is empty!" << endl;
+        screen_access.unlock();
         return Frame();
     }
     
@@ -137,7 +139,9 @@ Frame MessageEncoderDecoder::generateFrameFromString(const string &frame){
 
         // Frame type indicates an error
         case UNKNOWN:
+            screen_access.try_lock();
             cerr << "Could not read frame type" << endl;
+            screen_access.unlock();
             return Frame();
     }
 
@@ -189,9 +193,14 @@ Frame MessageEncoderDecoder::generateFrameFromString(const string &frame){
         i++;
     }
 
-    if (DEBUG_MODE && unexpectedHeadersFlag) cout << "[DEBUG] unexpected headers were found in the server frame: " << unexpectedHeaders << endl;
+    if (unexpectedHeadersFlag) {
+        screen_access.try_lock();
+        cout << "unexpected headers were found in the server frame: " << unexpectedHeaders << endl;
+        screen_access.unlock();
+    }
 
     if (!allArgsFound) {
+        screen_access.try_lock();
         cerr << "Frame is missing arguments" << endl;
         cout << "Missing headers: ";
         for (const auto &pair : headers) {
@@ -202,6 +211,7 @@ Frame MessageEncoderDecoder::generateFrameFromString(const string &frame){
             }
         }
         cout << endl;
+        screen_access.unlock();
         return Frame();
     }
     int messageStartLineIndex = i+1; // The index of the line where the message body starts

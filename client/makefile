@@ -1,7 +1,7 @@
 CFLAGS := -c -Wall -Weffc++ -g -std=c++11 -Iinclude
 LDFLAGS := -lboost_system -lpthread
 
-OFILES := bin/MessageEncoderDecoder.o bin/frame.o bin/event.o bin/connectionHandler.o bin/StompProtocol.o bin/CommandsHandler.o bin/main.o bin/StompClient.o bin/AdminClient.o bin/UserClient.o bin/SocketReader.o
+OFILES := bin/MessageEncoderDecoder.o bin/frame.o bin/event.o bin/connectionHandler.o bin/StompProtocol.o bin/CommandsHandler.o bin/main.o bin/SocketReader.o
 
 all: createBin StompEMIClient
 
@@ -10,15 +10,6 @@ StompEMIClient: $(OFILES)
 
 bin/main.o: src/main.cpp
 	g++ $(CFLAGS) -o bin/main.o src/main.cpp
-
-bin/StompClient.o: src/clients/StompClient.cpp
-	g++ $(CFLAGS) -o bin/StompClient.o src/clients/StompClient.cpp
-
-bin/AdminClient.o: src/clients/AdminClient.cpp
-	g++ $(CFLAGS) -o bin/AdminClient.o src/clients/AdminClient.cpp
-
-bin/UserClient.o: src/clients/UserClient.cpp
-	g++ $(CFLAGS) -o bin/UserClient.o src/clients/UserClient.cpp
 
 bin/StompProtocol.o: src/StompProtocol.cpp
 	g++ $(CFLAGS) -o bin/StompProtocol.o src/StompProtocol.cpp

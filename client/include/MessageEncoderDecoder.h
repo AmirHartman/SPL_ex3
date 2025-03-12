@@ -4,10 +4,12 @@
 #include <sstream>
 #include <vector>
 #include <deque>
+#include <mutex>
 
 using namespace std;
 
 extern bool DEBUG_MODE;
+extern mutex screen_access;
 
 class MessageEncoderDecoder{
   public:

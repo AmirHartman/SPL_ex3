@@ -2,6 +2,7 @@
 
 #include "StompProtocol.h"
 #include "SocketReader.h"
+#include "event.h"
 
 class CommandsHandler {
 public:
@@ -11,11 +12,7 @@ public:
     void execute(vector<string> &command);
     
 private:
+    bool connected;
     StompProtocol stomp;
     SocketReader reader;
-    bool connected;
-
-    // Proccessing string input got by user (accept all options for input, with/without .json, with/without path)
-    vector<string> handle_file_path(string& input_string);
-    bool parse_json_events_file(string &input_string, names_and_events &namesAndEvents);
 };

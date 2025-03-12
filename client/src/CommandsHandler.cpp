@@ -1,7 +1,5 @@
 #include "../include/CommandsHandler.h"
-#include "event.h"
 
-// make sure to import the right command to impl this
 vector<string> parseStringByDelimeter(const string &frame, char delimiter){
     vector<string> parsedString;
     stringstream stream(frame);
@@ -52,14 +50,18 @@ void CommandsHandler::execute(vector<string> &args) {
             cout << "The client is already logged in, log out before trying again" << endl;
             return;
         }
-        if (args.size() != 5) {
+        if (args.size() != 4) {
             cout << "Usage: login {host} {port} {username} {password}" << endl;
             return;
         } 
-        cout << "Logging in..." << endl;
-        if (stomp.out.connect(args[1], stoi(args[2]), args[3], args[4])) {
+        vector<string> host_port = parseStringByDelimeter(args[1], ':');
+        string host = host_port[0];
+        short port = stoi(host_port[1]);
+        string username = args[2];
+        string password = args[3];
+        if (stomp.out.connect(host, port, username, password)) {
             connected = true;
-            cout << "Logged in successfully." << endl;
+            cout << "Login successful." << endl;
             reader.start();
         }
 

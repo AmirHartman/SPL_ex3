@@ -6,7 +6,6 @@ StompProtocol::Out::Out(StompProtocol& _parent) : p(_parent) {}
 
 void StompProtocol::closeConnection() {
     if (connectionHandler != nullptr) {
-        cout << "Closing connection...\n" << endl;
         connectionHandler->close();
         connectionHandler.reset(nullptr);
     }
@@ -17,8 +16,11 @@ bool StompProtocol::Out::connect(string& host, short port, string username, stri
     p.connectionHandler.reset(new ConnectionHandler(host, port));
 
     if (p.connectionHandler->connect()) {
-        if (DEBUG_MODE) cout << "\n[DEBUG] Connected to " << host << ":" << port << endl;
         return login(username, password);
+    } else {
+        screen_access.try_lock();
+        cerr << "Could not connect to server." << endl;
+        screen_access.unlock();
     }
     return false;
 }
@@ -45,7 +47,9 @@ void StompProtocol::Out::join(string& channelName) {
 
 void StompProtocol::Out::exit(string& channelName) {
     if (p.encdec.topicSubscriptionMap.find(channelName) == p.encdec.topicSubscriptionMap.end()) {
+        screen_access.try_lock();
         cout << "Couldn't find the channel \"" << channelName << "\" in the subscribed channels" << endl;
+        screen_access.unlock();
         return;
     }
     Frame unsubscribeFrame = p.encdec.generateUnsubscribeFrame(channelName);
@@ -54,10 +58,13 @@ void StompProtocol::Out::exit(string& channelName) {
 }
 
 void StompProtocol::Out::report(names_and_events& namesAndEvents) {
+    screen_access.try_lock();
     cout << "Report for channel " << namesAndEvents.channel_name << endl;
+    screen_access.unlock();
     
     string message;
     for (Event event : namesAndEvents.events) {
+        screen_access.lock();
         event.setEventOwnerUser(p.connectionHandler->getUsername());
         cout << "Sending the event \"" << event.get_name() << "\" to the server..." << endl;
         message = "user:" + event.getEventOwnerUser() + "\n";
@@ -73,6 +80,7 @@ void StompProtocol::Out::report(names_and_events& namesAndEvents) {
         p.out.addEvent(event);
         Frame reportFrame = p.encdec.generateSendFrame(namesAndEvents.channel_name, message);
         p.awaiting_frames_for_receipt[stoi(reportFrame.headers["receipt"])] = reportFrame;
+        screen_access.unlock();
         sendFrame(reportFrame);
     }
 }
@@ -136,19 +144,13 @@ void StompProtocol::Out::logout(){
 bool StompProtocol::Out::sendFrame(Frame& frameToSend) {
     string message = frameToSend.toString();
 
-    if (DEBUG_MODE) {
-        cout << "[DEBUG] Frame sent to the server:" << endl;
-        cout << "____________________" << endl;
-        cout << message << endl;
-        cout << "____________________" << endl;
-    }
-
     // Send the frame to the server
     if (!p.connectionHandler->sendFrameAscii(message, '\0')) {
+        screen_access.try_lock();
         cerr << "Failed to send request to the server. Connection error." << endl;
+        screen_access.unlock();
+        p.closeConnection();
         return false;
-    } else {
-        if (DEBUG_MODE) cout << "\n[DEBUG] Frame successfully sent to the server" << endl;
     }
     return true;
 }
@@ -175,26 +177,32 @@ bool StompProtocol::In::proccess(Frame &server_answer) {
     bool should_disconnect = false;
     switch(server_answer.type){
         case FrameType::MESSAGE:
+            screen_access.try_lock();
             cout << "Message received from the server: \n" << server_answer.body << endl;
+            screen_access.unlock();
             try {
                 Event event(server_answer.body);  
                 p.out.addEvent(event);
             } catch (const std::exception& e) {
+                screen_access.try_lock();
                 cout << "Error creating event: " << e.what() << endl;
+                screen_access.unlock();
             }
             break;
         case FrameType::RECEIPT:
             should_disconnect = proccessReceipt(server_answer);
             break;
         case FrameType::ERROR:
+            screen_access.try_lock();
             cout << "Error message received from the server: " << server_answer.headers["message"] << "." << endl;
+            screen_access.unlock();
             should_disconnect = true;
             break;
         case FrameType::UNKNOWN:
             // Server's answer failed to be decoded -- in this case, the client should disconnect manually (in other cases, the server will disconnect the client)
-            if (DEBUG_MODE) {
-                cout << "[DEBUG] Server's answer failed to be decoded." << endl;
-            }
+            screen_access.try_lock();
+            cout << "Server's answer failed to be decoded." << endl;
+            screen_access.unlock();
             should_disconnect = true;
             break;
         default:
@@ -210,7 +218,9 @@ bool StompProtocol::In::proccessReceipt(Frame &server_answer) {
     bool should_disconnect = false;
     int receipt_id = stoi(server_answer.headers["receipt-id"]);
     if (p.awaiting_frames_for_receipt.find(receipt_id) == p.awaiting_frames_for_receipt.end()) {
+        screen_access.try_lock();
         cout << "Received a receipt for an unknown frame." << endl;
+        screen_access.unlock();
         return true;
     }
 
@@ -227,7 +237,9 @@ bool StompProtocol::In::proccessReceipt(Frame &server_answer) {
             }
         }
         if (topic == "") {
+            screen_access.try_lock();
             cout << "Couldn't find the channel id " << subscriptionId << "in the subscribed channels" << endl;
+            screen_access.unlock();
             return true;
         } else {
             frame_related_to_receipt.headers.erase("id");
@@ -236,6 +248,7 @@ bool StompProtocol::In::proccessReceipt(Frame &server_answer) {
         }
     }
 
+    screen_access.try_lock();
     switch(frame_related_to_receipt.type){
         case FrameType::SUBSCRIBE:
             cout << "Subscribed to channel \"" << frame_related_to_receipt.headers["destination"] << "\"." << endl;
@@ -253,32 +266,22 @@ bool StompProtocol::In::proccessReceipt(Frame &server_answer) {
         default:
             break;
     }
+    screen_access.unlock();
     return should_disconnect;
 }
 
 Frame StompProtocol::In::read_from_socket(){
     Frame answerFrame;
     string answerAsString;
-    cout << "reading from socket again" << endl;
+    // cout << "reading from socket again" << endl;
     if (!p.connectionHandler->getFrameAscii(answerAsString, '\0')) {
-        cout << "!p.connectionHandler->getFrameAscii(answerAsString, '\0')" << endl;
+        // cout << "!p.connectionHandler->getFrameAscii(answerAsString, '\0')" << endl;
         screen_access.try_lock();
         cerr << "Failed to receive an answer from the server." << endl;
-        p.closeConnection();
         screen_access.unlock();
+        p.closeConnection();
     } else {
-        cout << "before decoding" << endl;
         answerFrame = p.encdec.generateFrameFromString(answerAsString);
-        cout << "after decoding" << endl;
-        if (DEBUG_MODE) {
-            screen_access.try_lock();
-            cout << "[DEBUG] Answer frame successfully received from the server." << endl;
-            cout << "[DEBUG] Frame received from the server:" << endl;
-            cout << "____________________" << endl;
-            cout << answerFrame.toString() << endl;
-            cout << "____________________\n\n" << endl;
-            screen_access.unlock();
-        } 
     }
     return answerFrame;
 }
