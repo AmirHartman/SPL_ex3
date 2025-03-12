@@ -18,21 +18,15 @@ public class ConnectionsImpl<T> implements Connections<T> {
     
     @Override
     public boolean send(int connectionId, T msg){
-        // סנכרון על "טופיקס" כדי שלא ניתן יהיה לשלוח הודעות כאשר מישהו נרשם
-        System.out.println("CONNECTIONS: run first send method");
         synchronized(handlers){
             if (handlers.containsKey(connectionId)){
-                System.out.println("CONNECTIONS: first send method - handlers contains connectionId");
                 handlers.get(connectionId).send(msg);
-                System.out.println("CONNECTIONS: first send method - send message to connection handler");
                 return true;
         }}
-        System.out.println("CONNECTIONS: first send method - handlers doesn't contain connectionId");
         return false;
     }
     @Override
     public void send(String channel, T msg){
-        System.out.println("CONNECTIONS: run second send method - shpuld never happen!");
         if (topics.get(channel) == null){
             return;
         }
@@ -46,13 +40,15 @@ public class ConnectionsImpl<T> implements Connections<T> {
 
     @Override
     public void disconnect(int connectionId){
-        synchronized (users){
-            for (String username : users.keySet()){
-                if (users.get(username) == connectionId){
-                    users.remove(username);
-                    break;
-                }
-        }}
+        // synchronized topics so that a user cannot sign into a channel while sending a message to all subscribers
+        synchronized(topics){
+            synchronized (users){
+                for (String username : users.keySet()){
+                    if (users.get(username) == connectionId){
+                        users.remove(username);
+                        break;
+                    }
+            }}}
         handlers.remove(connectionId);
         synchronized (topics){
                 for (String topic : topics.keySet()){

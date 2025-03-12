@@ -45,24 +45,12 @@ public class BlockingConnectionHandler<T> implements Runnable, ConnectionHandler
                     synchronized (messages) {
                         while (!messages.isEmpty()) {
                             T response = messages.poll();
-                            System.out.println("the decoded message from client is:\n" + escapeNullCharacters((String) nextMessage));
                             if (response != null) {
                                 out.write(encdec.encode(response));
                                 out.flush();
                                 System.out.println("the response to the client is:\n" + (String) response);
                                 System.out.println("should terminate is: " + protocol.shouldTerminate());
-
-                            }
-                        }
-                    }
-                    // if (response != null) {
-                    //     System.out.println("the response to the client is:\n" + (String) response);
-                    //     out.write(encdec.encode(response));
-                    //     out.flush();
-                    //     System.out.println("should terminate is: " + protocol.shouldTerminate());
-                    // }
-                }
-            }
+                            }}}}}
         } catch (IOException ex) {
             ex.printStackTrace();
             System.err.println("Error in connection handler for client: " + sock.getRemoteSocketAddress() + " - " + ex.getMessage());
@@ -94,8 +82,9 @@ public class BlockingConnectionHandler<T> implements Runnable, ConnectionHandler
         }
     }
 
+    // for tests
     private String escapeNullCharacters(String input) {
-        return input.replace("\0", "\\0");  // 🔹 Replace actual null characters with visible "\0"
+        return input.replace("\0", "\\0");  // replace actual null characters with visible "\0"
     }
     
 }

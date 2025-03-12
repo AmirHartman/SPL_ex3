@@ -131,10 +131,5 @@ public class NonBlockingConnectionHandler<T> implements ConnectionHandler<T> {
     public void send(T msg) {
         messages.add(msg);
     }
-
 }
-
-
-//   /workspaces/SPL_ex3/events4.json
-//    login 127.0.0.1 8888
 
