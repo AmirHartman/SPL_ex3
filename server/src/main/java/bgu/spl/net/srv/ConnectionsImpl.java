@@ -18,11 +18,13 @@ public class ConnectionsImpl<T> implements Connections<T> {
     
     @Override
     public boolean send(int connectionId, T msg){
-        synchronized(handlers){
-            if (handlers.containsKey(connectionId)){
-                handlers.get(connectionId).send(msg);
-                return true;
-        }}
+        // synchronized topics so that a user cannot sign into a channel while sending a message to all subscribers
+        synchronized (topics){
+            synchronized(handlers){
+                if (handlers.containsKey(connectionId)){
+                    handlers.get(connectionId).send(msg);
+                    return true;
+            }}}
         return false;
     }
     @Override
@@ -40,15 +42,13 @@ public class ConnectionsImpl<T> implements Connections<T> {
 
     @Override
     public void disconnect(int connectionId){
-        // synchronized topics so that a user cannot sign into a channel while sending a message to all subscribers
-        synchronized(topics){
             synchronized (users){
                 for (String username : users.keySet()){
                     if (users.get(username) == connectionId){
                         users.remove(username);
                         break;
                     }
-            }}}
+            }}
         handlers.remove(connectionId);
         synchronized (topics){
                 for (String topic : topics.keySet()){
