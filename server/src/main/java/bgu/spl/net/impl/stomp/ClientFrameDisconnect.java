@@ -25,7 +25,6 @@ public class ClientFrameDisconnect extends ClientFrame {
     public ServerFrame process (int connectionId, Connections <String> connections, StompMessagingProtocolImpl protocol){
         ServerFrameReceipt receipt = new ServerFrameReceipt(receiptId);
         connections.send(connectionId, receipt.toString());
-        System.out.println("message sent to send method in connections from process in ClientFrameDisconnect");
         return receipt;
     }
 

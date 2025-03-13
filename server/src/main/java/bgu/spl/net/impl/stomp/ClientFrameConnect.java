@@ -19,14 +19,6 @@ public class ClientFrameConnect extends ClientFrame {
         this.passcode = passcode;
     }
 
-    // public ClientFrameConnect(String username, String passcode, int receiptId){
-    //     super(StompCommand.CONNECT);
-    //     this.username = username;
-    //     this.passcode = passcode;
-    //     this.receiptId = receiptId;
-    // }
-
-
     public ClientFrameConnect(String toFrame){
         super(toFrame);
         String[] lines = toFrame.split("\n");
@@ -41,30 +33,6 @@ public class ClientFrameConnect extends ClientFrame {
                     this.passcode = header[1];  
                     break;
             }}}
-
-            // public ClientFrameConnect(String toFrame){
-            //     super(toFrame);
-            //     String[] lines = toFrame.split("\n");
-            //     // initialize headers
-            //     for (int i = 1; i < lines.length; i++){
-            //         String[] header = lines[i].split(":");
-            //         switch (header[0]){
-            //             case "username":
-            //                 this.username = header[1];
-            //                 break;
-            //             case "passcode":
-            //                 this.passcode = header[1];  
-            //                 break;
-            //             case "receipt":
-            //                 try {
-            //                     this.receiptId = Integer.parseInt(header[1]);
-            //                 } catch (Exception e) {
-            //                     System.out.println("unable to create frameConnect, invalid receipt id");
-            //                 } 
-            //                 break;
-            //         }}}
-        
-
 
     public String getUsername(){
         return this.username;

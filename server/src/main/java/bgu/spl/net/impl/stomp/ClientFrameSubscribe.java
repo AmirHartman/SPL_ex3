@@ -47,7 +47,6 @@ public class ClientFrameSubscribe extends ClientFrame {
     @Override
     public ServerFrame process (int connectionId, Connections <String> connections, StompMessagingProtocolImpl protocol){
         if (!connections.isConnected(connectionId)){// should never happen
-            System.out.println("user is trying to subscribe to a channel without being connected");
             return new ServerFrameError("Unconnected user is trying to subscribe to a channel", receiptId, toString());
         }
         protocol.subscriberIds.put(subscription, destination);

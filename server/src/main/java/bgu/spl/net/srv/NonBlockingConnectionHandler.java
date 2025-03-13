@@ -8,7 +8,6 @@ import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
 import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class NonBlockingConnectionHandler<T> implements ConnectionHandler<T> {
@@ -21,7 +20,6 @@ public class NonBlockingConnectionHandler<T> implements ConnectionHandler<T> {
     private final Queue<ByteBuffer> writeQueue = new ConcurrentLinkedQueue<>();
     private final SocketChannel chan;
     private final Reactor<T> reactor;
-    private ConcurrentLinkedDeque<T> messages = new ConcurrentLinkedDeque<>();
 
     String username = null;
 
@@ -56,13 +54,6 @@ public class NonBlockingConnectionHandler<T> implements ConnectionHandler<T> {
                         T nextMessage = encdec.decodeNextByte(buf.get());
                         if (nextMessage != null) {
                             protocol.process(nextMessage);
-                            while (!messages.isEmpty()) {
-                                T response = messages.pollFirst();
-                                    if (response != null) {
-                                        writeQueue.add(ByteBuffer.wrap(encdec.encode(response)));
-                                        reactor.updateInterestedOps(chan, SelectionKey.OP_READ | SelectionKey.OP_WRITE);
-                                    }
-                            }
                         }
                     }
                 } finally {
@@ -127,7 +118,10 @@ public class NonBlockingConnectionHandler<T> implements ConnectionHandler<T> {
 
     @Override
     public void send(T msg) {
-        messages.add(msg);
-    }
+        if (msg != null) {
+            writeQueue.add(ByteBuffer.wrap(encdec.encode(msg)));
+            reactor.updateInterestedOps(chan, SelectionKey.OP_READ | SelectionKey.OP_WRITE);
+    }}
+
 }
 
