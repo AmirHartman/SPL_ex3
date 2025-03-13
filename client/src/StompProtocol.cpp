@@ -89,10 +89,6 @@ void StompProtocol::Out::report(names_and_events& namesAndEvents) {
     cout << "reported" << endl;
     screen_access.unlock();
 }
-
-// void StompProtocol::Out::update_reports (int& counter, string& reports, Event &event){
-
-//     void StompProtocol::Out::update_stats (Event &event, int& active, int& forces_arrival_at_scene){
     
 
 void StompProtocol::Out::summary(string channel_name, string name, string file_name){
@@ -175,9 +171,6 @@ bool StompProtocol::In::proccess(Frame &server_answer) {
     bool should_disconnect = false;
     switch(server_answer.type){
         case FrameType::MESSAGE:
-            screen_access.try_lock();
-            cout << "Message received from the server: \n" << server_answer.body << endl;
-            screen_access.unlock();
             try {
                 Event event(server_answer.body);  
                 p.out.addEvent(event);
@@ -192,7 +185,7 @@ bool StompProtocol::In::proccess(Frame &server_answer) {
             break;
         case FrameType::ERROR:
             screen_access.try_lock();
-            cout << "Error message received from the server: " << server_answer.headers["message"] << "." << endl;
+            cout << "ERROR FROM THE SERVER:\n\n" << server_answer.toString() << endl;
             screen_access.unlock();
             should_disconnect = true;
             break;
@@ -252,7 +245,7 @@ bool StompProtocol::In::proccessReceipt(Frame &server_answer) {
             cout << "Joined channel " << frame_related_to_receipt.headers["destination"].substr(1) << endl;
             break;
         case FrameType::UNSUBSCRIBE:
-            cout << "Exited channel " << frame_related_to_receipt.headers["destination"].substr(1) << endl;
+            cout << "Exited channel " << frame_related_to_receipt.headers["destination"] << endl;
             break;
         case FrameType::SEND:
             break;
@@ -270,9 +263,7 @@ bool StompProtocol::In::proccessReceipt(Frame &server_answer) {
 Frame StompProtocol::In::read_from_socket(){
     Frame answerFrame;
     string answerAsString;
-    // cout << "reading from socket again" << endl;
     if (!p.connectionHandler->getFrameAscii(answerAsString, '\0')) {
-        // cout << "!p.connectionHandler->getFrameAscii(answerAsString, '\0')" << endl;
         screen_access.try_lock();
         cerr << "Failed to receive an answer from the server." << endl;
         screen_access.unlock();
@@ -326,9 +317,3 @@ void StompProtocol::Out::update_file (string &file_name, string &file_content){
 }
 
 
-
-
-
-
-//   /workspaces/SPL_ex3/events4.json
-//    login 127.0.0.1 8888

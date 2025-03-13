@@ -38,7 +38,6 @@ Frame MessageEncoderDecoder::generateConnectFrame(const string &username, const 
     headers["accept-version"] = "1.2";
     headers["login"] = username;
     headers["passcode"] = password;
-    // headers["receipt"] = to_string(idCounter::generateReceiptId());
     return Frame(FrameType::CONNECT, headers, "");
 }
 

@@ -19,14 +19,12 @@ void SocketReader::stop() {
     should_terminate = true;
     if (reading_thread.joinable()) {
         reading_thread.join();
-        cout << "Socket reader thread has been terminated." << endl;
     }
 }
 
 void SocketReader::read_loop() {
     if (DEBUG_MODE) {
         screen_access.try_lock();
-        cout << "[DEBUG] Starting the socket reader thread." << endl;
         screen_access.unlock();
     }
     
@@ -37,7 +35,6 @@ void SocketReader::read_loop() {
                 connected = false;
             }
     }
-    cout << "Ending read loop" << endl;
 }
 
 
