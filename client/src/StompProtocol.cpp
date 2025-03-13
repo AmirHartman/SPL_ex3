@@ -103,14 +103,14 @@ void StompProtocol::Out::summary(string channel_name, string name, string file_n
            file_content += "Stats: \n";
     // if the channel doesn't exist or the user didn't send any reports to this channel
     if (p.events.find(channel_name) == p.events.end() || p.events[channel_name].find(name) == p.events[channel_name].end()) {
-        file_content += "Total: 0\n\n\n";
+        file_content += "Total: 0\n\n";
         file_content += "Event Reports:";
     }
     else {
         set<Event, EventComparator> events = p.events[channel_name][name];
         int total = events.size();
         int active = 0, forces_arrival_at_scene = 0, counter = 1;
-        string reports = "Event Reports:\n\n\n";
+        string reports = "Event Reports:\n\n";
         // iterating over the events by order
         for(set<Event, EventComparator>::iterator it = events.begin(); it != events.end(); ++it) { 
             update_stats(*it, active, forces_arrival_at_scene);
