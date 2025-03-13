@@ -29,18 +29,15 @@ public class BlockingConnectionHandler<T> implements Runnable, ConnectionHandler
 
     @Override
     public void run() {
-        System.out.println("Start run method for client: " + sock.getRemoteSocketAddress());
         try (Socket sock = this.sock) {
             int read = -1;
            
             in = new BufferedInputStream(sock.getInputStream());
             out = new BufferedOutputStream(sock.getOutputStream());
-            System.out.println("Input and output streams initialized for client: " + sock.getRemoteSocketAddress());
 
             while (!protocol.shouldTerminate() && connected && (read = in.read()) >= 0) {
                 T nextMessage = encdec.decodeNextByte((byte) read);
                 if (nextMessage != null) {
-                    System.out.println("the decoded message from client is:\n" + escapeNullCharacters((String) nextMessage));
                     protocol.process(nextMessage);
                     synchronized (messages) {
                         while (!messages.isEmpty()) {
@@ -48,15 +45,11 @@ public class BlockingConnectionHandler<T> implements Runnable, ConnectionHandler
                             if (response != null) {
                                 out.write(encdec.encode(response));
                                 out.flush();
-                                System.out.println("the response to the client is:\n" + (String) response);
-                                System.out.println("should terminate is: " + protocol.shouldTerminate());
                             }}}}}
         } catch (IOException ex) {
             ex.printStackTrace();
-            System.err.println("Error in connection handler for client: " + sock.getRemoteSocketAddress() + " - " + ex.getMessage());
         }
         finally {
-            System.out.println("closing connection for client");
             protocol.close();
         }
     }   
@@ -67,7 +60,6 @@ public class BlockingConnectionHandler<T> implements Runnable, ConnectionHandler
             connected = false;
             if (sock != null && !sock.isClosed()) {
                 sock.close(); // Close the socket
-                System.out.println("Socket closed for client.");
             }
         }
     }
@@ -78,19 +70,11 @@ public class BlockingConnectionHandler<T> implements Runnable, ConnectionHandler
     public void send(T msg) {
         synchronized (messages) {
             messages.add(msg);
-            System.out.println("Message added to messages queue for handler id: " + protocol.getConnectionId() + "\n" + (String) msg);
         }
-    }
-
-    // for tests
-    private String escapeNullCharacters(String input) {
-        return input.replace("\0", "\\0");  // replace actual null characters with visible "\0"
     }
     
 }
 
-//   /workspaces/SPL_ex3/events4.json
-//   login 127.0.0.1 8888    
 
 
 
