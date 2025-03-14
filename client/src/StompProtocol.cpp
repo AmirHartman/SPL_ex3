@@ -132,6 +132,8 @@ void StompProtocol::Out::summary(string channel_name, string name, string file_n
 void StompProtocol::Out::logout(){
     Frame disconnectFrame = p.encdec.generateDisconnectFrame();
     p.awaiting_frames_for_receipt[stoi(disconnectFrame.headers["receipt"])] = disconnectFrame;
+    p.events.clear();
+    p.encdec.topicSubscriptionMap.clear();
     sendFrame(disconnectFrame);
 }
 
