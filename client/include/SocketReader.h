@@ -5,6 +5,7 @@
 #include <thread>
 
 extern mutex screen_access;
+extern atomic<bool> should_terminate;
 
 class SocketReader {
 public:
@@ -17,7 +18,7 @@ private:
     void read_loop();
 
     StompProtocol& stomp;
-    bool should_terminate;
     thread reading_thread;
     bool& connected;
+    bool continue_reading = true;
 };

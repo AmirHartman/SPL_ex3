@@ -15,12 +15,8 @@
 
 using namespace std;
 extern mutex events_lock;
-
-
-extern bool DEBUG_MODE;
 extern atomic<bool> should_terminate;
 extern mutex screen_access;
-extern condition_variable cv;
 
 class In;
 class Out;

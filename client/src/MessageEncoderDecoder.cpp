@@ -157,7 +157,7 @@ Frame MessageEncoderDecoder::generateFrameFromString(const string &frame){
             argsFound.push_front(true); // push front so i will be the index of the last arg
         }
         // check if header is unexpected (only in debug mode)
-        else if (DEBUG_MODE && headers.find(frameArgs[i][0]) == headers.end()){
+        else if (headers.find(frameArgs[i][0]) == headers.end()){
             unexpectedHeadersFlag = true;
             unexpectedHeaders += frameArgs[i][0] + " ";
         }

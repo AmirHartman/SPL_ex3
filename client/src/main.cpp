@@ -6,17 +6,16 @@
 #include <iostream>
 #include <sstream>
 
-bool DEBUG_MODE = false;
 mutex screen_access;
 mutex events_lock;
+atomic<bool> should_terminate(false);
 
 int main(int argc, char *argv[]) {
-    // DEBUG_MODE = true;
 
     CommandsHandler command_handler;
 
     string command;
-    while (getline(cin, command)) {
+    while (!should_terminate && getline(cin, command)) {
         cout << endl;
         vector<string> commandVector;
         stringstream ss(command);

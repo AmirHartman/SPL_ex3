@@ -188,6 +188,7 @@ bool StompProtocol::In::proccess(Frame &server_answer) {
             cout << "ERROR FROM THE SERVER:\n\n" << server_answer.toString() << endl;
             screen_access.unlock();
             should_disconnect = true;
+            should_terminate = true;
             break;
         case FrameType::UNKNOWN:
             // Server's answer failed to be decoded -- in this case, the client should disconnect manually (in other cases, the server will disconnect the client)
@@ -195,6 +196,7 @@ bool StompProtocol::In::proccess(Frame &server_answer) {
             cout << "Server's answer failed to be decoded." << endl;
             screen_access.unlock();
             should_disconnect = true;
+            should_terminate = true;
             break;
         default:
             break;

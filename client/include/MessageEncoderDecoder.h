@@ -8,7 +8,6 @@
 
 using namespace std;
 
-extern bool DEBUG_MODE;
 extern mutex screen_access;
 
 class MessageEncoderDecoder{
